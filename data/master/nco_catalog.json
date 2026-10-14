@@ -1,0 +1,293 @@
+{
+  "total_occupations": 16,
+  "occupations": [
+    {
+      "nco_code": "7411.0101",
+      "title": "Solar PV Installation & Maintenance Technician",
+      "division_code": "7",
+      "division_name": "Craft and Related Trades Workers",
+      "sub_division": "74",
+      "sub_division_name": "Electrical and Electronic Trades Workers",
+      "sector_name": "Green Energy & Solar PV",
+      "nsqf_level": 4,
+      "description": "Assembles, mounts, wires, tests, and commissions rooftop and utility-scale solar photovoltaic panels, inverters, and battery storage systems.",
+      "core_competencies": [
+        "PV Module Mounting",
+        "Inverter Wiring",
+        "Grid Synchronization",
+        "Earthing & Surge Protection",
+        "I-V Curve Testing"
+      ],
+      "growth_category": "Sunrise / High Demand"
+    },
+    {
+      "nco_code": "7411.0102",
+      "title": "Rooftop Solar Plant Assembler",
+      "division_code": "7",
+      "division_name": "Craft and Related Trades Workers",
+      "sub_division": "74",
+      "sub_division_name": "Electrical and Electronic Trades Workers",
+      "sector_name": "Green Energy & Solar PV",
+      "nsqf_level": 3,
+      "description": "Performs mechanical racking, structure anchoring, and conduit runs for domestic and commercial rooftop solar installations.",
+      "core_competencies": [
+        "Roof Penetration Waterproofing",
+        "Clamp Fixing",
+        "Conduit Bending",
+        "Safety Harness Handling"
+      ],
+      "growth_category": "Sunrise / High Demand"
+    },
+    {
+      "nco_code": "3131.0201",
+      "title": "Microgrid & Solar Sub-Station Operator",
+      "division_code": "3",
+      "division_name": "Technicians and Associate Professionals",
+      "sub_division": "31",
+      "sub_division_name": "Science and Engineering Associate Professionals",
+      "sector_name": "Green Energy & Solar PV",
+      "nsqf_level": 5,
+      "description": "Operates centralized SCADA panels, load switchgear, and battery management systems in decentralized microgrids.",
+      "core_competencies": [
+        "SCADA Monitoring",
+        "Battery Energy Storage Systems (BESS)",
+        "Fault Isolation",
+        "Load Shedding Logic"
+      ],
+      "growth_category": "Sunrise / High Demand"
+    },
+    {
+      "nco_code": "7126.0301",
+      "title": "Solar Thermal & Pump Installer",
+      "division_code": "7",
+      "division_name": "Craft and Related Trades Workers",
+      "sub_division": "71",
+      "sub_division_name": "Building and Related Trades Workers",
+      "sector_name": "Green Energy & Solar PV",
+      "nsqf_level": 4,
+      "description": "Installs solar-powered agricultural water pump sets, evacuated tube collectors, and solar water heating infrastructure.",
+      "core_competencies": [
+        "Solar Pump VFD Configuration",
+        "Piping & Hydraulics",
+        "Controller Troubleshooting"
+      ],
+      "growth_category": "Moderate Growth"
+    },
+    {
+      "nco_code": "7231.0102",
+      "title": "Automotive Service Technician (Electric Vehicle)",
+      "division_code": "7",
+      "division_name": "Craft and Related Trades Workers",
+      "sub_division": "72",
+      "sub_division_name": "Metal, Machinery and Related Trades Workers",
+      "sector_name": "Automotive & EV Diagnostics",
+      "nsqf_level": 4,
+      "description": "Diagnoses, services, and repairs high-voltage powertrain, lithium-ion battery modules, motor controllers, and regenerative braking in EVs.",
+      "core_competencies": [
+        "High Voltage Safety (OSHA/IS)",
+        "CAN Bus Telematics",
+        "BMS Diagnostic Scanning",
+        "Electric Motor Insulation Test"
+      ],
+      "growth_category": "Sunrise / High Demand"
+    },
+    {
+      "nco_code": "7223.0501",
+      "title": "CNC Machinist & Precision Operator",
+      "division_code": "7",
+      "division_name": "Craft and Related Trades Workers",
+      "sub_division": "72",
+      "sub_division_name": "Metal, Machinery and Related Trades Workers",
+      "sector_name": "Automotive & EV Diagnostics",
+      "nsqf_level": 4,
+      "description": "Sets up, programs, and operates computer numerical control (CNC) multi-axis milling and turning centers to produce precision automotive components.",
+      "core_competencies": [
+        "G-Code / M-Code Programming",
+        "Micrometer & Vernier Caliper Metrology",
+        "Tool Offset Setting",
+        "Surface Finish Inspection"
+      ],
+      "growth_category": "Steady Industrial Demand"
+    },
+    {
+      "nco_code": "7212.0100",
+      "title": "Automotive Robotic Welding Operator",
+      "division_code": "7",
+      "division_name": "Craft and Related Trades Workers",
+      "sub_division": "72",
+      "sub_division_name": "Metal, Machinery and Related Trades Workers",
+      "sector_name": "Automotive & EV Diagnostics",
+      "nsqf_level": 4,
+      "description": "Monitors and operates robotic spot and MIG welding fixtures on high-speed vehicle assembly lines.",
+      "core_competencies": [
+        "Teach Pendant Robot Jogging",
+        "Weld Seam Quality Audit",
+        "Shielding Gas Regulation",
+        "Electrode Dressing"
+      ],
+      "growth_category": "High Demand"
+    },
+    {
+      "nco_code": "7231.0100",
+      "title": "Four-Wheeler Conventional Mechanic",
+      "division_code": "7",
+      "division_name": "Craft and Related Trades Workers",
+      "sub_division": "72",
+      "sub_division_name": "Metal, Machinery and Related Trades Workers",
+      "sector_name": "Automotive & EV Diagnostics",
+      "nsqf_level": 3,
+      "description": "Services traditional internal combustion engine (ICE) cooling, lubrication, fuel injection, and clutch systems.",
+      "core_competencies": [
+        "Engine Overhaul",
+        "Carburetor / Injector Cleaning",
+        "Brake Bleeding",
+        "Gearbox Dismantling"
+      ],
+      "growth_category": "Transitioning / Low Growth"
+    },
+    {
+      "nco_code": "5321.0100",
+      "title": "General Duty Assistant (GDA)",
+      "division_code": "5",
+      "division_name": "Services and Sales Workers",
+      "sub_division": "53",
+      "sub_division_name": "Personal Care Workers",
+      "sector_name": "Healthcare & Allied Care",
+      "nsqf_level": 4,
+      "description": "Assists registered nurses and physicians in patient transport, vital sign monitoring, bed-side care, and clinical hygiene in hospitals.",
+      "core_competencies": [
+        "Vital Signs Recording (BP, SpO2, Pulse)",
+        "Infection Prevention & Sterilization",
+        "Patient Mobility Support",
+        "Biomedical Waste Disposal"
+      ],
+      "growth_category": "Critical Shortage / High Demand"
+    },
+    {
+      "nco_code": "5322.0101",
+      "title": "Home Health Aide & Geriatric Caregiver",
+      "division_code": "5",
+      "division_name": "Services and Sales Workers",
+      "sub_division": "53",
+      "sub_division_name": "Personal Care Workers",
+      "sector_name": "Healthcare & Allied Care",
+      "nsqf_level": 4,
+      "description": "Provides specialized geriatric home-based rehabilitation, medication compliance monitoring, and palliative assistance for elderly citizens.",
+      "core_competencies": [
+        "Geriatric Fall Prevention",
+        "Enteral Feeding Assistance",
+        "Dementia Patient Communication",
+        "First Aid & CPR"
+      ],
+      "growth_category": "High Demand"
+    },
+    {
+      "nco_code": "3212.0100",
+      "title": "Medical Laboratory Technician",
+      "division_code": "3",
+      "division_name": "Technicians and Associate Professionals",
+      "sub_division": "32",
+      "sub_division_name": "Health Associate Professionals",
+      "sector_name": "Healthcare & Allied Care",
+      "nsqf_level": 5,
+      "description": "Performs diagnostic biochemistry, hematology, and microbiological sampling and automated analyzer operation in clinical diagnostic labs.",
+      "core_competencies": [
+        "Phlebotomy Sampling",
+        "Automated Hematology Analyzer",
+        "Microscopy Staining",
+        "NABL Quality Control Logs"
+      ],
+      "growth_category": "High Demand"
+    },
+    {
+      "nco_code": "3258.0100",
+      "title": "Emergency Medical Technician (EMT)",
+      "division_code": "3",
+      "division_name": "Technicians and Associate Professionals",
+      "sub_division": "32",
+      "sub_division_name": "Health Associate Professionals",
+      "sector_name": "Healthcare & Allied Care",
+      "nsqf_level": 5,
+      "description": "Operates Advanced Life Support (ALS) ambulances, stabilizes trauma patients, and administers emergency oxygen therapy.",
+      "core_competencies": [
+        "Defibrillator (AED) Operation",
+        "Cervical Collar Spinal Immobilization",
+        "Oxygen Delivery Systems",
+        "Triage Assessment"
+      ],
+      "growth_category": "High Demand"
+    },
+    {
+      "nco_code": "4132.0100",
+      "title": "Domestic Data Entry Operator (DEO)",
+      "division_code": "4",
+      "division_name": "Clerical Support Workers",
+      "sub_division": "41",
+      "sub_division_name": "General and Keyboard Clerks",
+      "sector_name": "IT-ITeS & Digital Services",
+      "nsqf_level": 3,
+      "description": "Enters alphabetic and numeric data into computer terminal databases from physical ledgers and forms with basic accuracy checks.",
+      "core_competencies": [
+        "Typing Speed 30 WPM",
+        "MS Word / Excel Entry",
+        "Basic Office Filing",
+        "Data Verification"
+      ],
+      "growth_category": "Severe Oversupply / Saturated"
+    },
+    {
+      "nco_code": "3512.0101",
+      "title": "Cloud Computing Infrastructure Support Associate",
+      "division_code": "3",
+      "division_name": "Technicians and Associate Professionals",
+      "sub_division": "35",
+      "sub_division_name": "Information and Communications Technology Technicians",
+      "sector_name": "IT-ITeS & Digital Services",
+      "nsqf_level": 5,
+      "description": "Monitors virtual servers, storage containers, identity access permissions, and ticket escalations on cloud platforms.",
+      "core_competencies": [
+        "Linux CLI Operations",
+        "Cloud IAM Configuration",
+        "Virtual Network Troubleshooting",
+        "SLA Incident Escalation"
+      ],
+      "growth_category": "High Demand"
+    },
+    {
+      "nco_code": "3513.0100",
+      "title": "Cybersecurity SOC Analyst (L1)",
+      "division_code": "3",
+      "division_name": "Technicians and Associate Professionals",
+      "sub_division": "35",
+      "sub_division_name": "Information and Communications Technology Technicians",
+      "sector_name": "IT-ITeS & Digital Services",
+      "nsqf_level": 5,
+      "description": "Triages Security Information and Event Management (SIEM) alerts, detects phishing attempts, and reports firewall anomalies.",
+      "core_competencies": [
+        "SIEM Log Analysis",
+        "Phishing Header Inspection",
+        "Firewall Rule Checking",
+        "Endpoint Threat Isolation"
+      ],
+      "growth_category": "Critical Shortage / High Demand"
+    },
+    {
+      "nco_code": "3514.0201",
+      "title": "AI Model Data Annotator & Prompt Verifier",
+      "division_code": "3",
+      "division_name": "Technicians and Associate Professionals",
+      "sub_division": "35",
+      "sub_division_name": "Information and Communications Technology Technicians",
+      "sector_name": "IT-ITeS & Digital Services",
+      "nsqf_level": 4,
+      "description": "Tags complex multimodal image bounding boxes, annotates named entity tokens, and verifies safety and factual alignment for AI models.",
+      "core_competencies": [
+        "Semantic Segmentation Tagging",
+        "RLHF Feedback Scoring",
+        "NER Entity Labeling",
+        "Factual Consistency Check"
+      ],
+      "growth_category": "Sunrise / High Demand"
+    }
+  ]
+}

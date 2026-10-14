@@ -1,0 +1,588 @@
+{
+  "total_districts": 41,
+  "districts": [
+    {
+      "district_lgd_code": 158,
+      "district_name": "Kanpur Nagar",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 26.4499,
+      "longitude": 80.3319,
+      "tier": "Tier-2",
+      "cluster_type": "Manufacturing, Leather & Solar Hub",
+      "aliases": [
+        "kanpur",
+        "cawnpore",
+        "kanpur city",
+        "kanpur nagar"
+      ]
+    },
+    {
+      "district_lgd_code": 160,
+      "district_name": "Lucknow",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 26.8467,
+      "longitude": 80.9462,
+      "tier": "Tier-1",
+      "cluster_type": "State Capital, IT-ITeS & Healthcare",
+      "aliases": [
+        "lko",
+        "lucknow",
+        "laxmanpuri"
+      ]
+    },
+    {
+      "district_lgd_code": 184,
+      "district_name": "Varanasi",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 25.3176,
+      "longitude": 82.9739,
+      "tier": "Tier-2",
+      "cluster_type": "Handloom, Tourism & Micro-solar",
+      "aliases": [
+        "kashi",
+        "banaras",
+        "benares",
+        "varanasi"
+      ]
+    },
+    {
+      "district_lgd_code": 148,
+      "district_name": "Gautam Buddha Nagar",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 28.5355,
+      "longitude": 77.391,
+      "tier": "Tier-1",
+      "cluster_type": "Electronics, EV & Software Hub",
+      "aliases": [
+        "noida",
+        "greater noida",
+        "gb nagar",
+        "gautam budh nagar"
+      ]
+    },
+    {
+      "district_lgd_code": 149,
+      "district_name": "Ghaziabad",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 28.6692,
+      "longitude": 77.4538,
+      "tier": "Tier-2",
+      "cluster_type": "Heavy Engineering & Automotive Spares",
+      "aliases": [
+        "ghaziabad",
+        "gzb"
+      ]
+    },
+    {
+      "district_lgd_code": 126,
+      "district_name": "Prayagraj",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 25.4358,
+      "longitude": 81.8463,
+      "tier": "Tier-2",
+      "cluster_type": "Education, Services & Agro-processing",
+      "aliases": [
+        "allahabad",
+        "prayag",
+        "prayagraj"
+      ]
+    },
+    {
+      "district_lgd_code": 124,
+      "district_name": "Agra",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 27.1767,
+      "longitude": 78.0081,
+      "tier": "Tier-2",
+      "cluster_type": "Footwear, Foundries & Hospitality",
+      "aliases": [
+        "agra",
+        "taj city"
+      ]
+    },
+    {
+      "district_lgd_code": 163,
+      "district_name": "Meerut",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 28.9845,
+      "longitude": 77.7064,
+      "tier": "Tier-2",
+      "cluster_type": "Sports Goods, Auto Ancillary & Textiles",
+      "aliases": [
+        "meerut"
+      ]
+    },
+    {
+      "district_lgd_code": 151,
+      "district_name": "Gorakhpur",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 26.7606,
+      "longitude": 83.3732,
+      "tier": "Tier-2",
+      "cluster_type": "Industrial Corridor, Logistics & Health",
+      "aliases": [
+        "gorakhpur",
+        "gkp"
+      ]
+    },
+    {
+      "district_lgd_code": 180,
+      "district_name": "Sonbhadra",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 24.685,
+      "longitude": 83.0683,
+      "tier": "Tier-3",
+      "cluster_type": "Power Generation, Mining & Solar Parks",
+      "aliases": [
+        "sonbhadra",
+        "sonebhadra"
+      ]
+    },
+    {
+      "district_lgd_code": 155,
+      "district_name": "Jhansi",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 25.4484,
+      "longitude": 78.5685,
+      "tier": "Tier-3",
+      "cluster_type": "Defense Corridor & Heavy Machinery",
+      "aliases": [
+        "jhansi"
+      ]
+    },
+    {
+      "district_lgd_code": 125,
+      "district_name": "Aligarh",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 27.8974,
+      "longitude": 78.088,
+      "tier": "Tier-2",
+      "cluster_type": "Lock Hardware, Metal Casting & Education",
+      "aliases": [
+        "aligarh"
+      ]
+    },
+    {
+      "district_lgd_code": 132,
+      "district_name": "Bareilly",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 28.367,
+      "longitude": 79.4304,
+      "tier": "Tier-2",
+      "cluster_type": "Wood Craft, Zari Zardozi & Agro",
+      "aliases": [
+        "bareilly"
+      ]
+    },
+    {
+      "district_lgd_code": 165,
+      "district_name": "Mirzapur",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 25.1337,
+      "longitude": 82.5644,
+      "tier": "Tier-3",
+      "cluster_type": "Carpet Weaving, Brassware & Green Jobs",
+      "aliases": [
+        "mirzapur"
+      ]
+    },
+    {
+      "district_lgd_code": 145,
+      "district_name": "Ayodhya",
+      "state_lgd_code": 9,
+      "state_name": "Uttar Pradesh",
+      "latitude": 26.7922,
+      "longitude": 82.1998,
+      "tier": "Tier-2",
+      "cluster_type": "Hospitality, Logistics & Solar City",
+      "aliases": [
+        "faizabad",
+        "ayodhya"
+      ]
+    },
+    {
+      "district_lgd_code": 492,
+      "district_name": "Pune",
+      "state_lgd_code": 27,
+      "state_name": "Maharashtra",
+      "latitude": 18.5204,
+      "longitude": 73.8567,
+      "tier": "Tier-1",
+      "cluster_type": "Automotive, EV Manufacturing & IT",
+      "aliases": [
+        "pune",
+        "poona",
+        "punyanagari"
+      ]
+    },
+    {
+      "district_lgd_code": 485,
+      "district_name": "Mumbai",
+      "state_lgd_code": 27,
+      "state_name": "Maharashtra",
+      "latitude": 18.9388,
+      "longitude": 72.8354,
+      "tier": "Tier-1",
+      "cluster_type": "Finance, Ports, Healthcare & Services",
+      "aliases": [
+        "mumbai",
+        "bombay",
+        "mumbai city"
+      ]
+    },
+    {
+      "district_lgd_code": 486,
+      "district_name": "Mumbai Suburban",
+      "state_lgd_code": 27,
+      "state_name": "Maharashtra",
+      "latitude": 19.1136,
+      "longitude": 72.8697,
+      "tier": "Tier-1",
+      "cluster_type": "Media, IT-ITeS & Retail Logistics",
+      "aliases": [
+        "mumbai suburban",
+        "suburban mumbai"
+      ]
+    },
+    {
+      "district_lgd_code": 497,
+      "district_name": "Thane",
+      "state_lgd_code": 27,
+      "state_name": "Maharashtra",
+      "latitude": 19.2183,
+      "longitude": 72.9781,
+      "tier": "Tier-1",
+      "cluster_type": "Chemicals, Precision Engineering & Logistics",
+      "aliases": [
+        "thane",
+        "thana"
+      ]
+    },
+    {
+      "district_lgd_code": 488,
+      "district_name": "Nagpur",
+      "state_lgd_code": 27,
+      "state_name": "Maharashtra",
+      "latitude": 21.1458,
+      "longitude": 79.0882,
+      "tier": "Tier-2",
+      "cluster_type": "MIHAN Cargo, Defense & Electronics",
+      "aliases": [
+        "nagpur",
+        "orange city"
+      ]
+    },
+    {
+      "district_lgd_code": 490,
+      "district_name": "Nashik",
+      "state_lgd_code": 27,
+      "state_name": "Maharashtra",
+      "latitude": 19.9975,
+      "longitude": 73.7898,
+      "tier": "Tier-2",
+      "cluster_type": "Auto Ancillary, Electrical Equipment & Agro",
+      "aliases": [
+        "nashik",
+        "nasik"
+      ]
+    },
+    {
+      "district_lgd_code": 467,
+      "district_name": "Chhatrapati Sambhaji Nagar",
+      "state_lgd_code": 27,
+      "state_name": "Maharashtra",
+      "latitude": 19.8762,
+      "longitude": 75.3433,
+      "tier": "Tier-2",
+      "cluster_type": "AURIC Smart City, Auto & Pharma",
+      "aliases": [
+        "aurangabad",
+        "chhatrapati sambhaji nagar",
+        "sambhajinagar"
+      ]
+    },
+    {
+      "district_lgd_code": 479,
+      "district_name": "Kolhapur",
+      "state_lgd_code": 27,
+      "state_name": "Maharashtra",
+      "latitude": 16.705,
+      "longitude": 74.2433,
+      "tier": "Tier-2",
+      "cluster_type": "Foundry, Auto Forging & Sugar Processing",
+      "aliases": [
+        "kolhapur"
+      ]
+    },
+    {
+      "district_lgd_code": 496,
+      "district_name": "Solapur",
+      "state_lgd_code": 27,
+      "state_name": "Maharashtra",
+      "latitude": 17.6599,
+      "longitude": 75.9064,
+      "tier": "Tier-2",
+      "cluster_type": "Textiles, Garments & Solar Energy",
+      "aliases": [
+        "solapur",
+        "sholapur"
+      ]
+    },
+    {
+      "district_lgd_code": 475,
+      "district_name": "Gadchiroli",
+      "state_lgd_code": 27,
+      "state_name": "Maharashtra",
+      "latitude": 20.1809,
+      "longitude": 80.0022,
+      "tier": "Tier-3",
+      "cluster_type": "Mining, Forest Produce & Tribal Crafts",
+      "aliases": [
+        "gadchiroli"
+      ]
+    },
+    {
+      "district_lgd_code": 465,
+      "district_name": "Ahilyanagar",
+      "state_lgd_code": 27,
+      "state_name": "Maharashtra",
+      "latitude": 19.0948,
+      "longitude": 74.748,
+      "tier": "Tier-3",
+      "cluster_type": "Agro-processing, Wind & Solar Power",
+      "aliases": [
+        "ahmednagar",
+        "ahilyanagar"
+      ]
+    },
+    {
+      "district_lgd_code": 491,
+      "district_name": "Raigad",
+      "state_lgd_code": 27,
+      "state_name": "Maharashtra",
+      "latitude": 18.5158,
+      "longitude": 73.1822,
+      "tier": "Tier-2",
+      "cluster_type": "Steel, Ports (JNPT), Petrochemicals",
+      "aliases": [
+        "raigad",
+        "raigarh maharashtra"
+      ]
+    },
+    {
+      "district_lgd_code": 365,
+      "district_name": "Khordha",
+      "state_lgd_code": 21,
+      "state_name": "Odisha",
+      "latitude": 20.1812,
+      "longitude": 85.617,
+      "tier": "Tier-2",
+      "cluster_type": "State Capital (Bhubaneswar), IT & Healthcare",
+      "aliases": [
+        "khordha",
+        "bhubaneswar",
+        "khurda",
+        "bbsr"
+      ]
+    },
+    {
+      "district_lgd_code": 354,
+      "district_name": "Cuttack",
+      "state_lgd_code": 21,
+      "state_name": "Odisha",
+      "latitude": 20.4625,
+      "longitude": 85.8828,
+      "tier": "Tier-2",
+      "cluster_type": "Logistics, Silver Filigree, Heavy Spares",
+      "aliases": [
+        "cuttack",
+        "katak"
+      ]
+    },
+    {
+      "district_lgd_code": 376,
+      "district_name": "Sundargarh",
+      "state_lgd_code": 21,
+      "state_name": "Odisha",
+      "latitude": 22.12,
+      "longitude": 84.03,
+      "tier": "Tier-2",
+      "cluster_type": "Steel (Rourkela Steel Plant), Mining & Metal",
+      "aliases": [
+        "sundargarh",
+        "rourkela",
+        "sundergarh"
+      ]
+    },
+    {
+      "district_lgd_code": 359,
+      "district_name": "Ganjam",
+      "state_lgd_code": 21,
+      "state_name": "Odisha",
+      "latitude": 19.38,
+      "longitude": 84.99,
+      "tier": "Tier-3",
+      "cluster_type": "Gopalpur Port, Rare Earths & Fisheries",
+      "aliases": [
+        "ganjam",
+        "berhampur",
+        "brahmapur"
+      ]
+    },
+    {
+      "district_lgd_code": 374,
+      "district_name": "Sambalpur",
+      "state_lgd_code": 21,
+      "state_name": "Odisha",
+      "latitude": 21.4669,
+      "longitude": 83.9812,
+      "tier": "Tier-2",
+      "cluster_type": "Aluminium (MCL), Handloom & Power",
+      "aliases": [
+        "sambalpur"
+      ]
+    },
+    {
+      "district_lgd_code": 348,
+      "district_name": "Angul",
+      "state_lgd_code": 21,
+      "state_name": "Odisha",
+      "latitude": 20.84,
+      "longitude": 85.1,
+      "tier": "Tier-3",
+      "cluster_type": "Thermal Power (NTPC), Aluminium & Coal",
+      "aliases": [
+        "angul",
+        "anugul"
+      ]
+    },
+    {
+      "district_lgd_code": 363,
+      "district_name": "Jajpur",
+      "state_lgd_code": 21,
+      "state_name": "Odisha",
+      "latitude": 20.85,
+      "longitude": 86.33,
+      "tier": "Tier-2",
+      "cluster_type": "Kalinganagar Steel Hub, Ferro-alloys",
+      "aliases": [
+        "jajpur",
+        "kalinganagar"
+      ]
+    },
+    {
+      "district_lgd_code": 349,
+      "district_name": "Balasore",
+      "state_lgd_code": 21,
+      "state_name": "Odisha",
+      "latitude": 21.4934,
+      "longitude": 86.9135,
+      "tier": "Tier-3",
+      "cluster_type": "Missile Testing (ITR), Plastics & Sea Food",
+      "aliases": [
+        "balasore",
+        "baleswar"
+      ]
+    },
+    {
+      "district_lgd_code": 366,
+      "district_name": "Kendujhar",
+      "state_lgd_code": 21,
+      "state_name": "Odisha",
+      "latitude": 21.63,
+      "longitude": 85.58,
+      "tier": "Tier-3",
+      "cluster_type": "Iron Ore Mining, Heavy Earthmoving Spares",
+      "aliases": [
+        "keonjhar",
+        "kendujhar"
+      ]
+    },
+    {
+      "district_lgd_code": 364,
+      "district_name": "Jharsuguda",
+      "state_lgd_code": 21,
+      "state_name": "Odisha",
+      "latitude": 21.85,
+      "longitude": 84.0,
+      "tier": "Tier-3",
+      "cluster_type": "Aluminium Smelters (Vedanta), Power, Rail",
+      "aliases": [
+        "jharsuguda"
+      ]
+    },
+    {
+      "district_lgd_code": 367,
+      "district_name": "Koraput",
+      "state_lgd_code": 21,
+      "state_name": "Odisha",
+      "latitude": 18.81,
+      "longitude": 82.71,
+      "tier": "Tier-3",
+      "cluster_type": "Aero-engines (HAL Sunabeda), Bauxite (NALCO)",
+      "aliases": [
+        "koraput",
+        "sunabeda"
+      ]
+    },
+    {
+      "district_lgd_code": 85,
+      "district_name": "New Delhi",
+      "state_lgd_code": 7,
+      "state_name": "Delhi",
+      "latitude": 28.6139,
+      "longitude": 77.209,
+      "tier": "Tier-1",
+      "cluster_type": "National Capital, Commercial Services & Policy",
+      "aliases": [
+        "delhi",
+        "new delhi",
+        "nct of delhi"
+      ]
+    },
+    {
+      "district_lgd_code": 533,
+      "district_name": "Bengaluru Urban",
+      "state_lgd_code": 29,
+      "state_name": "Karnataka",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "tier": "Tier-1",
+      "cluster_type": "Software, Aerospace & Deep Tech",
+      "aliases": [
+        "bangalore",
+        "bengaluru",
+        "bengaluru urban"
+      ]
+    },
+    {
+      "district_lgd_code": 500,
+      "district_name": "Hyderabad",
+      "state_lgd_code": 36,
+      "state_name": "Telangana",
+      "latitude": 17.385,
+      "longitude": 78.4867,
+      "tier": "Tier-1",
+      "cluster_type": "Pharma, Biotech & IT Services",
+      "aliases": [
+        "hyderabad",
+        "hyd",
+        "cyberabad"
+      ]
+    }
+  ]
+}
