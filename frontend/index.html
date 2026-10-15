@@ -1,112 +1,227 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KaushalDrishti (कौशल दृष्टि) — AI-Enabled Labour Market Intelligence & Skill Forecasting Engine</title>
-  <meta name="description" content="Strategic Decision Support and Skill Demand-Supply Forecasting Engine for the Ministry of Skill Development and Entrepreneurship (MSDE), Government of India." />
+  <title>KaushalDrishti (कौशल दृष्टि) — AI-Powered Labour Market Intelligence</title>
+  <meta name="description" content="AI-Powered Labour Market Intelligence and Skill Demand-Supply Forecasting Engine for the Ministry of Skill Development and Entrepreneurship (MSDE), Government of India." />
   
-  <!-- Favicon & Fonts -->
+  <!-- Google Fonts: Inter & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
   
-  <!-- CSS Stylesheets -->
+  <!-- CSS Styles -->
   <link rel="stylesheet" href="/css/tokens.css" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-  <!-- Header & Sticky Global Navigation -->
-  <header class="app-header">
-    <div class="header-inner">
-      <!-- National Brand & Ministry Badge -->
-      <div class="brand-section">
-        <div class="national-emblem-badge" title="Government of India Skilling Intelligence">
-          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-            <path d="M12 2L1 21h22L12 2zm0 4.2l7.5 13H4.5L12 6.2z"/>
+  <div class="app-container">
+    <!-- Fixed Left Sidebar -->
+    <aside class="app-sidebar">
+      <!-- Brand Header -->
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <!-- Geometric Multi-colored Flower/Sparkle SVG -->
+          <svg viewBox="0 0 36 36" width="32" height="32" fill="none">
+            <circle cx="18" cy="18" r="4.5" fill="#10B981" />
+            <path d="M18 4v8M18 24v8M4 18h8M24 18h8" stroke="#2563EB" stroke-width="3" stroke-linecap="round" />
+            <path d="M8 8l6 6M22 22l6 6M8 28l6-6M22 14l6-6" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round" />
           </svg>
         </div>
-        <div class="brand-titles">
-          <h1 class="brand-title" data-i18n="app_title">KaushalDrishti (कौशल दृष्टि)</h1>
-          <span class="brand-ministry" data-i18n="ministry_badge">Ministry of Skill Development & Entrepreneurship (MSDE)</span>
+        <div class="brand-text-wrap">
+          <span class="brand-name">KaushalDrishti</span>
+          <span class="brand-subtitle">AI-Powered Labour Market Intelligence</span>
         </div>
       </div>
 
-      <!-- Navigation Bar -->
-      <nav class="main-nav" aria-label="Main Navigation">
-        <a href="#command-center" class="nav-link active" data-view="command-center" data-i18n="nav_command_center">National Command</a>
-        <a href="#district-explorer" class="nav-link" data-view="district-explorer" data-i18n="nav_district_explorer">District Explorer</a>
-        <a href="#trade-deep-dive" class="nav-link" data-view="trade-deep-dive" data-i18n="nav_trade_deep_dive">Trade Deep Dive</a>
-        <a href="#early-warning" class="nav-link" data-view="alert-center" data-i18n="nav_early_warning">Early Warning Radar</a>
-        <a href="#simulator" class="nav-link" data-view="simulator" data-i18n="nav_simulator">What-If Sandbox</a>
-        <a href="#export-hub" class="nav-link" data-view="export-hub" data-i18n="nav_target_export">Target Export</a>
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav" aria-label="Main Navigation">
+        <a class="nav-link active" data-view="dashboard" title="National Command Dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span data-i18n="nav_dashboard">Dashboard</span>
+        </a>
+
+        <a class="nav-link" data-view="sectors-trades">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span data-i18n="nav_demand_supply">Demand & Supply</span>
+        </a>
+
+        <a class="nav-link" data-view="forecasting">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+          <span data-i18n="nav_forecasting">Forecasting</span>
+        </a>
+
+        <a class="nav-link" data-view="sectors-trades">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+          <span data-i18n="nav_sectors_trades">Sectors & Trades</span>
+        </a>
+
+        <a class="nav-link" data-view="geographic-view">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+            <line x1="8" y1="2" x2="8" y2="18"></line>
+            <line x1="16" y1="6" x2="16" y2="22"></line>
+          </svg>
+          <span data-i18n="nav_geographic_view">Geographic View</span>
+        </a>
+
+        <a class="nav-link" data-view="simulator">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+          </svg>
+          <span data-i18n="nav_training_capacity">Training Capacity</span>
+        </a>
+
+        <a class="nav-link" data-view="alerts-insights">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span data-i18n="nav_alerts_insights">Alerts & Insights</span>
+        </a>
+
+        <a class="nav-link" data-view="reports">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span data-i18n="nav_reports">Reports</span>
+        </a>
+
+        <a class="nav-link" data-view="data-explorer">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+          </svg>
+          <span data-i18n="nav_data_explorer">Data Explorer</span>
+        </a>
+
+        <a class="nav-link" data-view="api-access">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+          <span data-i18n="nav_api_access">API Access</span>
+        </a>
+
+        <a class="nav-link" data-view="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span data-i18n="nav_settings">Settings</span>
+        </a>
       </nav>
+    </aside>
 
-      <!-- Language & Theme Utilities -->
-      <div class="header-actions">
-        <!-- Language Switcher -->
-        <div class="lang-toggle-wrap" role="group" aria-label="Language Selector">
-          <button class="lang-btn active" data-lang="en">EN</button>
-          <button class="lang-btn" data-lang="hi">हिन्दी</button>
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      <!-- Fixed Top Header -->
+      <header class="top-header">
+        <!-- Search Bar -->
+        <div class="header-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="globalSearchInput" placeholder="Search sector, trade, district..." data-i18n-placeholder="search_placeholder" />
         </div>
 
-        <!-- Theme Toggle Button -->
-        <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
-          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-          </svg>
-        </button>
-      </div>
+        <!-- Header Actions: Language, Notifications, Admin Profile -->
+        <div class="header-right">
+          <!-- Language Selector -->
+          <div class="lang-selector-wrap">
+            <button class="lang-dropdown-btn" id="langToggleBtn">
+              <span id="currentLangLabel">English</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Notification Bell -->
+          <button class="header-icon-btn" title="Alerts & Notifications">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="badge-dot">1</span>
+          </button>
+
+          <!-- User Profile Avatar -->
+          <div class="user-profile-badge">
+            <div class="user-avatar">A</div>
+            <div class="user-details">
+              <span class="user-name">Admin</span>
+              <span class="user-role">MSDE</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Body Container -->
+      <main class="content-area">
+        <!-- Screen 1: Dashboard View -->
+        <section id="view-dashboard" class="view-panel active"></section>
+
+        <!-- Screen 2: Geographic View -->
+        <section id="view-geographic-view" class="view-panel"></section>
+
+        <!-- Screen 3: Sectors & Trades -->
+        <section id="view-sectors-trades" class="view-panel"></section>
+
+        <!-- Screen 4: Forecasting -->
+        <section id="view-forecasting" class="view-panel"></section>
+
+        <!-- Screen 5: Alerts & Insights -->
+        <section id="view-alerts-insights" class="view-panel"></section>
+
+        <!-- Screen 6: Training Capacity / Simulator -->
+        <section id="view-simulator" class="view-panel"></section>
+
+        <!-- Screen 7: Reports / Target Export -->
+        <section id="view-reports" class="view-panel"></section>
+
+        <!-- Screen 8: Data Explorer -->
+        <section id="view-data-explorer" class="view-panel"></section>
+
+        <!-- Screen 9: API Access -->
+        <section id="view-api-access" class="view-panel"></section>
+
+        <!-- Screen 10: Settings -->
+        <section id="view-settings" class="view-panel"></section>
+      </main>
     </div>
-  </header>
+  </div>
 
-  <!-- App Main Content Views Container -->
-  <main class="app-main" id="appMain">
-    <!-- View 1: National Command Center -->
-    <div id="view-command-center" class="view-container"></div>
-
-    <!-- View 2: Geospatial District Explorer -->
-    <div id="view-district-explorer" class="view-container hidden"></div>
-
-    <!-- View 3: Trade & Sector Deep-Dive Lab -->
-    <div id="view-trade-deep-dive" class="view-container hidden"></div>
-
-    <!-- View 4: Early Warning Radar & Triage Center -->
-    <div id="view-alert-center" class="view-container hidden"></div>
-
-    <!-- View 5: What-If Capacity Simulation Sandbox -->
-    <div id="view-simulator" class="view-container hidden"></div>
-
-    <!-- View 6: Target Setting & Scheme Export Hub -->
-    <div id="view-export-hub" class="view-container hidden"></div>
-  </main>
-
-  <!-- Footer -->
-  <footer class="app-footer">
-    <div class="footer-inner">
-      <div>
-        <strong>Project KaushalDrishti (कौशल दृष्टि)</strong> — Problem Statement ID 26246
-      </div>
-      <div class="footer-compliance">
-        <span>NCO-2015 8-Digit Aligned</span>
-        <span>•</span>
-        <span>LGD Canonical 742 Districts</span>
-        <span>•</span>
-        <span>DPDP Act 2023 Compliant</span>
-        <span>•</span>
-        <span>WCAG 2.1 AA</span>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Scripts -->
-  <script src="/js/i18n.js"></script>
+  <!-- JavaScript Modules -->
   <script src="/js/api.js"></script>
-  <script src="/js/components/map.js"></script>
+  <script src="/js/i18n.js"></script>
   <script src="/js/components/charts.js"></script>
+  <script src="/js/components/map.js"></script>
   <script src="/js/modules/command_center.js"></script>
   <script src="/js/modules/district_explorer.js"></script>
   <script src="/js/modules/trade_deep_dive.js"></script>
+  <script src="/js/modules/sectors_trades.js"></script>
   <script src="/js/modules/alert_center.js"></script>
   <script src="/js/modules/simulator.js"></script>
   <script src="/js/modules/export_hub.js"></script>

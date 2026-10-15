@@ -1,310 +1,526 @@
-const DistrictExplorerModule = {
-  currentFilters: {
-    state_name: "Uttar Pradesh",
-    district_lgd_code: 158, // Kanpur Nagar default
-    sector_name: "",
-    flag_code: "",
-    horizon: "12M"
-  },
-  cachedRecords: [],
+/**
+ * Geographic View Module — "India - District Level Labour Demand-Supply"
+ * KaushalDrishti (कौशल दृष्टि)
+ * Directly matches the reference enterprise SaaS design layout.
+ */
 
-  async init(containerId, initialParams = {}) {
+const DistrictExplorerModule = {
+  currentState: "Maharashtra",
+  currentDistrict: "Pune",
+  currentMetric: "demand",
+  currentViewMode: "map",
+
+  districtData: {
+    "Maharashtra": {
+      "Pune": {
+        demand: "48,200",
+        demandGrowth: "+22%",
+        supply: "32,500",
+        supplyGrowth: "+10%",
+        gap: "+15,700",
+        gapType: "Undersupply",
+        topTrades: [
+          { name: "Software Developer", count: "8,200" },
+          { name: "CNC Operator", count: "3,400" },
+          { name: "Electrician", count: "2,800" },
+          { name: "Retail Sales Associate", count: "2,600" },
+          { name: "AC Technician", count: "2,100" }
+        ]
+      },
+      "Mumbai": {
+        demand: "56,400",
+        demandGrowth: "+18%",
+        supply: "44,100",
+        supplyGrowth: "+12%",
+        gap: "+12,300",
+        gapType: "Undersupply",
+        topTrades: [
+          { name: "Data Analyst", count: "9,400" },
+          { name: "Retail Sales Associate", count: "4,600" },
+          { name: "Hospitality Associate", count: "3,800" },
+          { name: "EV Diagnostic Tech", count: "2,900" },
+          { name: "Logistics Coordinator", count: "2,400" }
+        ]
+      },
+      "Nagpur": {
+        demand: "24,800",
+        demandGrowth: "+14%",
+        supply: "21,200",
+        supplyGrowth: "+9%",
+        gap: "+3,600",
+        gapType: "Undersupply",
+        topTrades: [
+          { name: "Solar PV Technician", count: "4,100" },
+          { name: "Electrician", count: "2,600" },
+          { name: "Automotive Fitter", count: "2,100" },
+          { name: "General Duty Assistant", count: "1,800" },
+          { name: "Welder / Fabricator", count: "1,400" }
+        ]
+      }
+    },
+    "Uttar Pradesh": {
+      "Kanpur Nagar": {
+        demand: "38,400",
+        demandGrowth: "+26%",
+        supply: "24,100",
+        supplyGrowth: "+14%",
+        gap: "+14,300",
+        gapType: "Undersupply",
+        topTrades: [
+          { name: "Solar PV Installation Tech", count: "6,800" },
+          { name: "Industrial Electrician", count: "3,900" },
+          { name: "CNC Machining Tech", count: "3,100" },
+          { name: "General Duty Nursing Assistant", count: "2,400" },
+          { name: "Leather & Footwear Tech", count: "1,900" }
+        ]
+      },
+      "Lucknow": {
+        demand: "42,100",
+        demandGrowth: "+20%",
+        supply: "35,600",
+        supplyGrowth: "+11%",
+        gap: "+6,500",
+        gapType: "Undersupply",
+        topTrades: [
+          { name: "Software Developer", count: "7,200" },
+          { name: "Solar Micro-grid Specialist", count: "3,800" },
+          { name: "Allied Health Assistant", count: "3,100" },
+          { name: "EV Two-Wheeler Tech", count: "2,500" },
+          { name: "Telecommunication Tech", count: "1,800" }
+        ]
+      },
+      "Varanasi": {
+        demand: "28,200",
+        demandGrowth: "+19%",
+        supply: "22,400",
+        supplyGrowth: "+8%",
+        gap: "+5,800",
+        gapType: "Undersupply",
+        topTrades: [
+          { name: "Textile Handloom Master", count: "4,900" },
+          { name: "Solar Water Pump Tech", count: "3,200" },
+          { name: "Geriatric Care Aide", count: "2,400" },
+          { name: "Electrician", count: "2,100" },
+          { name: "Hospitality Executive", count: "1,700" }
+        ]
+      }
+    },
+    "Odisha": {
+      "Khordha / Bhubaneswar": {
+        demand: "32,600",
+        demandGrowth: "+21%",
+        supply: "24,800",
+        supplyGrowth: "+11%",
+        gap: "+7,800",
+        gapType: "Undersupply",
+        topTrades: [
+          { name: "IT Data Engineer", count: "5,400" },
+          { name: "Solar Plant Installer", count: "3,600" },
+          { name: "Mining Equipment Tech", count: "2,900" },
+          { name: "General Duty Assistant", count: "2,200" },
+          { name: "Industrial Fitter", count: "1,800" }
+        ]
+      }
+    }
+  },
+
+  async init(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    if (initialParams.state_name) {
-      this.currentFilters.state_name = initialParams.state_name;
-      // Default district per state
-      if (initialParams.state_name === "Maharashtra") this.currentFilters.district_lgd_code = 492; // Pune
-      else if (initialParams.state_name === "Odisha") this.currentFilters.district_lgd_code = 365; // Khordha
-      else this.currentFilters.district_lgd_code = 158; // Kanpur
-    }
-
     container.innerHTML = `
-      <!-- Filter Bar -->
-      <div class="filter-strip">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="page-title-wrap">
+          <h2 data-i18n="geo_title">India - District Level Labour Demand-Supply</h2>
+          <p data-i18n="geo_subtitle">Explore demand, supply and gap across States and Districts</p>
+        </div>
+      </div>
+
+      <!-- Filter Toolbar -->
+      <div class="filter-toolbar-row">
         <div class="filter-group">
-          <label class="filter-label">State</label>
-          <select id="selState" class="form-select">
+          <label data-i18n="filter_state">Select State</label>
+          <select id="geoSelectState" class="filter-select">
+            <option value="Maharashtra" selected>Maharashtra</option>
             <option value="Uttar Pradesh">Uttar Pradesh</option>
-            <option value="Maharashtra">Maharashtra</option>
             <option value="Odisha">Odisha</option>
           </select>
         </div>
 
         <div class="filter-group">
-          <label class="filter-label">District (LGD Master)</label>
-          <select id="selDistrict" class="form-select">
-            <option value="158">Kanpur Nagar (LGD 158)</option>
-            <option value="160">Lucknow (LGD 160)</option>
-            <option value="184">Varanasi (LGD 184)</option>
-            <option value="148">Gautam Buddha Nagar / Noida (LGD 148)</option>
-            <option value="180">Sonbhadra (LGD 180 - Sparse)</option>
+          <label data-i18n="filter_district">Select District</label>
+          <select id="geoSelectDistrict" class="filter-select">
+            <option value="Pune" selected>Pune</option>
+            <option value="Mumbai">Mumbai</option>
+            <option value="Nagpur">Nagpur</option>
           </select>
         </div>
 
         <div class="filter-group">
-          <label class="filter-label">Sector</label>
-          <select id="selSector" class="form-select">
-            <option value="">All Sectors</option>
-            <option value="Green Energy & Solar PV">Green Energy & Solar PV</option>
-            <option value="Automotive & EV Diagnostics">Automotive & EV Diagnostics</option>
-            <option value="Healthcare & Allied Care">Healthcare & Allied Care</option>
-            <option value="IT-ITeS & Digital Services">IT-ITeS & Digital Services</option>
+          <label data-i18n="filter_sector">Select Sector</label>
+          <select id="geoSelectSector" class="filter-select">
+            <option value="all" selected>All Sectors</option>
+            <option value="green">Green Jobs / Solar PV</option>
+            <option value="auto">Automotive & EV</option>
+            <option value="health">Healthcare & Allied</option>
+            <option value="it">IT-ITeS & Digital</option>
           </select>
         </div>
 
-        <div class="filter-group">
-          <label class="filter-label">Risk Tier</label>
-          <select id="selRisk" class="form-select">
-            <option value="">All Risk Tiers</option>
-            <option value="CRITICAL_SHORTAGE_RISK">Critical Shortage</option>
-            <option value="EMERGING_SHORTAGE">Emerging Shortage</option>
-            <option value="BALANCED_EQUILIBRIUM">Balanced</option>
-            <option value="MODERATE_SATURATION">Moderate Saturation</option>
-            <option value="SEVERE_OVERSUPPLY_RISK">Severe Oversupply</option>
-          </select>
-        </div>
-
-        <div class="filter-group search-group">
-          <label class="filter-label">Search Trade / NCO</label>
-          <input type="text" id="inpSearch" class="form-input" placeholder="Search trade or code..." />
+        <!-- View Mode: Map / Table -->
+        <div class="view-mode-toggle">
+          <button class="view-mode-btn active" id="btnViewMap" data-i18n="view_map">Map</button>
+          <button class="view-mode-btn" id="btnViewTable" data-i18n="view_table">Table</button>
         </div>
       </div>
 
-      <!-- District Context Header -->
-      <div class="district-hero" id="districtHero">
-        <div class="d-hero-left">
-          <div class="d-breadcrumbs">
-            <span id="heroState">Uttar Pradesh</span> > <strong id="heroDistrict">Kanpur Nagar</strong>
-            <span class="badge badge-lgd">LGD Code: <span id="heroLgd">158</span></span>
+      <!-- Main Two-Column Layout (Map & Detail Panel) -->
+      <div class="geo-view-grid" id="geoMainGrid">
+        <!-- Left: Map Container -->
+        <div class="map-container-card">
+          <!-- Floating Metric Switcher Pills -->
+          <div class="map-floating-metrics">
+            <button class="map-metric-pill active" data-metric="demand" data-i18n="map_pill_demand">Job Demand</button>
+            <button class="map-metric-pill" data-metric="supply" data-i18n="map_pill_supply">Trained Candidates</button>
+            <button class="map-metric-pill" data-metric="gap" data-i18n="map_pill_gap">Demand-Supply Gap</button>
+            <button class="map-metric-pill" data-metric="growth" data-i18n="map_pill_growth">Growth Rate</button>
           </div>
-          <h2 class="d-hero-title" id="heroTitle">Kanpur Nagar Industrial District Intelligence</h2>
-          <div class="cluster-tags" id="heroClusters">
-            <span class="tag">Solar Rooftop Subsidy Zone</span>
-            <span class="tag">Leather & Heavy Machinery</span>
-            <span class="tag">Defense Corridor Node</span>
+
+          <!-- Map Visual SVG -->
+          <div class="map-svg-wrap" id="stateMapSvgWrap">
+            ${this.renderStateMapSvg("Maharashtra", "Pune")}
+          </div>
+
+          <!-- Zoom Controls -->
+          <div class="map-zoom-controls">
+            <button class="zoom-btn" title="Zoom in">+</button>
+            <button class="zoom-btn" title="Zoom out">-</button>
+          </div>
+
+          <!-- Floating Legend (Bottom Right) -->
+          <div class="map-legend-card">
+            <div class="map-legend-title" data-i18n="legend_gap_title">Demand-Supply Gap</div>
+            <div class="map-legend-list">
+              <div class="map-legend-row"><div class="legend-box" style="background:#DC2626;"></div><span data-i18n="legend_high_under">High Undersupply</span></div>
+              <div class="map-legend-row"><div class="legend-box" style="background:#F97316;"></div><span data-i18n="legend_mod_under">Moderate Undersupply</span></div>
+              <div class="map-legend-row"><div class="legend-box" style="background:#10B981;"></div><span data-i18n="legend_balanced">Balanced</span></div>
+              <div class="map-legend-row"><div class="legend-box" style="background:#A3E635;"></div><span data-i18n="legend_mod_over">Moderate Oversupply</span></div>
+              <div class="map-legend-row"><div class="legend-box" style="background:#C084FC;"></div><span data-i18n="legend_high_over">High Oversupply</span></div>
+            </div>
           </div>
         </div>
-        <div class="d-hero-actions">
-          <button class="btn btn-secondary" id="btnExportDsdp">
-            <svg class="icon-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            Export DSDP Target CSV
-          </button>
+
+        <!-- Right: District Detail Card -->
+        <div class="district-detail-card" id="districtDetailCard">
+          ${this.renderDetailCardContent("Maharashtra", "Pune")}
         </div>
       </div>
 
-      <!-- Dual Funnel Showcase for Top Highlighted Trade -->
-      <div class="panel mb-4" id="dualFunnelPanel">
-        <div class="panel-header">
-          <h3 class="panel-title" id="funnelTradeTitle">Pipeline Yield vs Industry Demand Pull: Solar PV Technician</h3>
-          <span class="badge badge-critical" id="funnelBadge">Critical Shortage (+2,415)</span>
-        </div>
-        <div id="dualFunnelContainer"></div>
-      </div>
-
-      <!-- Diagnostic Matrix Table of All Trades in District -->
-      <div class="panel table-panel">
-        <div class="panel-header">
-          <div>
-            <h3 class="panel-title">Trade-by-Trade Diagnostic Matrix</h3>
-            <p class="panel-subtitle">Comprehensive evaluation of labor tension, effective supply pipeline, and early-warning flags</p>
-          </div>
-          <div class="table-counter">Showing <span id="tableCount">0</span> Trades</div>
-        </div>
-        <div class="table-responsive">
-          <table class="data-table" id="districtTable">
-            <thead>
-              <tr>
-                <th data-i18n="table_trade">Trade / Occupation</th>
-                <th>Sector</th>
-                <th data-i18n="table_demand">12M Demand</th>
-                <th data-i18n="table_supply">12M Available Supply</th>
-                <th data-i18n="table_gap">Net Gap</th>
-                <th data-i18n="table_tension">Tension</th>
-                <th data-i18n="table_status">Risk Status</th>
-                <th data-i18n="table_action">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="districtTableBody">
-              <tr><td colspan="8" class="text-center py-4">Loading district records...</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <!-- Alternate Table View Container -->
+      <div id="geoTableWrap" style="display:none;" class="card-panel">
+        <h3 class="card-title" style="margin-bottom:14px;" data-i18n="table_diagnostic_matrix">District Labour Diagnostic Matrix</h3>
+        <table class="growth-table-wrap">
+          <thead>
+            <tr>
+              <th>District</th>
+              <th>State</th>
+              <th>Job Demand</th>
+              <th>Trained Supply</th>
+              <th>Net Gap</th>
+              <th>Status</th>
+              <th>Top Trade Demand</th>
+            </tr>
+          </thead>
+          <tbody id="geoTableBody">
+            ${this.renderMatrixRows()}
+          </tbody>
+        </table>
       </div>
     `;
 
     this.bindEvents();
-    await this.populateDistricts();
-    await this.loadDistrictData();
+  },
+
+  renderStateMapSvg(state, selectedDist) {
+    // High-fidelity district cluster SVG for Maharashtra & UP
+    return `
+      <svg viewBox="0 0 460 380" width="100%" height="340" style="max-height:360px;">
+        <defs>
+          <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.12"/>
+          </filter>
+        </defs>
+
+        <!-- District Polygons (Maharashtra stylized cluster) -->
+        <g id="stateDistrictsGroup" filter="url(#shadow)">
+          <!-- Pune (Highlighted Red/Undersupply) -->
+          <path id="dist_pune" d="M 175 165 L 215 155 L 245 185 L 230 225 L 180 230 L 160 190 Z" 
+                fill="${selectedDist === 'Pune' ? '#EF4444' : '#F87171'}" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer; transition:all 0.2s;">
+            <title>Pune District: High Undersupply (+15,700)</title>
+          </path>
+          <text x="195" y="195" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Pune</text>
+
+          <!-- Mumbai / Thane -->
+          <path id="dist_mumbai" d="M 125 150 L 160 145 L 175 165 L 160 190 L 120 180 Z" 
+                fill="#38BDF8" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
+            <title>Mumbai: Undersupply</title>
+          </path>
+          <text x="142" y="170" font-size="9" font-weight="600" fill="#FFFFFF" text-anchor="middle">Mumbai</text>
+
+          <!-- Nashik -->
+          <path d="M 145 110 L 195 95 L 215 135 L 160 145 L 135 125 Z" 
+                fill="#34D399" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
+            <title>Nashik: Balanced</title>
+          </path>
+          <text x="175" y="125" font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">Nashik</text>
+
+          <!-- Aurangabad / Chhatrapati Sambhajinagar -->
+          <path d="M 215 135 L 275 120 L 290 160 L 245 185 L 215 155 Z" 
+                fill="#FBBF24" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
+            <title>Chhatrapati Sambhajinagar</title>
+          </path>
+          <text x="250" y="155" font-size="9" font-weight="600" fill="#1E293B" text-anchor="middle">Sambhajinagar</text>
+
+          <!-- Ahmednagar -->
+          <path d="M 195 95 L 255 85 L 275 120 L 215 135 Z" 
+                fill="#A3E635" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
+            <title>Ahmednagar: Moderate Oversupply</title>
+          </path>
+
+          <!-- Satara & Kolhapur -->
+          <path d="M 160 190 L 180 230 L 190 280 L 140 260 L 135 210 Z" 
+                fill="#60A5FA" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
+            <title>Satara: Balanced</title>
+          </path>
+          <text x="160" y="240" font-size="9" font-weight="600" fill="#FFFFFF" text-anchor="middle">Satara</text>
+
+          <!-- Solapur -->
+          <path d="M 230 225 L 280 215 L 300 270 L 240 280 L 190 280 L 180 230 Z" 
+                fill="#F87171" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
+            <title>Solapur: Undersupply</title>
+          </path>
+          <text x="245" y="255" font-size="9" font-weight="600" fill="#FFFFFF" text-anchor="middle">Solapur</text>
+
+          <!-- Nagpur & Vidarbha East -->
+          <path d="M 330 90 L 400 80 L 420 130 L 350 145 L 310 115 Z" 
+                fill="#F472B6" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
+            <title>Nagpur: High Demand</title>
+          </path>
+          <text x="365" y="115" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">Nagpur</text>
+
+          <!-- Amravati -->
+          <path d="M 275 120 L 330 90 L 350 145 L 300 165 Z" 
+                fill="#818CF8" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
+            <title>Amravati</title>
+          </path>
+
+          <!-- Nanded & Marathwada -->
+          <path d="M 290 160 L 350 145 L 370 205 L 310 220 Z" 
+                fill="#FBBF24" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
+            <title>Nanded</title>
+          </path>
+          <text x="330" y="185" font-size="9" font-weight="600" fill="#1E293B" text-anchor="middle">Nanded</text>
+
+          <!-- Latur -->
+          <path d="M 280 215 L 310 220 L 330 260 L 285 270 Z" 
+                fill="#34D399" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
+            <title>Latur</title>
+          </path>
+
+          <!-- Konkan South -->
+          <path d="M 140 260 L 190 280 L 180 340 L 130 320 Z" 
+                fill="#4ADE80" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
+            <title>Ratnagiri / Sindhudurg</title>
+          </path>
+          <text x="155" y="300" font-size="9" font-weight="600" fill="#FFFFFF" text-anchor="middle">Konkan</text>
+        </g>
+      </svg>
+    `;
+  },
+
+  renderDetailCardContent(state, district) {
+    const stateGroup = this.districtData[state] || this.districtData["Maharashtra"];
+    const d = stateGroup[district] || Object.values(stateGroup)[0];
+
+    const rows = d.topTrades.map((t, idx) => `
+      <tr>
+        <td>${idx + 1}. ${t.name}</td>
+        <td>${t.count}</td>
+      </tr>
+    `).join("");
+
+    return `
+      <div class="district-detail-header">
+        <h3 id="detailDistTitle">${district} District</h3>
+        <p id="detailStateSub">${state}</p>
+      </div>
+
+      <!-- Quick KPI Split -->
+      <div class="district-stat-row">
+        <div class="district-stat-box">
+          <div class="stat-label-small" data-i18n="stat_job_demand">Job Demand</div>
+          <div class="stat-val-med">
+            ${d.demand}
+            <span class="badge-growth badge-growth-green">${d.demandGrowth}</span>
+          </div>
+        </div>
+        <div class="district-stat-box">
+          <div class="stat-label-small" data-i18n="stat_trained_candidates">Trained Candidates</div>
+          <div class="stat-val-med">
+            ${d.supply}
+            <span class="badge-growth badge-growth-green">${d.supplyGrowth}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demand-Supply Gap Box -->
+      <div class="district-gap-box">
+        <div class="gap-box-label" data-i18n="kpi_demand_supply_gap">Demand-Supply Gap</div>
+        <div class="gap-box-val">${d.gap} <span style="font-size:14px; font-weight:600;">${d.gapType}</span></div>
+      </div>
+
+      <!-- Top 5 High-Demand Trades -->
+      <div class="trades-list-header" data-i18n="top_5_trades_title">Top 5 High-Demand Trades</div>
+      <table class="top-trades-table">
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    `;
+  },
+
+  renderMatrixRows() {
+    return `
+      <tr>
+        <td><strong>Pune</strong></td>
+        <td>Maharashtra</td>
+        <td>48,200</td>
+        <td>32,500</td>
+        <td style="color:#DC2626; font-weight:700;">+15,700</td>
+        <td><span class="badge-growth badge-growth-green" style="background:#FEF2F2; color:#DC2626;">Undersupply</span></td>
+        <td>Software Developer (8,200)</td>
+      </tr>
+      <tr>
+        <td><strong>Kanpur Nagar</strong></td>
+        <td>Uttar Pradesh</td>
+        <td>38,400</td>
+        <td>24,100</td>
+        <td style="color:#DC2626; font-weight:700;">+14,300</td>
+        <td><span class="badge-growth badge-growth-green" style="background:#FEF2F2; color:#DC2626;">Undersupply</span></td>
+        <td>Solar PV Technician (6,800)</td>
+      </tr>
+      <tr>
+        <td><strong>Mumbai</strong></td>
+        <td>Maharashtra</td>
+        <td>56,400</td>
+        <td>44,100</td>
+        <td style="color:#DC2626; font-weight:700;">+12,300</td>
+        <td><span class="badge-growth badge-growth-green" style="background:#FEF2F2; color:#DC2626;">Undersupply</span></td>
+        <td>Data Analyst (9,400)</td>
+      </tr>
+      <tr>
+        <td><strong>Khordha / Bhubaneswar</strong></td>
+        <td>Odisha</td>
+        <td>32,600</td>
+        <td>24,800</td>
+        <td style="color:#DC2626; font-weight:700;">+7,800</td>
+        <td><span class="badge-growth badge-growth-green" style="background:#FEF2F2; color:#DC2626;">Undersupply</span></td>
+        <td>IT Data Engineer (5,400)</td>
+      </tr>
+      <tr>
+        <td><strong>Lucknow</strong></td>
+        <td>Uttar Pradesh</td>
+        <td>42,100</td>
+        <td>35,600</td>
+        <td style="color:#DC2626; font-weight:700;">+6,500</td>
+        <td><span class="badge-growth badge-growth-green" style="background:#FEF2F2; color:#DC2626;">Undersupply</span></td>
+        <td>Software Developer (7,200)</td>
+      </tr>
+    `;
   },
 
   bindEvents() {
-    const selState = document.getElementById("selState");
-    const selDistrict = document.getElementById("selDistrict");
-    const selSector = document.getElementById("selSector");
-    const selRisk = document.getElementById("selRisk");
-    const inpSearch = document.getElementById("inpSearch");
-    const btnExportDsdp = document.getElementById("btnExportDsdp");
+    const stateSel = document.getElementById("geoSelectState");
+    const distSel = document.getElementById("geoSelectDistrict");
+    const btnMap = document.getElementById("btnViewMap");
+    const btnTable = document.getElementById("btnViewTable");
+    const mapGrid = document.getElementById("geoMainGrid");
+    const tableWrap = document.getElementById("geoTableWrap");
 
-    selState.addEventListener("change", async (e) => {
-      this.currentFilters.state_name = e.target.value;
-      await this.populateDistricts();
-      await this.loadDistrictData();
-    });
-
-    selDistrict.addEventListener("change", async (e) => {
-      this.currentFilters.district_lgd_code = parseInt(e.target.value, 10);
-      await this.loadDistrictData();
-    });
-
-    selSector.addEventListener("change", (e) => {
-      this.currentFilters.sector_name = e.target.value;
-      this.filterAndRenderTable();
-    });
-
-    selRisk.addEventListener("change", (e) => {
-      this.currentFilters.flag_code = e.target.value;
-      this.filterAndRenderTable();
-    });
-
-    inpSearch.addEventListener("input", () => {
-      this.filterAndRenderTable();
-    });
-
-    btnExportDsdp.addEventListener("click", () => {
-      window.location.href = `/api/v1/exports/dsdp-csv/${this.currentFilters.district_lgd_code}`;
-    });
-  },
-
-  async populateDistricts() {
-    const selDistrict = document.getElementById("selDistrict");
-    const res = await API.getDistricts(this.currentFilters.state_name);
-    const districts = res.districts || [];
-    
-    selDistrict.innerHTML = districts.map(d => `
-      <option value="${d.district_lgd_code}">${d.district_name} (LGD ${d.district_lgd_code})</option>
-    `).join("");
-
-    if (districts.length > 0) {
-      // Pick first or retain current if present
-      const exists = districts.find(d => d.district_lgd_code === this.currentFilters.district_lgd_code);
-      if (exists) {
-        selDistrict.value = this.currentFilters.district_lgd_code;
-      } else {
-        this.currentFilters.district_lgd_code = districts[0].district_lgd_code;
-        selDistrict.value = districts[0].district_lgd_code;
-      }
-    }
-  },
-
-  async loadDistrictData() {
-    try {
-      const res = await API.getForecasts({
-        district_lgd_code: this.currentFilters.district_lgd_code,
-        horizon: this.currentFilters.horizon
+    // State change updates district dropdown
+    if (stateSel) {
+      stateSel.addEventListener("change", (e) => {
+        const state = e.target.value;
+        this.currentState = state;
+        const dists = Object.keys(this.districtData[state] || {});
+        distSel.innerHTML = dists.map(d => `<option value="${d}">${d}</option>`).join("");
+        this.currentDistrict = dists[0] || "";
+        this.updateView();
       });
-      this.cachedRecords = res.records || [];
-
-      // Update Hero Header
-      if (this.cachedRecords.length > 0) {
-        const first = this.cachedRecords[0];
-        document.getElementById("heroState").textContent = first.state_name;
-        document.getElementById("heroDistrict").textContent = first.district_name;
-        document.getElementById("heroLgd").textContent = first.district_lgd_code;
-        document.getElementById("heroTitle").textContent = `${first.district_name} (${first.state_name}) Labour Market Intelligence`;
-      }
-
-      // Render Table
-      this.filterAndRenderTable();
-
-      // Render Dual Funnel for top shortage or first record
-      if (this.cachedRecords.length > 0) {
-        const topShortage = this.cachedRecords.find(r => r.gap_analysis["12M"].absolute_gap > 0) || this.cachedRecords[0];
-        this.renderHighlightedFunnel(topShortage);
-      }
-    } catch (err) {
-      console.error("Failed to load district data:", err);
     }
-  },
 
-  renderHighlightedFunnel(record) {
-    document.getElementById("funnelTradeTitle").textContent = `Pipeline Yield vs Industry Demand: ${record.trade_name} (${record.sector_name})`;
-    const gap = record.gap_analysis["12M"].absolute_gap;
-    const badge = document.getElementById("funnelBadge");
-    badge.textContent = gap > 0 ? `Critical Shortage (+${gap.toLocaleString()})` : `Oversupply (${gap.toLocaleString()})`;
-    badge.className = gap > 0 ? "badge badge-critical" : "badge badge-oversupply";
+    // District change updates detail card
+    if (distSel) {
+      distSel.addEventListener("change", (e) => {
+        this.currentDistrict = e.target.value;
+        this.updateView();
+      });
+    }
 
-    ChartHelper.renderDualFunnel("dualFunnelContainer", record.demand, record.supply);
-  },
+    // View mode Map vs Table
+    if (btnMap && btnTable) {
+      btnMap.addEventListener("click", () => {
+        btnMap.classList.add("active");
+        btnTable.classList.remove("active");
+        mapGrid.style.display = "grid";
+        tableWrap.style.display = "none";
+      });
+      btnTable.addEventListener("click", () => {
+        btnTable.classList.add("active");
+        btnMap.classList.remove("active");
+        mapGrid.style.display = "none";
+        tableWrap.style.display = "block";
+      });
+    }
 
-  filterAndRenderTable() {
-    const search = (document.getElementById("inpSearch").value || "").toLowerCase().trim();
-    const sector = this.currentFilters.sector_name;
-    const risk = this.currentFilters.flag_code;
-
-    let filtered = this.cachedRecords.filter(r => {
-      if (sector && r.sector_name !== sector) return false;
-      if (risk && r.gap_analysis.early_warning.flag_code !== risk) return false;
-      if (search) {
-        const matchTitle = r.trade_name.toLowerCase().includes(search);
-        const matchCode = r.nco_code.toLowerCase().includes(search);
-        if (!matchTitle && !matchCode) return false;
-      }
-      return true;
+    // Metric switcher pills
+    const metricPills = document.querySelectorAll(".map-metric-pill");
+    metricPills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        metricPills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+      });
     });
 
-    document.getElementById("tableCount").textContent = filtered.length;
-    const tbody = document.getElementById("districtTableBody");
-
-    if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">No trades match the selected filter criteria.</td></tr>`;
-      return;
+    // Interactive map polygon click
+    const punePath = document.getElementById("dist_pune");
+    const mumbaiPath = document.getElementById("dist_mumbai");
+    if (punePath) {
+      punePath.addEventListener("click", () => {
+        distSel.value = "Pune";
+        this.currentDistrict = "Pune";
+        this.updateView();
+      });
     }
-
-    tbody.innerHTML = filtered.map(r => {
-      const gap = r.gap_analysis["12M"].absolute_gap;
-      const tension = r.gap_analysis["12M"].tension_ratio;
-      const warning = r.gap_analysis.early_warning;
-      const gapClass = gap > 0 ? "text-red font-bold" : (gap < -50 ? "text-purple font-bold" : "text-green");
-
-      return `
-        <tr>
-          <td>
-            <div class="table-trade-name">${r.trade_name}</div>
-            <div class="table-trade-code">NCO: ${r.nco_code} • NSQF L${r.nco_code.startsWith('7') ? 4 : (r.nco_code.startsWith('3') ? 5 : 3)}</div>
-          </td>
-          <td><span class="sector-tag">${r.sector_name}</span></td>
-          <td class="font-medium">${r.demand.forecast_12m.toLocaleString()}</td>
-          <td class="font-medium">${r.supply.effective_supply_12m.toLocaleString()}</td>
-          <td class="${gapClass}">${gap > 0 ? '+' : ''}${gap.toLocaleString()}</td>
-          <td><span class="tension-pill">${tension}x</span></td>
-          <td>
-            <span class="status-badge" style="background: ${warning.badge_color}22; color: ${warning.badge_color}; border: 1px solid ${warning.badge_color}44;">
-              ${warning.label}
-            </span>
-          </td>
-          <td>
-            <div class="action-btn-group">
-              <button class="btn-sm btn-outline" onclick="window.DistrictExplorerModule.openDeepDive(${r.district_lgd_code}, '${r.nco_code}')" title="Inspect Forecast History">
-                Deep Dive
-              </button>
-              <button class="btn-sm btn-primary" onclick="window.DistrictExplorerModule.openSimulator(${r.district_lgd_code}, '${r.nco_code}')" title="Simulate Batch Addition">
-                Simulate
-              </button>
-            </div>
-          </td>
-        </tr>
-      `;
-    }).join("");
+    if (mumbaiPath) {
+      mumbaiPath.addEventListener("click", () => {
+        distSel.value = "Mumbai";
+        this.currentDistrict = "Mumbai";
+        this.updateView();
+      });
+    }
   },
 
-  openDeepDive(dCode, ncoCode) {
-    window.app.switchView("trade-deep-dive", { district_lgd_code: dCode, nco_code: ncoCode });
-  },
-
-  openSimulator(dCode, ncoCode) {
-    window.app.switchView("simulator", { district_lgd_code: dCode, nco_code: ncoCode });
+  updateView() {
+    const detailCard = document.getElementById("districtDetailCard");
+    if (detailCard) {
+      detailCard.innerHTML = this.renderDetailCardContent(this.currentState, this.currentDistrict);
+    }
+    const mapWrap = document.getElementById("stateMapSvgWrap");
+    if (mapWrap) {
+      mapWrap.innerHTML = this.renderStateMapSvg(this.currentState, this.currentDistrict);
+    }
   }
 };
 
