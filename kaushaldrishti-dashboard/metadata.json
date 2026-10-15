@@ -1,0 +1,6 @@
+{
+  "name": "KaushalDrishti",
+  "description": "AI-Powered Labour Market Intelligence and Skill Demand-Supply Forecasting Platform for India's Ministry of Skill Development and Entrepreneurship (MSDE).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
