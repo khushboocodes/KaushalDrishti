@@ -193,7 +193,7 @@ const CommandCenterModule = {
         <div class="quick-insights-strip">
           <!-- Quick 1: Healthcare -->
           <div class="insight-pill-card">
-            <div class="insight-icon-square" style="background:#FEE2E2; color:#DC2626;">
+            <div class="insight-icon-square" style="background:var(--color-soft-coral); color:var(--color-terracotta);">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
               </svg>
@@ -206,14 +206,14 @@ const CommandCenterModule = {
 
           <!-- Quick 2: Green Jobs -->
           <div class="insight-pill-card">
-            <div class="insight-icon-square" style="background:#DCFCE7; color:#16A34A;">
+            <div class="insight-icon-square" style="background:var(--color-sage); color:var(--color-primary-accent);">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                 <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
               </svg>
             </div>
             <div class="insight-text-wrap">
               <span class="insight-name">Green Jobs</span>
-              <span class="insight-desc"><strong style="color:#16A34A;">32%</strong> projected growth</span>
+              <span class="insight-desc"><strong style="color:var(--color-primary-accent);">32%</strong> projected growth</span>
             </div>
           </div>
 
@@ -234,7 +234,7 @@ const CommandCenterModule = {
 
           <!-- Quick 4: Construction -->
           <div class="insight-pill-card">
-            <div class="insight-icon-square" style="background:#FFF7ED; color:#EA580C;">
+            <div class="insight-icon-square" style="background:var(--color-saffron-light); color:var(--color-saffron-dark);">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                 <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/>
               </svg>
@@ -290,11 +290,11 @@ const CommandCenterModule = {
       { val: 1500000, label: "1.5 Cr" }
     ];
 
-    // Draw horizontal grid lines and y labels
-    ctx.strokeStyle = "#F1EFEA";
+    // Draw horizontal grid lines and y labels with design system tokens
+    ctx.strokeStyle = "#E9E0D3";
     ctx.lineWidth = 1;
-    ctx.fillStyle = "#A8A29E";
-    ctx.font = "11px Inter, sans-serif";
+    ctx.fillStyle = "#64716D";
+    ctx.font = "11px 'DM Sans', 'Inter', sans-serif";
     ctx.textAlign = "right";
 
     ySteps.forEach(step => {
@@ -316,14 +316,14 @@ const CommandCenterModule = {
     years.forEach((item, i) => {
       const groupCenterX = padLeft + i * groupW + groupW / 2;
 
-      // Demand Bar (Purple)
+      // Demand Bar (Purple #7B78B8)
       const dH = (item.demand / maxVal) * chartH;
       const dX = groupCenterX - barW - gapBetween / 2;
       const dY = padTop + chartH - dH;
       ctx.fillStyle = "#7B78B8";
       this.drawRoundedRect(ctx, dX, dY, barW, dH, 4);
 
-      // Supply Bar (Soft Coral / Pink)
+      // Supply Bar (Soft Coral / Pink #F49D9D)
       const sH = (item.supply / maxVal) * chartH;
       const sX = groupCenterX + gapBetween / 2;
       const sY = padTop + chartH - sH;
@@ -331,8 +331,8 @@ const CommandCenterModule = {
       this.drawRoundedRect(ctx, sX, sY, barW, sH, 4);
 
       // X-axis label
-      ctx.fillStyle = "#64748B";
-      ctx.font = item.year.includes("(F)") ? "600 11px Inter, sans-serif" : "11px Inter, sans-serif";
+      ctx.fillStyle = "#173F35";
+      ctx.font = item.year.includes("(F)") ? "600 11px 'DM Sans', 'Inter', sans-serif" : "11px 'DM Sans', 'Inter', sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(item.year, groupCenterX, h - 8);
     });
@@ -367,11 +367,11 @@ const CommandCenterModule = {
     const outerR = 72;
     const innerR = 48;
 
-    // Percentages matching reference image: 38% Undersupply (Red), 42% Balanced (Teal/Green), 20% Oversupply (Orange/Blue)
+    // Percentages matching reference image: 38% Undersupply (Terracotta #D96843), 42% Balanced (Forest Green #17604D), 20% Oversupply (Sky Blue #0284C7)
     const segments = [
-      { pct: 0.38, color: "#EF4444" },  // Undersupply
-      { pct: 0.42, color: "#10B981" },  // Balanced
-      { pct: 0.20, color: "#60A5FA" }   // Oversupply
+      { pct: 0.38, color: "#D96843" },  // Undersupply
+      { pct: 0.42, color: "#17604D" },  // Balanced
+      { pct: 0.20, color: "#0284C7" }   // Oversupply
     ];
 
     let startAngle = -Math.PI / 2;

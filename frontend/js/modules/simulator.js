@@ -11,18 +11,18 @@ const SimulatorModule = {
     if (params.nco_code) this.selectedNco = params.nco_code;
 
     container.innerHTML = `
-      <div class="sim-hero">
-        <h2 class="section-title" data-i18n="sim_title">Policy Decision Support & "What-If" Capacity Sandbox</h2>
-        <p class="section-subtitle" data-i18n="sim_subtitle">Simulate adding or reallocating training batches, test dropout sensitivity, and evaluate real-time gap reduction before committing targets</p>
+      <div class="page-title-wrap" style="margin-bottom:16px;">
+        <h2 style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-primary);" data-i18n="sim_title">Policy Decision Support & "What-If" Capacity Sandbox</h2>
+        <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;" data-i18n="sim_subtitle">Simulate adding or reallocating training batches, test dropout sensitivity, and evaluate real-time gap reduction before committing targets</p>
       </div>
 
       <!-- Simulator Layout: 2-Columns (Controls on Left, Comparative Impact on Right) -->
       <div class="sim-layout-grid">
         <!-- Controls Panel -->
-        <div class="panel sim-controls-panel">
-          <div class="panel-header">
-            <h3 class="panel-title">Policy Levers & Capacity Parameters</h3>
-            <button class="btn btn-sm btn-ghost" id="btnResetSim" data-i18n="btn_reset">Reset</button>
+        <div class="card-panel sim-controls-panel">
+          <div class="panel-header" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+            <h3 class="card-title">Policy Levers & Capacity Parameters</h3>
+            <button class="btn-ghost" id="btnResetSim" data-i18n="btn_reset">Reset</button>
           </div>
 
           <div class="sim-form-group">
@@ -51,7 +51,7 @@ const SimulatorModule = {
             </select>
           </div>
 
-          <hr class="divider-subtle my-3" />
+          <hr class="divider-subtle" />
 
           <!-- Interactive Sliders -->
           <div class="slider-block">
@@ -89,10 +89,10 @@ const SimulatorModule = {
         </div>
 
         <!-- Comparative Output Panel -->
-        <div class="panel sim-output-panel">
-          <div class="panel-header">
-            <h3 class="panel-title">Before vs After Policy Impact Tensor</h3>
-            <span class="live-pulse-badge">Live Simulation</span>
+        <div class="card-panel sim-output-panel">
+          <div class="panel-header" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+            <h3 class="card-title">Before vs After Policy Impact Tensor</h3>
+            <span style="font-size:10.5px; font-weight:700; color:var(--color-primary-accent); background:var(--color-sage); padding:2px 8px; border-radius:4px;">Live Simulation</span>
           </div>
 
           <!-- Comparison Cards Grid -->
@@ -110,23 +110,23 @@ const SimulatorModule = {
               </div>
               <div class="sim-metric-row">
                 <span class="s-lbl">Net Gap:</span>
-                <span class="s-val text-red font-bold" id="baseGap">-</span>
+                <span class="s-val" id="baseGap" style="color:var(--color-terracotta); font-weight:700;">-</span>
               </div>
               <div class="sim-metric-row">
                 <span class="s-lbl">Labor Tension Ratio:</span>
                 <span class="s-val" id="baseTension">-</span>
               </div>
-              <div class="sim-status-box mt-3">
-                <span class="status-badge" id="baseFlag">Critical Shortage</span>
+              <div class="sim-status-box" style="margin-top:10px;">
+                <span class="badge-shortage" id="baseFlag">Critical Shortage</span>
               </div>
             </div>
 
             <!-- Simulated Card -->
             <div class="sim-card simulated-card">
-              <div class="sim-card-tag text-accent font-bold">Simulated Policy Outcome</div>
+              <div class="sim-card-tag" style="color:var(--color-primary-accent);">Simulated Policy Outcome</div>
               <div class="sim-metric-row">
                 <span class="s-lbl">New Sanctioned Target:</span>
-                <span class="s-val text-accent font-bold" id="simSeats">-</span>
+                <span class="s-val" id="simSeats" style="color:var(--color-primary-accent); font-weight:700;">-</span>
               </div>
               <div class="sim-metric-row">
                 <span class="s-lbl">New Effective Supply:</span>
@@ -134,26 +134,26 @@ const SimulatorModule = {
               </div>
               <div class="sim-metric-row">
                 <span class="s-lbl">New Net Gap:</span>
-                <span class="s-val font-bold" id="simGap">-</span>
+                <span class="s-val" id="simGap" style="font-weight:700;">-</span>
               </div>
               <div class="sim-metric-row">
                 <span class="s-lbl">New Tension Ratio:</span>
                 <span class="s-val" id="simTension">-</span>
               </div>
-              <div class="sim-status-box mt-3">
-                <span class="status-badge" id="simFlag">Balanced Equilibrium</span>
+              <div class="sim-status-box" style="margin-top:10px;">
+                <span class="badge-balanced" id="simFlag">Balanced Equilibrium</span>
               </div>
             </div>
           </div>
 
           <!-- Impact Metrics Strip -->
-          <div class="impact-banner mt-4">
+          <div class="impact-banner">
             <div class="impact-stat">
               <div class="impact-val" id="statMitigated">0%</div>
               <div class="impact-lbl" data-i18n="sim_gap_reduction">Deficit Mitigated</div>
             </div>
             <div class="impact-stat">
-              <div class="impact-val text-teal" id="statTrained">+0</div>
+              <div class="impact-val" id="statTrained" style="color:var(--color-primary-accent);">+0</div>
               <div class="impact-lbl">Net Added Workers</div>
             </div>
             <div class="impact-stat">
@@ -163,16 +163,15 @@ const SimulatorModule = {
           </div>
 
           <!-- Policy Feedback Advice Box -->
-          <div class="policy-advice-card mt-3">
-            <div class="advice-header">
-              <svg class="icon-sm text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              <strong>Policy Prescription:</strong>
+          <div class="policy-advice-card">
+            <div style="font-weight:700; color:var(--text-primary); margin-bottom:4px;">
+              Policy Prescription:
             </div>
-            <p class="advice-text" id="adviceText">Adjust sliders to model capacity shifts.</p>
+            <p id="adviceText" style="color:var(--text-secondary); line-height:1.5;">Adjust sliders to model capacity shifts.</p>
           </div>
 
-          <div class="sim-actions-footer mt-4">
-            <button class="btn btn-primary w-full" id="btnCommitPlan">
+          <div style="margin-top:16px;">
+            <button class="btn-primary w-full" id="btnCommitPlan">
               Commit Target Allocation to Draft DSDP
             </button>
           </div>

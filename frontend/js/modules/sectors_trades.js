@@ -6,13 +6,13 @@
 
 const SectorsTradesModule = {
   sectorsList: [
-    { name: "IT/ITeS", icon: "monitor", val: "2.8 Lakh", growth: "+34%", bg: "#EFF6FF", color: "#2563EB", demand: 280, supply: 215 },
-    { name: "Healthcare", icon: "heart", val: "1.9 Lakh", growth: "+18%", bg: "#FEE2E2", color: "#DC2626", demand: 190, supply: 140 },
-    { name: "Construction", icon: "hard-hat", val: "1.6 Lakh", growth: "+12%", bg: "#FFF7ED", color: "#EA580C", demand: 160, supply: 130 },
-    { name: "Manufacturing", icon: "settings", val: "1.4 Lakh", growth: "+10%", bg: "#FEF3C7", color: "#D97706", demand: 140, supply: 105 },
-    { name: "Retail", icon: "shopping-bag", val: "1.2 Lakh", growth: "+8%", bg: "#FDF2F8", color: "#DB2777", demand: 120, supply: 110 },
-    { name: "Agriculture", icon: "feather", val: "0.9 Lakh", growth: "+5%", bg: "#ECFDF5", color: "#16A34A", demand: 90, supply: 80 },
-    { name: "Hospitality", icon: "coffee", val: "0.8 Lakh", growth: "+14%", bg: "#FFFBEB", color: "#B45309", demand: 80, supply: 65 }
+    { name: "IT/ITeS", icon: "monitor", val: "2.8 Lakh", growth: "+34%", bg: "rgba(23, 96, 77, 0.08)", color: "#17604D", demand: 280, supply: 215 },
+    { name: "Healthcare", icon: "heart", val: "1.9 Lakh", growth: "+18%", bg: "var(--color-soft-coral)", color: "var(--color-terracotta)", demand: 190, supply: 140 },
+    { name: "Construction", icon: "hard-hat", val: "1.6 Lakh", growth: "+12%", bg: "rgba(242, 185, 104, 0.18)", color: "#B45309", demand: 160, supply: 130 },
+    { name: "Manufacturing", icon: "settings", val: "1.4 Lakh", growth: "+10%", bg: "rgba(217, 104, 67, 0.12)", color: "var(--color-terracotta)", demand: 140, supply: 105 },
+    { name: "Retail", icon: "shopping-bag", val: "1.2 Lakh", growth: "+8%", bg: "rgba(23, 63, 53, 0.08)", color: "var(--text-primary)", demand: 120, supply: 110 },
+    { name: "Agriculture", icon: "feather", val: "0.9 Lakh", growth: "+5%", bg: "var(--color-sage)", color: "#17604D", demand: 90, supply: 80 },
+    { name: "Hospitality", icon: "coffee", val: "0.8 Lakh", growth: "+14%", bg: "rgba(242, 185, 104, 0.22)", color: "#92400E", demand: 80, supply: 65 }
   ],
 
   top10Trades: [
@@ -45,8 +45,8 @@ const SectorsTradesModule = {
 
     const tableRows = this.top10Trades.map(t => `
       <tr>
-        <td style="font-weight:600; color:var(--text-muted);">${t.rank}</td>
-        <td><strong>${t.trade}</strong></td>
+        <td style="font-weight:600; color:var(--text-secondary);">${t.rank}</td>
+        <td><strong style="color:var(--text-primary);">${t.trade}</strong></td>
         <td><span class="tag-badge">${t.sector}</span></td>
         <td class="growth-pct-green">${t.growth}</td>
       </tr>
@@ -56,18 +56,21 @@ const SectorsTradesModule = {
       <!-- Page Header -->
       <div class="page-title-wrap" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
         <div>
-          <h2 data-i18n="sector_title" style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-main);">Sector-wise Analysis</h2>
-          <p data-i18n="sector_subtitle" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">Compare demand, supply, growth and skill gaps across sectors</p>
+          <h2 data-i18n="sector_title" style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-primary);">Sector-wise Analysis</h2>
+          <p data-i18n="sector_subtitle" style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Compare demand, supply, growth and skill gaps across sectors</p>
         </div>
         <div style="display:flex; align-items:center; gap:12px;">
-          <select class="filter-select" style="min-width:130px; height:34px;">
+          <select class="form-select filter-select" style="min-width:140px; height:34px;">
             <option>All Sectors</option>
             <option>IT/ITeS</option>
             <option>Healthcare</option>
             <option>Manufacturing</option>
             <option>Green Jobs</option>
+            <option>Retail</option>
+            <option>Agriculture</option>
+            <option>Hospitality</option>
           </select>
-          <button class="btn-dark-navy" id="btnExportSector">
+          <button class="btn-primary" id="btnExportSector">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
             <span data-i18n="btn_export">Export Report</span>
           </button>
@@ -117,10 +120,10 @@ const SectorsTradesModule = {
 
         <!-- Heritage Botanical Watermark at Bottom-Left -->
         <svg viewBox="0 0 140 100" width="120" height="90" style="position:absolute; bottom:-10px; left:-10px; opacity:0.18; pointer-events:none;" fill="none">
-          <path d="M10 90 C 30 60, 60 40, 110 20" stroke="#D97706" stroke-width="2"/>
-          <path d="M25 75 C 35 60, 50 65, 45 80 Z" fill="#D97706"/>
-          <path d="M50 55 C 60 40, 75 45, 70 60 Z" fill="#D97706"/>
-          <path d="M75 35 C 85 20, 100 25, 95 40 Z" fill="#D97706"/>
+          <path d="M10 90 C 30 60, 60 40, 110 20" stroke="#D96843" stroke-width="2"/>
+          <path d="M25 75 C 35 60, 50 65, 45 80 Z" fill="#D96843"/>
+          <path d="M50 55 C 60 40, 75 45, 70 60 Z" fill="#F2B968"/>
+          <path d="M75 35 C 85 20, 100 25, 95 40 Z" fill="#DCE9D9"/>
         </svg>
       </div>
     `;
@@ -169,10 +172,10 @@ const SectorsTradesModule = {
 
     // Draw vertical grid lines & X labels
     const xSteps = [0, 50, 100, 150, 200, 250, 300];
-    ctx.strokeStyle = "#F1EFEA";
+    ctx.strokeStyle = "#E9E0D3";
     ctx.lineWidth = 1;
-    ctx.fillStyle = "#A8A29E";
-    ctx.font = "10.5px Inter, sans-serif";
+    ctx.fillStyle = "#64716D";
+    ctx.font = "10.5px 'DM Sans', sans-serif";
     ctx.textAlign = "center";
 
     xSteps.forEach(val => {
@@ -196,8 +199,8 @@ const SectorsTradesModule = {
       const centerY = padTop + i * rowH + rowH / 2;
 
       // Label on Y axis
-      ctx.fillStyle = "#475569";
-      ctx.font = "11.5px Inter, sans-serif";
+      ctx.fillStyle = "#173F35";
+      ctx.font = "500 11.5px 'DM Sans', sans-serif";
       ctx.textAlign = "right";
       ctx.fillText(sec.name, padLeft - 10, centerY + 4);
 

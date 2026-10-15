@@ -16,15 +16,15 @@ const TradeDeepDiveModule = {
     container.innerHTML = `
       <!-- Page Header -->
       <div class="page-title-wrap" style="margin-bottom:16px;">
-        <h2 data-i18n="forecast_title" style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-main);">Skill Demand Forecasting</h2>
-        <p data-i18n="forecast_subtitle" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">AI-powered forecasts to plan training capacity and resources</p>
+        <h2 data-i18n="forecast_title" style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-primary);">Skill Demand Forecasting</h2>
+        <p data-i18n="forecast_subtitle" style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">AI-powered forecasts to plan training capacity and resources</p>
       </div>
 
       <!-- Filter Controls Strip -->
       <div class="filter-toolbar-row">
         <div class="filter-group">
           <label data-i18n="filter_sector">Sector</label>
-          <select id="forecastSectorSelect" class="filter-select">
+          <select id="forecastSectorSelect" class="form-select filter-select">
             <option value="IT/ITeS" selected>IT/ITeS</option>
             <option value="Green Energy">Green Jobs / Solar PV</option>
             <option value="Automotive">Automotive & EV</option>
@@ -34,7 +34,7 @@ const TradeDeepDiveModule = {
 
         <div class="filter-group">
           <label data-i18n="filter_trade">Trade</label>
-          <select id="forecastTradeSelect" class="filter-select" style="min-width: 240px;">
+          <select id="forecastTradeSelect" class="form-select filter-select" style="min-width: 250px;">
             <option value="Software Developer (2512.01)" selected>Software Developer (2512.01)</option>
             <option value="Data Analyst (2511.01)">Data Analyst (2511.01)</option>
             <option value="Solar PV Tech (7412.03)">Solar PV Tech (7412.03)</option>
@@ -44,7 +44,7 @@ const TradeDeepDiveModule = {
 
         <div class="filter-group">
           <label data-i18n="filter_horizon">Forecast Horizon</label>
-          <select id="forecastHorizonSelect" class="filter-select">
+          <select id="forecastHorizonSelect" class="form-select filter-select">
             <option value="1 Year">1 Year</option>
             <option value="2 Years">2 Years</option>
             <option value="3 Years" selected>3 Years</option>
@@ -52,7 +52,7 @@ const TradeDeepDiveModule = {
         </div>
 
         <div style="margin-left: auto;">
-          <button class="btn-dark-navy" id="btnGenerateForecast">
+          <button class="btn-primary" id="btnGenerateForecast">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
             <span data-i18n="btn_generate_forecast">Generate Forecast</span>
           </button>
@@ -83,11 +83,11 @@ const TradeDeepDiveModule = {
               <canvas id="forecastLineCanvas" style="width:100%; height:100%;"></canvas>
               
               <!-- Target Point Callout Badge (◆ 2027 -> 1,58,000) -->
-              <div style="position:absolute; top:28px; right:15px; background:#FFFFFF; border:1px solid #F87171; border-radius:16px; padding:4px 10px; box-shadow:0 2px 6px rgba(0,0,0,0.06); display:flex; align-items:center; gap:6px; font-size:11.5px;">
-                <span style="color:#DC2626; font-size:9px;">&#9670;</span>
-                <span style="font-weight:600; color:#64748B;">2027</span>
-                <span style="color:#94A3B8;">&rarr;</span>
-                <strong style="color:#0F172A; font-family:var(--font-display);">1,58,000</strong>
+              <div style="position:absolute; top:28px; right:15px; background:#FFFEFB; border:1px solid var(--color-terracotta); border-radius:16px; padding:4px 10px; box-shadow:0 2px 6px rgba(0,0,0,0.06); display:flex; align-items:center; gap:6px; font-size:11.5px;">
+                <span style="color:var(--color-terracotta); font-size:9px;">&#9670;</span>
+                <span style="font-weight:600; color:var(--text-secondary);">2027</span>
+                <span style="color:var(--text-secondary);">&rarr;</span>
+                <strong style="color:var(--text-primary); font-family:var(--font-display);">1,58,000</strong>
               </div>
             </div>
           </div>
@@ -97,28 +97,28 @@ const TradeDeepDiveModule = {
             <div class="card-title" style="margin-bottom:12px;" data-i18n="key_factors_title">Key Factors Influencing Demand</div>
             <div class="factors-list">
               <div class="factor-item">
-                <div class="factor-bullet" style="color:#8B5CF6;">
+                <div class="factor-bullet" style="color:#7B78B8; background:rgba(123, 120, 184, 0.12); width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
                 </div>
-                <span data-i18n="factor_ai">Growth in digital services and AI adoption</span>
+                <span data-i18n="factor_ai" style="color:var(--text-primary); font-size:12.5px;">Growth in digital services and AI adoption</span>
               </div>
               <div class="factor-item">
-                <div class="factor-bullet" style="color:#3B82F6;">
+                <div class="factor-bullet" style="color:#17604D; background:rgba(23, 96, 77, 0.1); width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
                 </div>
-                <span data-i18n="factor_gcc">Increased GCC investments in India</span>
+                <span data-i18n="factor_gcc" style="color:var(--text-primary); font-size:12.5px;">Increased GCC investments in India</span>
               </div>
               <div class="factor-item">
-                <div class="factor-bullet" style="color:#0D9488;">
+                <div class="factor-bullet" style="color:#173F35; background:var(--color-sage); width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                 </div>
-                <span data-i18n="factor_cloud">Rising demand for cloud and cybersecurity skills</span>
+                <span data-i18n="factor_cloud" style="color:var(--text-primary); font-size:12.5px;">Rising demand for cloud and cybersecurity skills</span>
               </div>
               <div class="factor-item">
-                <div class="factor-bullet" style="color:#F59E0B;">
+                <div class="factor-bullet" style="color:#B45309; background:rgba(242, 185, 104, 0.22); width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v4M12 14v4M16 14v4"/></svg>
                 </div>
-                <span data-i18n="factor_dpi">Government digital initiatives (DPI, e-Governance)</span>
+                <span data-i18n="factor_dpi" style="color:var(--text-primary); font-size:12.5px;">Government digital initiatives (DPI, e-Governance)</span>
               </div>
             </div>
           </div>
@@ -133,27 +133,27 @@ const TradeDeepDiveModule = {
             <div style="display:flex; flex-direction:column; gap:12px;">
               <div>
                 <div class="kpi-label" data-i18n="stat_current_demand">Current Demand</div>
-                <div style="font-family:var(--font-display); font-size:21px; font-weight:700; color:var(--text-main);">92,000</div>
+                <div style="font-family:var(--font-display); font-size:21px; font-weight:700; color:var(--text-primary);">92,000</div>
               </div>
 
               <div>
                 <div class="kpi-label" data-i18n="stat_proj_demand">Projected Demand (2027)</div>
-                <div style="font-family:var(--font-display); font-size:22px; font-weight:700; color:var(--text-main); display:flex; align-items:center; gap:8px;">
+                <div style="font-family:var(--font-display); font-size:22px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
                   1,58,000
-                  <span style="font-size:11px; font-weight:700; background:#DCFCE7; color:#15803D; padding:2px 7px; border-radius:4px;">+72%</span>
+                  <span style="font-size:11px; font-weight:700; background:var(--color-sage); color:#17604D; padding:2px 7px; border-radius:4px;">+72%</span>
                 </div>
               </div>
 
               <div>
                 <div class="kpi-label" data-i18n="stat_rec_seats">Recommended Training Seats</div>
-                <div style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-main);">1,20,000</div>
+                <div style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-primary);">1,20,000</div>
               </div>
 
-              <div style="background:#FFF5F5; border:1px solid #FED7D7; border-radius:var(--radius-md); padding:10px 14px;">
-                <div class="kpi-label" style="color:#991B1B;" data-i18n="stat_exp_gap">Expected Gap (2027)</div>
-                <div style="font-size:18px; font-weight:700; color:#DC2626; display:flex; align-items:center; gap:8px;">
+              <div style="background:var(--color-soft-coral); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:10px 14px;">
+                <div class="kpi-label" style="color:var(--color-terracotta);" data-i18n="stat_exp_gap">Expected Gap (2027)</div>
+                <div style="font-size:18px; font-weight:700; color:var(--color-terracotta); display:flex; align-items:center; gap:8px;">
                   +38,000
-                  <span style="background:#FEE2E2; color:#DC2626; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;">Undersupply</span>
+                  <span style="background:#FFFEFB; color:var(--color-terracotta); border:1px solid var(--color-terracotta); font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;">Undersupply</span>
                 </div>
               </div>
             </div>
@@ -166,16 +166,16 @@ const TradeDeepDiveModule = {
               <!-- Circular Progress Ring (87%) -->
               <div class="circle-progress-ring">
                 <svg width="68" height="68" viewBox="0 0 72 72">
-                  <circle cx="36" cy="36" r="30" stroke="#F1F5F9" stroke-width="6" fill="none"/>
-                  <circle cx="36" cy="36" r="30" stroke="#10B981" stroke-width="6" fill="none"
+                  <circle cx="36" cy="36" r="30" stroke="#E9E0D3" stroke-width="6" fill="none"/>
+                  <circle cx="36" cy="36" r="30" stroke="#17604D" stroke-width="6" fill="none"
                           stroke-dasharray="188.5" stroke-dashoffset="24.5" stroke-linecap="round"
                           transform="rotate(-90 36 36)"/>
                 </svg>
-                <span style="position:absolute; font-family:var(--font-display); font-size:17px; font-weight:700;">87%</span>
+                <span style="position:absolute; font-family:var(--font-display); font-size:17px; font-weight:700; color:var(--text-primary);">87%</span>
               </div>
               <div>
-                <div style="font-size:13.5px; font-weight:700; color:#059669;" data-i18n="high_confidence">High Confidence</div>
-                <p style="font-size:11px; color:var(--text-muted); margin-top:2px;" data-i18n="confidence_desc">Based on 5 data sources and historical trends</p>
+                <div style="font-size:13.5px; font-weight:700; color:#17604D;" data-i18n="high_confidence">High Confidence</div>
+                <p style="font-size:11px; color:var(--text-secondary); margin-top:2px;" data-i18n="confidence_desc">Based on 5 data sources and historical trends</p>
               </div>
             </div>
           </div>
@@ -183,9 +183,9 @@ const TradeDeepDiveModule = {
 
         <!-- Heritage Botanical Watermark at Bottom-Left -->
         <svg viewBox="0 0 140 100" width="120" height="90" style="position:absolute; bottom:-10px; left:-10px; opacity:0.18; pointer-events:none;" fill="none">
-          <path d="M10 90 C 30 60, 60 40, 110 20" stroke="#D97706" stroke-width="2"/>
-          <path d="M25 75 C 35 60, 50 65, 45 80 Z" fill="#D97706"/>
-          <path d="M50 55 C 60 40, 75 45, 70 60 Z" fill="#D97706"/>
+          <path d="M10 90 C 30 60, 60 40, 110 20" stroke="#D96843" stroke-width="2"/>
+          <path d="M25 75 C 35 60, 50 65, 45 80 Z" fill="#D96843"/>
+          <path d="M50 55 C 60 40, 75 45, 70 60 Z" fill="#F2B968"/>
         </svg>
       </div>
     `;
@@ -217,10 +217,10 @@ const TradeDeepDiveModule = {
     const maxVal = 200;
     const ySteps = [0, 50, 100, 150, 200];
 
-    ctx.strokeStyle = "#F1EFEA";
+    ctx.strokeStyle = "#E9E0D3";
     ctx.lineWidth = 1;
-    ctx.fillStyle = "#A8A29E";
-    ctx.font = "11px Inter, sans-serif";
+    ctx.fillStyle = "#64716D";
+    ctx.font = "11px 'DM Sans', sans-serif";
     ctx.textAlign = "right";
 
     ySteps.forEach(val => {
@@ -243,7 +243,8 @@ const TradeDeepDiveModule = {
     ];
 
     ctx.textAlign = "center";
-    ctx.fillStyle = "#64748B";
+    ctx.fillStyle = "#173F35";
+    ctx.font = "500 11px 'DM Sans', sans-serif";
     years.forEach(yr => {
       const x = padLeft + yr.xPct * chartW;
       ctx.fillText(yr.year, x, h - 6);

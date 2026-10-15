@@ -268,6 +268,15 @@ graph TD
   - **Dependencies:** `TSK-060` through `TSK-067`.
   - **Acceptance Criteria:** 100% accessible; passes standard automated accessibility audits.
 
+- [x] **TSK-069: Global UI Theme Standardization & Heritage Design System Implementation**
+  - **Description:** Standardize the **entire KaushalDrishti application** to follow one cohesive, polished visual design system based on the reference MSDE dashboard specification (`media_1792056507363.jpg`):
+    - **Color Palette:** Warm ivory background (`#F8F5EF`), surface cards (`#FFFEFB`), sidebar (`#F5F0E7`), primary headings (`#173F35`), secondary labels (`#64716D`), primary forest-green buttons (`#17604D`), terracotta accents (`#D96843`), saffron indicators (`#F2B968`), sage positive balances (`#DCE9D9`), soft coral shortages (`#F5D7CC`), and borders (`#E9E0D3`).
+    - **Typography System:** Editorial serif headings in `Lora` & `DM Serif Display`; interface UI in `DM Sans` & `Inter`; numeric tabular numerals.
+    - **Architectural & Botanical Heritage Art:** Clean vector silhouettes of Indian monuments, skilled workers, and botanical watermarks.
+    - **Universal Route Coverage:** Dashboard, Demand & Supply, Forecasting, Sectors & Trades, Geographic View, Training Capacity (Simulator), Alerts & Insights, Reports / DSDP, Data Explorer, API Access, Settings, and Government Officer SSO Auth Modal.
+  - **Deliverable:** `frontend/css/tokens.css`, `frontend/css/style.css`, `frontend/index.html`, `frontend/js/modules/*.js`.
+  - **Acceptance Criteria:** All 10+ views and modals unified under design tokens; 22/22 pytest suite tests passing.
+
 ---
 
 ## Phase 7: Cloud Deployment Setup & Live Link Generation (SUBMISSION GATE)

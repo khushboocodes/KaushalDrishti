@@ -160,19 +160,19 @@ const DistrictExplorerModule = {
           <!-- Horizontal Legend at Bottom -->
           <div class="map-legend-horizontal">
             <div style="display:flex; align-items:center; gap:6px;">
-              <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:#EF4444;"></span>
+              <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--color-terracotta);"></span>
               <span>High Undersupply</span>
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
-              <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:#FB923C;"></span>
+              <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--color-saffron);"></span>
               <span>Moderate</span>
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
-              <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:#FEF08A;"></span>
+              <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--color-sage); border:1px solid #C2D5BF;"></span>
               <span>Balanced</span>
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
-              <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:#10B981;"></span>
+              <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--color-primary-accent);"></span>
               <span>High Oversupply</span>
             </div>
           </div>
@@ -243,7 +243,7 @@ const DistrictExplorerModule = {
             <path d="M 250 220 L 285 215 L 275 285 L 235 270 Z" fill="#FEF08A" opacity="0.9"/>
             
             <!-- Maharashtra (Highlighted - Terracotta/Coral) -->
-            <path id="mapMaharashtra" d="M 145 235 L 225 230 L 250 280 L 195 315 L 135 280 Z" fill="#F87171" stroke="#C2410C" stroke-width="2.5" style="cursor:pointer;">
+            <path id="mapMaharashtra" d="M 145 235 L 225 230 L 250 280 L 195 315 L 135 280 Z" fill="#F87171" stroke="#D96843" stroke-width="2.5" style="cursor:pointer;">
               <title>Maharashtra State (Pune District Highlighted)</title>
             </path>
             
@@ -257,31 +257,31 @@ const DistrictExplorerModule = {
 
           <!-- Pulsing Map Marker for Pune, Maharashtra -->
           <g transform="translate(178, 275)">
-            <circle cx="0" cy="0" r="10" fill="#EF4444" opacity="0.3">
+            <circle cx="0" cy="0" r="10" fill="#D96843" opacity="0.3">
               <animate attributeName="r" values="6;14;6" dur="2s" repeatCount="indefinite"/>
             </circle>
-            <circle cx="0" cy="0" r="5" fill="#DC2626" stroke="#FFFFFF" stroke-width="2"/>
+            <circle cx="0" cy="0" r="5" fill="#D96843" stroke="#FFFFFF" stroke-width="2"/>
             <!-- Leader Line pointing to Pune Callout -->
-            <path d="M 4 -4 L 40 -30 L 70 -30" stroke="#C2410C" stroke-width="1.5" stroke-dasharray="2,2" fill="none"/>
+            <path d="M 4 -4 L 40 -30 L 70 -30" stroke="#D96843" stroke-width="1.5" stroke-dasharray="2,2" fill="none"/>
           </g>
         </svg>
 
-        <!-- Floating Interactive Callout Box for Pune (Exactly matching reference screen) -->
-        <div style="position:absolute; top:130px; right:35px; width:195px; background:rgba(255,255,255,0.96); border:1px solid #E2E8F0; border-radius:8px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:10px 12px; font-size:11.5px; z-index:15; backdrop-filter:blur(4px);">
-          <div style="font-weight:700; color:#0F172A; font-size:12px; margin-bottom:6px; border-bottom:1px solid #F1F5F9; padding-bottom:4px;">
+        <!-- Floating Interactive Callout Box for Pune -->
+        <div style="position:absolute; top:130px; right:35px; width:195px; background:rgba(255,254,251,0.96); border:1px solid var(--border-color); border-radius:var(--radius-md); box-shadow:var(--shadow-card); padding:10px 12px; font-size:11.5px; z-index:15; backdrop-filter:blur(4px);">
+          <div style="font-family:var(--font-display); font-weight:700; color:var(--text-primary); font-size:12.5px; margin-bottom:6px; border-bottom:1px solid var(--border-color); padding-bottom:4px;">
             Pune, Maharashtra
           </div>
-          <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:#64748B;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--text-secondary);">
             <span>Job Demand</span>
-            <span style="font-weight:700; color:#0F172A;">48,200</span>
+            <span style="font-weight:700; color:var(--text-primary);">48,200</span>
           </div>
-          <div style="display:flex; justify-content:space-between; margin-bottom:6px; color:#64748B;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px; color:var(--text-secondary);">
             <span>Trained Candidates</span>
-            <span style="font-weight:700; color:#0F172A;">32,500</span>
+            <span style="font-weight:700; color:var(--text-primary);">32,500</span>
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="color:#64748B;">Status</span>
-            <span style="background:#FEE2E2; color:#DC2626; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;">Undersupply</span>
+            <span style="color:var(--text-secondary);">Status</span>
+            <span class="badge-shortage">Undersupply</span>
           </div>
         </div>
       </div>
@@ -294,24 +294,24 @@ const DistrictExplorerModule = {
     const d = sData[dist] || sData["Pune"];
 
     const tradesList = d.topTrades.map(t => `
-      <div style="display:flex; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:1px solid #FAF7F2; font-size:12px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--border-subtle); font-size:12px;">
         <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-weight:600; color:#94A3B8; width:16px;">${t.rank}.</span>
-          <span style="color:#1E293B; font-weight:500;">${t.name}</span>
+          <span style="font-weight:600; color:var(--text-secondary); width:16px;">${t.rank}.</span>
+          <span style="color:var(--text-primary); font-weight:500;">${t.name}</span>
         </div>
-        <span style="font-weight:700; color:#0F172A;">${t.count}</span>
+        <span style="font-weight:700; color:var(--text-primary);">${t.count}</span>
       </div>
     `).join("");
 
     return `
-      <!-- Maharashtra State Overview Box with Mini State Graphic -->
+      <!-- State Overview Box with Mini State Graphic -->
       <div class="state-overview-box">
         <div class="state-title-row">
           <div>
-            <h3>${state} <span style="font-size:11px; font-weight:500; color:var(--text-muted);">(State Overview)</span></h3>
+            <h3>${state} <span style="font-size:11px; font-weight:500; color:var(--text-secondary);">(State Overview)</span></h3>
           </div>
           <!-- Mini Golden Silhouette Outline of State -->
-          <svg viewBox="0 0 40 36" width="34" height="30" fill="#F59E0B" opacity="0.85">
+          <svg viewBox="0 0 40 36" width="34" height="30" fill="#F2B968" opacity="0.9">
             <path d="M4 6 L18 4 L34 12 L38 24 L28 32 L16 30 L6 20 Z"/>
           </svg>
         </div>
@@ -332,9 +332,9 @@ const DistrictExplorerModule = {
         </div>
       </div>
 
-      <!-- Top High-Demand Trades (Pune) -->
+      <!-- Top High-Demand Trades -->
       <div class="state-overview-box" style="margin-top:14px;">
-        <div style="font-size:13px; font-weight:700; color:#0F172A; margin-bottom:10px;">
+        <div style="font-family:var(--font-display); font-size:13.5px; font-weight:700; color:var(--text-primary); margin-bottom:10px;">
           Top High-Demand Trades (${dist})
         </div>
         <div>
@@ -343,7 +343,7 @@ const DistrictExplorerModule = {
         
         <!-- View Detailed District Report Link Button -->
         <div style="margin-top:14px; text-align:left;">
-          <a href="#" style="color:#C2410C; font-size:12px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+          <a href="#" style="color:var(--color-terracotta); font-size:12px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
             <span>&gt; View Detailed District Report</span>
             <span style="font-size:14px;">&rarr;</span>
           </a>
@@ -359,8 +359,8 @@ const DistrictExplorerModule = {
         <td>Maharashtra</td>
         <td>48,200</td>
         <td>32,500</td>
-        <td style="color:#DC2626; font-weight:700;">+15,700</td>
-        <td><span class="badge-growth badge-growth-green" style="background:#FEF2F2; color:#DC2626;">Undersupply</span></td>
+        <td style="color:var(--color-terracotta); font-weight:700;">+15,700</td>
+        <td><span class="badge-shortage">Undersupply</span></td>
         <td>Software Developer (8,200)</td>
       </tr>
       <tr>
@@ -368,8 +368,8 @@ const DistrictExplorerModule = {
         <td>Uttar Pradesh</td>
         <td>38,400</td>
         <td>24,100</td>
-        <td style="color:#DC2626; font-weight:700;">+14,300</td>
-        <td><span class="badge-growth badge-growth-green" style="background:#FEF2F2; color:#DC2626;">Undersupply</span></td>
+        <td style="color:var(--color-terracotta); font-weight:700;">+14,300</td>
+        <td><span class="badge-shortage">Undersupply</span></td>
         <td>Solar PV Technician (6,800)</td>
       </tr>
       <tr>
@@ -377,8 +377,8 @@ const DistrictExplorerModule = {
         <td>Maharashtra</td>
         <td>56,400</td>
         <td>44,100</td>
-        <td style="color:#DC2626; font-weight:700;">+12,300</td>
-        <td><span class="badge-growth badge-growth-green" style="background:#FEF2F2; color:#DC2626;">Undersupply</span></td>
+        <td style="color:var(--color-terracotta); font-weight:700;">+12,300</td>
+        <td><span class="badge-shortage">Undersupply</span></td>
         <td>Data Analyst (9,400)</td>
       </tr>
       <tr>
@@ -386,8 +386,8 @@ const DistrictExplorerModule = {
         <td>Uttar Pradesh</td>
         <td>42,100</td>
         <td>35,600</td>
-        <td style="color:#DC2626; font-weight:700;">+6,500</td>
-        <td><span class="badge-growth badge-growth-green" style="background:#FEF2F2; color:#DC2626;">Undersupply</span></td>
+        <td style="color:var(--color-terracotta); font-weight:700;">+6,500</td>
+        <td><span class="badge-shortage">Undersupply</span></td>
         <td>Software Developer (7,200)</td>
       </tr>
     `;

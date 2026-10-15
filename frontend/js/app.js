@@ -8,7 +8,7 @@ class AppCoordinator {
     this.currentView = "dashboard";
     this.viewInstances = {
       "dashboard": window.CommandCenterModule,
-      "demand-supply": window.SectorsTradesModule,
+      "demand-supply": window.DemandSupplyModule,
       "forecasting": window.TradeDeepDiveModule,
       "sectors-trades": window.SectorsTradesModule,
       "geographic-view": window.DistrictExplorerModule,
@@ -20,17 +20,24 @@ class AppCoordinator {
           const c = document.getElementById(containerId);
           if (c) {
             c.innerHTML = `
-              <div class="page-header">
-                <div class="page-title-wrap">
-                  <h2>Data Explorer</h2>
-                  <p>National cross-sectional skill diagnostic repository</p>
+              <div class="page-title-wrap" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                <div>
+                  <h2 style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-primary);">Data Explorer</h2>
+                  <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">National cross-sectional skill diagnostic repository</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <input type="text" placeholder="Filter NCO or Trade..." class="form-input" style="width:200px; height:32px; font-size:12px;" id="dataExplorerFilter" />
+                  <button class="btn-dark-navy" style="height:32px; padding:0 12px; font-size:11.5px;" onclick="window.open('/api/v1/intelligence/national-summary', '_blank')">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    <span>Export JSON</span>
+                  </button>
                 </div>
               </div>
               <div class="card-panel">
                 <table class="growth-table-wrap">
                   <thead>
                     <tr>
-                      <th>NCO Code</th>
+                      <th style="width:110px;">NCO Code</th>
                       <th>Trade Classification</th>
                       <th>Sector</th>
                       <th>NSQF Level</th>
@@ -40,11 +47,11 @@ class AppCoordinator {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td><strong>7411.0101</strong></td><td>Solar PV Installation Technician</td><td>Green Jobs</td><td>Level 4</td><td>1,240</td><td>320</td><td><span class="badge-growth" style="background:#FEF2F2; color:#DC2626;">Critical Shortage</span></td></tr>
-                    <tr><td><strong>7231.0102</strong></td><td>Electric Vehicle Diagnostic Specialist</td><td>Automotive</td><td>Level 5</td><td>980</td><td>210</td><td><span class="badge-growth" style="background:#FEF2F2; color:#DC2626;">Critical Shortage</span></td></tr>
-                    <tr><td><strong>5321.0100</strong></td><td>General Duty Nursing Assistant</td><td>Healthcare</td><td>Level 4</td><td>1,650</td><td>680</td><td><span class="badge-growth" style="background:#FEF2F2; color:#DC2626;">Critical Shortage</span></td></tr>
-                    <tr><td><strong>2511.0100</strong></td><td>Data Analyst / BI Specialist</td><td>IT/ITeS</td><td>Level 6</td><td>2,400</td><td>1,800</td><td><span class="badge-growth" style="background:#ECFDF5; color:#059669;">Balanced</span></td></tr>
-                    <tr><td><strong>4132.0100</strong></td><td>Data Entry Operator</td><td>IT/ITeS</td><td>Level 3</td><td>450</td><td>2,800</td><td><span class="badge-growth" style="background:#FFFBEB; color:#D97706;">Severe Oversupply</span></td></tr>
+                    <tr><td><strong>7411.0101</strong></td><td>Solar PV Installation Technician</td><td><span class="tag-badge">Green Jobs</span></td><td>Level 4</td><td>1,240</td><td>320</td><td><span class="badge-shortage">Critical Shortage</span></td></tr>
+                    <tr><td><strong>7231.0102</strong></td><td>Electric Vehicle Diagnostic Specialist</td><td><span class="tag-badge">Automotive</span></td><td>Level 5</td><td>980</td><td>210</td><td><span class="badge-shortage">Critical Shortage</span></td></tr>
+                    <tr><td><strong>5321.0100</strong></td><td>General Duty Nursing Assistant</td><td><span class="tag-badge">Healthcare</span></td><td>Level 4</td><td>1,650</td><td>680</td><td><span class="badge-shortage">Critical Shortage</span></td></tr>
+                    <tr><td><strong>2511.0100</strong></td><td>Data Analyst / BI Specialist</td><td><span class="tag-badge">IT/ITeS</span></td><td>Level 6</td><td>2,400</td><td>1,800</td><td><span class="badge-balanced">Balanced</span></td></tr>
+                    <tr><td><strong>4132.0100</strong></td><td>Data Entry Operator</td><td><span class="tag-badge">IT/ITeS</span></td><td>Level 3</td><td>450</td><td>2,800</td><td><span class="badge-shortage" style="background:#FFFBEB; color:#D97706; border-color:#FDE68A;">Severe Oversupply</span></td></tr>
                   </tbody>
                 </table>
               </div>
@@ -57,33 +64,47 @@ class AppCoordinator {
           const c = document.getElementById(containerId);
           if (c) {
             c.innerHTML = `
-              <div class="page-header">
-                <div class="page-title-wrap">
-                  <h2>API Access & Developer Documentation</h2>
-                  <p>RESTful OpenAPI endpoints powering the KaushalDrishti engine</p>
-                </div>
+              <div class="page-title-wrap" style="margin-bottom:16px;">
+                <h2 style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-primary);">API Access & Developer Documentation</h2>
+                <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">RESTful OpenAPI endpoints powering the KaushalDrishti engine</p>
               </div>
-              <div class="card-panel" style="max-width: 800px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div class="card-panel" style="max-width: 840px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
                   <span class="card-title">Production Endpoints</span>
-                  <a href="/docs" target="_blank" class="btn-primary-blue" style="text-decoration:none;">Open Interactive Swagger Docs</a>
+                  <a href="/docs" target="_blank" class="btn-primary" style="text-decoration:none;">Open Interactive Swagger Docs</a>
                 </div>
-                <div style="display:flex; flex-direction:column; gap:12px; font-size:13px;">
-                  <div style="background:#F8FAFC; padding:12px; border-radius:8px; border:1px solid #E2E8F0;">
-                    <span style="background:#2563EB; color:white; padding:2px 8px; border-radius:4px; font-weight:700; font-size:11px;">GET</span>
-                    <strong style="margin-left:8px;">/api/v1/intelligence/national-summary</strong> — National KPI totals and leaderboards
+                <div style="display:flex; flex-direction:column; gap:12px; font-size:12.5px;">
+                  <div style="background:var(--bg-app); padding:14px; border-radius:var(--radius-md); border:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                      <span style="background:var(--color-primary-accent); color:white; padding:3px 9px; border-radius:4px; font-weight:700; font-size:10.5px;">GET</span>
+                      <strong style="margin-left:10px; color:var(--text-primary);">/api/v1/intelligence/national-summary</strong>
+                      <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">National KPI totals, leaderboards, and tension aggregates</div>
+                    </div>
+                    <span style="font-size:10.5px; font-weight:600; color:var(--color-primary-accent); background:var(--color-sage); padding:2px 8px; border-radius:4px;">200 OK</span>
                   </div>
-                  <div style="background:#F8FAFC; padding:12px; border-radius:8px; border:1px solid #E2E8F0;">
-                    <span style="background:#2563EB; color:white; padding:2px 8px; border-radius:4px; font-weight:700; font-size:11px;">GET</span>
-                    <strong style="margin-left:8px;">/api/v1/intelligence/forecasts</strong> — Filtered trade-district forecasts (3M/6M/12M)
+                  <div style="background:var(--bg-app); padding:14px; border-radius:var(--radius-md); border:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                      <span style="background:var(--color-primary-accent); color:white; padding:3px 9px; border-radius:4px; font-weight:700; font-size:10.5px;">GET</span>
+                      <strong style="margin-left:10px; color:var(--text-primary);">/api/v1/intelligence/forecasts</strong>
+                      <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Filtered trade-district forecasts (3M / 6M / 12M / 3Y horizons)</div>
+                    </div>
+                    <span style="font-size:10.5px; font-weight:600; color:var(--color-primary-accent); background:var(--color-sage); padding:2px 8px; border-radius:4px;">200 OK</span>
                   </div>
-                  <div style="background:#F8FAFC; padding:12px; border-radius:8px; border:1px solid #E2E8F0;">
-                    <span style="background:#059669; color:white; padding:2px 8px; border-radius:4px; font-weight:700; font-size:11px;">POST</span>
-                    <strong style="margin-left:8px;">/api/v1/simulation/simulate-gap</strong> — Real-time What-If policy reallocation engine
+                  <div style="background:var(--bg-app); padding:14px; border-radius:var(--radius-md); border:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                      <span style="background:var(--color-terracotta); color:white; padding:3px 9px; border-radius:4px; font-weight:700; font-size:10.5px;">POST</span>
+                      <strong style="margin-left:10px; color:var(--text-primary);">/api/v1/simulation/simulate-gap</strong>
+                      <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Real-time What-If policy reallocation tensor engine</div>
+                    </div>
+                    <span style="font-size:10.5px; font-weight:600; color:var(--color-primary-accent); background:var(--color-sage); padding:2px 8px; border-radius:4px;">200 OK</span>
                   </div>
-                  <div style="background:#F8FAFC; padding:12px; border-radius:8px; border:1px solid #E2E8F0;">
-                    <span style="background:#2563EB; color:white; padding:2px 8px; border-radius:4px; font-weight:700; font-size:11px;">GET</span>
-                    <strong style="margin-left:8px;">/api/v1/exports/dsdp-csv</strong> — Download official MSDE DSDP annual allocation CSV
+                  <div style="background:var(--bg-app); padding:14px; border-radius:var(--radius-md); border:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                      <span style="background:var(--color-primary-accent); color:white; padding:3px 9px; border-radius:4px; font-weight:700; font-size:10.5px;">GET</span>
+                      <strong style="margin-left:10px; color:var(--text-primary);">/api/v1/exports/dsdp-csv/{district_lgd}</strong>
+                      <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Download official MSDE DSDP annual allocation CSV</div>
+                    </div>
+                    <span style="font-size:10.5px; font-weight:600; color:var(--color-primary-accent); background:var(--color-sage); padding:2px 8px; border-radius:4px;">200 OK</span>
                   </div>
                 </div>
               </div>
@@ -96,52 +117,50 @@ class AppCoordinator {
           const c = document.getElementById(containerId);
           if (c) {
             c.innerHTML = `
-              <div class="page-header">
-                <div class="page-title-wrap">
-                  <h2>Settings & Policy Weights</h2>
-                  <p>Configure analytical coefficients for the Composite Demand Index (CDI)</p>
-                </div>
+              <div class="page-title-wrap" style="margin-bottom:16px;">
+                <h2 style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-primary);">Settings & Policy Weights</h2>
+                <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Configure analytical coefficients for the Composite Demand Index (CDI)</p>
               </div>
-              <div class="card-panel" style="max-width: 650px;">
+              <div class="card-panel" style="max-width: 680px;">
                 <div class="card-title" style="margin-bottom:16px;">CDI Component Parameters</div>
                 <div style="display:flex; flex-direction:column; gap:16px;">
                   <div>
-                    <label style="font-size:12.5px; font-weight:600; color:var(--text-main); display:flex; justify-content:space-between;">
+                    <label style="font-size:12px; font-weight:600; color:var(--text-primary); display:flex; justify-content:space-between; margin-bottom:4px;">
                       <span>Vacancy Volume Weight (w_V)</span>
-                      <span>0.35</span>
+                      <span style="color:var(--color-primary-accent); font-weight:700;">0.35</span>
                     </label>
-                    <input type="range" min="0" max="1" step="0.05" value="0.35" style="width:100%;" disabled />
+                    <input type="range" min="0" max="1" step="0.05" value="0.35" class="sim-slider" disabled />
                   </div>
                   <div>
-                    <label style="font-size:12.5px; font-weight:600; color:var(--text-main); display:flex; justify-content:space-between;">
+                    <label style="font-size:12px; font-weight:600; color:var(--text-primary); display:flex; justify-content:space-between; margin-bottom:4px;">
                       <span>Growth Momentum Weight (w_G)</span>
-                      <span>0.25</span>
+                      <span style="color:var(--color-primary-accent); font-weight:700;">0.25</span>
                     </label>
-                    <input type="range" min="0" max="1" step="0.05" value="0.25" style="width:100%;" disabled />
+                    <input type="range" min="0" max="1" step="0.05" value="0.25" class="sim-slider" disabled />
                   </div>
                   <div>
-                    <label style="font-size:12.5px; font-weight:600; color:var(--text-main); display:flex; justify-content:space-between;">
+                    <label style="font-size:12px; font-weight:600; color:var(--text-primary); display:flex; justify-content:space-between; margin-bottom:4px;">
                       <span>Employer Hiring Breadth (w_H)</span>
-                      <span>0.15</span>
+                      <span style="color:var(--color-primary-accent); font-weight:700;">0.15</span>
                     </label>
-                    <input type="range" min="0" max="1" step="0.05" value="0.15" style="width:100%;" disabled />
+                    <input type="range" min="0" max="1" step="0.05" value="0.15" class="sim-slider" disabled />
                   </div>
                   <div>
-                    <label style="font-size:12.5px; font-weight:600; color:var(--text-main); display:flex; justify-content:space-between;">
+                    <label style="font-size:12px; font-weight:600; color:var(--text-primary); display:flex; justify-content:space-between; margin-bottom:4px;">
                       <span>Skill Dispersion Factor (w_S)</span>
-                      <span>0.15</span>
+                      <span style="color:var(--color-primary-accent); font-weight:700;">0.15</span>
                     </label>
-                    <input type="range" min="0" max="1" step="0.05" value="0.15" style="width:100%;" disabled />
+                    <input type="range" min="0" max="1" step="0.05" value="0.15" class="sim-slider" disabled />
                   </div>
                   <div>
-                    <label style="font-size:12.5px; font-weight:600; color:var(--text-main); display:flex; justify-content:space-between;">
+                    <label style="font-size:12px; font-weight:600; color:var(--text-primary); display:flex; justify-content:space-between; margin-bottom:4px;">
                       <span>Macro-Economic Proxy (w_M)</span>
-                      <span>0.10</span>
+                      <span style="color:var(--color-primary-accent); font-weight:700;">0.10</span>
                     </label>
-                    <input type="range" min="0" max="1" step="0.05" value="0.10" style="width:100%;" disabled />
+                    <input type="range" min="0" max="1" step="0.05" value="0.10" class="sim-slider" disabled />
                   </div>
                   <div style="margin-top:10px;">
-                    <button class="btn-primary-blue" onclick="alert('Settings saved successfully.')">Save Policy Parameters</button>
+                    <button class="btn-primary" onclick="alert('Settings verified & saved according to MSDE policy framework.')">Save Policy Parameters</button>
                   </div>
                 </div>
               </div>
@@ -160,9 +179,42 @@ class AppCoordinator {
     this.bindNavigation();
     this.bindLanguageToggle();
     this.bindGlobalSearch();
+    this.bindAuthModal();
 
     // Default to "dashboard"
     await this.switchView("dashboard");
+  }
+
+  bindAuthModal() {
+    const badge = document.getElementById("userProfileBadge");
+    const modal = document.getElementById("authModal");
+    const closeBtn = document.getElementById("authModalClose");
+
+    if (badge && modal) {
+      badge.addEventListener("click", () => {
+        modal.style.display = "flex";
+      });
+    }
+
+    if (closeBtn && modal) {
+      closeBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+      });
+    }
+
+    if (modal) {
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          modal.style.display = "none";
+        }
+      });
+    }
+  }
+
+  handleLogin() {
+    const modal = document.getElementById("authModal");
+    if (modal) modal.style.display = "none";
+    alert("Authentication confirmed: Signed in as MSDE National System Administrator.");
   }
 
   bindNavigation() {
