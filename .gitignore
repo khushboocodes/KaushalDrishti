@@ -1,0 +1,32 @@
+# Python Bytecode and Environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.pytest_cache/
+
+# Local Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+
+# Node Dependencies & Build Artifacts
+node_modules/
+dist/
+build/
+
+# Excluded Docs per User Request
+docs/PITCH_DECK_SLIDES.md
+docs/SUBMISSION_CHECKLIST.md
+
+# OS / Editor Artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
