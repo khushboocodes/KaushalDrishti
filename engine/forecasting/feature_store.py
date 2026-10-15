@@ -1,7 +1,7 @@
 """
 Supervised Panel Feature Store & Lag Matrix Generator
 Part of KaushalDrishti (कौशल दृष्टि) - LMIS Engine
-Problem Statement ID: 26246
+Ministry of Skill Development and Entrepreneurship (MSDE)
 
 Transforms panel demand time-series into supervised machine learning
 feature matrices with strict temporal ordering to prevent data leakage.

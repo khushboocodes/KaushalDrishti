@@ -1,7 +1,7 @@
 """
 Minimum Trace (MinT) Hierarchical Spatial Reconciler
 Part of KaushalDrishti (कौशल दृष्टि) - LMIS Engine
-Problem Statement ID: 26246
+Ministry of Skill Development and Entrepreneurship (MSDE)
 
 Reconciles independent bottom-level (district), middle-level (state), and top-level (national)
 forecasts into mathematically coherent projections using the MinT optimal linear projection:

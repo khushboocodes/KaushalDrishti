@@ -1,7 +1,7 @@
 """
 Ghost Vacancy & Stale Posting Temporal Decay Engine
 Part of KaushalDrishti (कौशल दृष्टि) - LMIS Engine
-Problem Statement ID: 26246
+Ministry of Skill Development and Entrepreneurship (MSDE)
 
 Applies exponential temporal decay to discount aged job postings and
 eliminate phantom 'ghost' vacancies from the effective demand signal:

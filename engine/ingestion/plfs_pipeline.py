@@ -1,7 +1,7 @@
 """
 Periodic Labour Force Survey (PLFS) Microdata Macro Indicator Pipeline
 Part of KaushalDrishti (कौशल दृष्टि) - LMIS Engine
-Problem Statement ID: 26246
+Ministry of Skill Development and Entrepreneurship (MSDE)
 
 Parses MoSPI PLFS microdata to extract structural LFPR, WPR, UR,
 and informal/formal ratios for macro-economic weighting.

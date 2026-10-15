@@ -1,6 +1,6 @@
 # KaushalDrishti (कौशल दृष्टि): Technical Methodology Whitepaper
 ## AI-Enabled Labour Market Intelligence & Skill Demand-Supply Forecasting Engine
-### Problem Statement ID: 26246 — Ministry of Skill Development and Entrepreneurship (MSDE)
+### Ministry of Skill Development and Entrepreneurship (MSDE), Government of India
 
 ---
 

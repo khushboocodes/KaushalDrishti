@@ -1,7 +1,7 @@
 """
 Early Warning Classification Precision & Recall Evaluation Suite
 Part of KaushalDrishti (कौशल दृष्टि) - LMIS Engine
-Problem Statement ID: 26246
+Ministry of Skill Development and Entrepreneurship (MSDE)
 
 Validates the 5-state early warning radar against ground truth outcomes to compute
 Precision, Recall, and Macro F1 for shortage and oversupply risk states.

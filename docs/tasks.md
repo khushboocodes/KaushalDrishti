@@ -1,14 +1,14 @@
 # Project KaushalDrishti (कौशल दृष्टि)
 ## Master Implementation Task Breakdown & Engineering Work Breakdown Structure (WBS)
-### Problem Statement ID: 26246 — AI-Enabled Labour Market Intelligence and Skill Demand-Supply Forecasting Engine
+### AI-Enabled Labour Market Intelligence and Skill Demand-Supply Forecasting Engine
 
 ---
 
 ## Document Control & Traceability
-- **PRD Reference:** [PRD_KaushalDrishti.md](file:///c:/Users/loq/Downloads/KaushalDrishti/PRD_KaushalDrishti.md)
-- **Version:** 2.0.0 (Fast-Track Deployable Submission Release)
+- **PRD Reference:** [PRD_KaushalDrishti.md](file:///c:/Users/loq/Downloads/KaushalDrishti/docs/PRD_KaushalDrishti.md)
+- **Version:** 2.0.0 (Production Release)
 - **Execution Strategy:** **Milestone-Driven Agile Delivery**
-  - **Milestone 1 (Fast-Track Deployable Demo):** End-to-end working GIS Dashboard, REST API, Core Analytics & What-If Simulation Engine with pre-calibrated realistic pilot data ready for **instant cloud deployment and hackathon link submission**.
+  - **Milestone 1 (Deployable Interactive System):** End-to-end working GIS Dashboard, REST API, Core Analytics & What-If Simulation Engine with pre-calibrated realistic pilot data ready for **instant cloud deployment**.
   - **Milestone 2 (Deep Production & Advanced ML):** Multi-source continuous ETL pipelines, SimHash deduplication, advanced ML training & MinT spatial reconciliation, and compliance audits.
 
 ---
@@ -301,7 +301,7 @@ graph TD
   - **Description:** Execute end-to-end smoke test validating all 6 dashboard modules, API responses, language toggling, what-if simulations, and export downloads on the deployable build.
   - **Deliverable:** `docs/SUBMISSION_CHECKLIST.md`.
   - **Dependencies:** `TSK-071`.
-  - **Acceptance Criteria:** All modules operational; zero console errors; **READY TO SUBMIT DEPLOYED LINK TO HACKATHON EVALUATORS!**
+  - **Acceptance Criteria:** All modules operational; zero console errors; **PRODUCTION DEPLOYMENT READY!**
 
 ---
 
@@ -412,8 +412,8 @@ graph TD
   - **Dependencies:** `TSK-081`.
   - **Acceptance Criteria:** Verifies compliance with Indian data privacy statutes.
 
-- [x] **TSK-121: Methodology Whitepaper & Executive Pitch Deck**
-  - **Description:** Compile the formal system methodology whitepaper, system architecture diagrams, and high-impact hackathon presentation deck for MSDE jury evaluation.
+- [x] **TSK-121: Methodology Whitepaper & Executive Presentation Deck**
+  - **Description:** Compile the formal system methodology whitepaper, system architecture diagrams, and executive presentation deck for MSDE evaluation.
   - **Deliverable:** `docs/METHODOLOGY_WHITEPAPER.md`, `docs/PITCH_DECK_SLIDES.md`, `README.md`.
   - **Dependencies:** `TSK-111`, `TSK-120`.
   - **Acceptance Criteria:** Complete, authoritative, executive documentation ready for top-tier evaluation.
@@ -428,4 +428,4 @@ graph TD
 | **Milestone 2** | **Deep Production Ingestion & Advanced ML** | Continuous scrapers, SimHash deduplication, HistGBM training, MinT reconciliation, Conformal prediction, backtesting suite, DPDP audit | **100% COMPLETED** |
 
 ---
-*End of Fast-Track Master Tasks Specification — Project KaushalDrishti (Problem Statement ID 26246)*
+*End of Fast-Track Master Tasks Specification — Project KaushalDrishti*

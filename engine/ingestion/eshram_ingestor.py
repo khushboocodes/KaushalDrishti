@@ -1,7 +1,7 @@
 """
 e-Shram Registration Aggregation & Micro-Data Ingestor
 Part of KaushalDrishti (कौशल दृष्टि) - LMIS Engine
-Problem Statement ID: 26246
+Ministry of Skill Development and Entrepreneurship (MSDE)
 
 Enforces privacy-preserving k-anonymity (k >= 50) and extracts
 informal talent supply & inter-district migration flow vectors.

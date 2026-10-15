@@ -1,7 +1,7 @@
 """
 Distribution-Free Conformal Prediction Intervals (80% & 95%)
 Part of KaushalDrishti (कौशल दृष्टि) - LMIS Engine
-Problem Statement ID: 26246
+Ministry of Skill Development and Entrepreneurship (MSDE)
 
 Computes rigorous split conformal prediction intervals guaranteeing finite-sample
 coverage without assuming Gaussian residual errors:

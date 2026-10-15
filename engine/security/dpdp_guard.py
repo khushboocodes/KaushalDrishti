@@ -1,7 +1,7 @@
 """
 Digital Personal Data Protection (DPDP) Act 2023 Compliance Guard
 Part of KaushalDrishti (कौशल दृष्टि) - LMIS Engine
-Problem Statement ID: 26246
+Ministry of Skill Development and Entrepreneurship (MSDE)
 
 Enforces privacy safeguards: Zero PII storage, k-anonymity (k >= 50)
 enforcement, differential privacy aggregation, and cryptographic audit hashing.
@@ -121,7 +121,7 @@ class DPDPComplianceGuard:
 
         lines = [
             "# Digital Personal Data Protection (DPDP) Act 2023 Compliance Audit",
-            "### Project KaushalDrishti (कौशल दृष्टि) — Problem Statement ID 26246",
+            "### Project KaushalDrishti (कौशल दृष्टि) — Ministry of Skill Development and Entrepreneurship (MSDE)",
             f"**Audit Status:** `{status_badge}`",
             f"**Audit Timestamp:** `{report.audit_timestamp}`",
             f"**Tamper-Evident SHA-256 Checksum:** `{report.audit_hash}`",

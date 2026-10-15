@@ -1,7 +1,7 @@
 """
 Automated Benchmark Comparison Suite
 Part of KaushalDrishti (कौशल दृष्टि) - LMIS Engine
-Problem Statement ID: 26246
+Ministry of Skill Development and Entrepreneurship (MSDE)
 
 Evaluates the KaushalDrishti ML engine against standard statistical baselines:
 1. Naive Persistence (y_{t+h} = y_t)

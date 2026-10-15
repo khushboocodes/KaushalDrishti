@@ -6,8 +6,7 @@
 
 | Document Attribute | Details |
 | :--- | :--- |
-| **Problem Statement ID** | 26246 |
-| **Problem Statement Title** | AI-Enabled Labour Market Intelligence and Skill Demand-Supply Forecasting Engine |
+| **Platform Initiative** | AI-Enabled Labour Market Intelligence and Skill Demand-Supply Forecasting Engine |
 | **Sponsoring Organization** | Ministry of Skill Development and Entrepreneurship (MSDE), Government of India |
 | **Associated Entities** | NCVET, DGT, NSDC, Sector Skill Councils (SSCs), State Skill Development Missions (SSDMs), District Skill Committees (DSCs) |
 | **Category & Theme** | Software / Miscellaneous (Governance & Economic Intelligence) |
@@ -691,7 +690,7 @@ graph TD
 
 ---
 
-## 12. Pilot Deployment Strategy & Hackathon Evaluation Framework
+## 12. Pilot Deployment Strategy & Model Evaluation Framework
 
 ### 12.1 Defined Pilot Scope
 To validate the system convincingly, the initial production-ready prototype focuses on **4 High-Impact Sectors** across **3 Economically Diverse Pilot States**:
@@ -715,7 +714,7 @@ graph TD
 ---
 
 ### 12.2 Data Strategy for Evaluation: Multi-Tiered Data Separation
-As recognized in the Problem Statement, the evaluation environment will combine official public statistics with realistic evaluation dummy datasets:
+The validation environment combines official public statistics with realistic evaluation datasets:
 
 ```mermaid
 graph LR
@@ -726,7 +725,7 @@ graph LR
     end
 ```
 
-- **Integrity Rule:** All generated records must be explicitly tagged as `is_simulated: true` in the database to prevent accidental conflation with audited government records during hackathon evaluation.
+- **Integrity Rule:** All generated records must be explicitly tagged as `is_simulated: true` in the database to prevent accidental conflation with audited government records during deployment validation.
 - **Realistic Noise & Shock Injection:** Synthetic evaluation datasets will incorporate real-world phenomena:
   - Seasonal hiring spikes (e.g., festive logistics surge in Q3).
   - Economic shocks (e.g., localized factory expansions).
@@ -780,7 +779,7 @@ gantt
     Data Schema & Canonical Ontology Ingestion   :active, 2026-10-15, 2026-11-05
     Forecasting Engine & Pipeline Yield Core     :2026-11-06, 2026-12-01
     Interactive Dashboard (Pilot States/Sectors) :2026-12-02, 2026-12-25
-    Hackathon Demo & Evaluation Delivery        :2026-12-26, 2027-01-10
+    Pilot Demo & Evaluation Delivery             :2026-12-26, 2027-01-10
 
     section Phase 2: State Expansion
     Automated NCS & Portal Scraping Pipeline     :2027-01-11, 2027-03-01
@@ -827,4 +826,4 @@ gantt
 | **MinT Reconciliation** | Minimum Trace Hierarchical Reconciliation: An algorithm that mathematically ensures district forecasts aggregate consistently to state and national totals. |
 
 ---
-*End of Product Requirements Document — Project KaushalDrishti (Problem Statement ID 26246)*
+*End of Product Requirements Document — Project KaushalDrishti*

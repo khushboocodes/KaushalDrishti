@@ -1,7 +1,7 @@
 """
 64-Bit SimHash Vacancy Deduplication Pipeline
 Part of KaushalDrishti (कौशल दृष्टि) - LMIS Engine
-Problem Statement ID: 26246
+Ministry of Skill Development and Entrepreneurship (MSDE)
 
 Computes 64-bit SimHash fingerprints over employer, location, and requirement
 vectors to cluster and purge syndicated and re-posted ghost vacancies.

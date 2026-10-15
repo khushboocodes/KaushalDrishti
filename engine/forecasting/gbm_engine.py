@@ -1,7 +1,7 @@
 """
 Gradient Boosted Panel Forecasting Engine
 Part of KaushalDrishti (कौशल दृष्टि) - LMIS Engine
-Problem Statement ID: 26246
+Ministry of Skill Development and Entrepreneurship (MSDE)
 
 Trains gradient boosted tree models (HistGradientBoosting / LightGBM)
 on panel demand time series for multi-horizon (3M, 6M, 12M) forecasting.

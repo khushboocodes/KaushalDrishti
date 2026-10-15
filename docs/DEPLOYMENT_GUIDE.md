@@ -1,8 +1,8 @@
 # Project KaushalDrishti (कौशल दृष्टि)
-## Public Cloud Deployment & Live Submission Link Guide
-### Problem Statement ID: 26246
+## Public Cloud Deployment & Hosting Guide
+### Ministry of Skill Development and Entrepreneurship (MSDE)
 
-This guide provides immediate instructions to deploy **KaushalDrishti** and obtain a **publicly accessible HTTPS demo link** for hackathon submission within 3 to 5 minutes.
+This guide provides immediate instructions to deploy **KaushalDrishti** and obtain a **publicly accessible HTTPS production link** within 3 to 5 minutes.
 
 ---
 
@@ -21,7 +21,7 @@ This guide provides immediate instructions to deploy **KaushalDrishti** and obta
    - **Plan:** `Free`
 6. Click **"Deploy Web Service"**.
 7. In ~2 minutes, your live link will be generated:
-   👉 **`https://kaushaldrishti.onrender.com`** *(Submit this link in your hackathon portal!)*
+   👉 **`https://kaushaldrishti.onrender.com`** *(Production live URL)*
 
 ---
 

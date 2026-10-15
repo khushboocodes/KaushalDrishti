@@ -1,7 +1,7 @@
 """
 Tri-Tier LGD Fuzzy Geographic Resolver
 Part of KaushalDrishti (कौशल दृष्टि) - LMIS Engine
-Problem Statement ID: 26246
+Ministry of Skill Development and Entrepreneurship (MSDE)
 
 Resolves noisy, colloquial, and legacy district strings to authoritative
 LGD codes using exact alias lookup, phonetic normalization, and Jaro-Winkler/Token-Sort scoring.

@@ -1,11 +1,11 @@
 # KaushalDrishti (कौशल दृष्टि)
 ## AI-Enabled Labour Market Intelligence and Skill Demand-Supply Forecasting Engine
-### Ministry of Skill Development and Entrepreneurship (MSDE) — Problem Statement ID: 26246
+### Ministry of Skill Development and Entrepreneurship (MSDE), Government of India
 
 [![Python Version](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Accessibility](https://img.shields.io/badge/WCAG-2.1%20AA%20Compliant-purple.svg)](frontend/css/a11y.css)
+[![Accessibility](https://img.shields.io/badge/WCAG-2.1%20AA%20Compliant-purple.svg)](#)
 [![DPDP Act 2023](https://img.shields.io/badge/DPDP%20Act%202023-Verified%20Compliant-success.svg)](docs/DPDP_COMPLIANCE_REPORT.md)
 
 ---
@@ -127,17 +127,16 @@ KaushalDrishti/
 │   ├── ontology/             # Canonical LGD & NCO Master Resolvers
 │   ├── security/             # DPDP Act 2023 Compliance Guard
 │   └── simulation/           # What-If Sandbox Core, Budget Modeler, DSDP Recommender
-├── frontend/                 # Interactive Bilingual GIS Dashboard
-│   ├── css/                  # Design tokens, modern aesthetic styles, accessibility (a11y)
-│   ├── js/                   # Vanilla ES6 Modular Architecture
-│   │   ├── components/       # SVG Map, Canvas Chart, Funnel Visualization
-│   │   ├── modules/          # Command Center, Explorer, Trade Lab, Alert Radar, Simulator
-│   │   └── i18n.js           # Bilingual Localization Engine (English & Hindi)
-│   └── locales/              # Translation files (en.json, hi.json)
+├── kaushaldrishti-dashboard/ # Modern React 19 + TypeScript + Vite Dashboard
+│   ├── src/                  # Components, Design System, Language Context & API Layer
+│   └── vite.config.ts        # Frontend Build & Proxy Pipeline
+├── frontend/                 # Compiled Production Application & Static Assets
+│   ├── index.html            # Root Mounted Entrypoint
+│   └── assets/               # Production Bundles & MSDE Design System Assets
 ├── data/                     # Canonical Master Ontologies & Pilot Telemetry
 │   ├── master/               # LGD Districts, NCO-2015 Catalog, NSQF Crosswalk
 │   └── pilot/                # Multi-Year Calibrated Demand & Supply Time Series
-├── docs/                     # Technical Whitepaper, Pitch Deck, Deployment Guide, Audit Reports
+├── docs/                     # Technical Documentation, Architecture Guides & Audit Reports
 ├── tests/                    # Comprehensive Pytest Verification Suite
 ├── Dockerfile                # Multi-stage container deployment
 ├── render.yaml               # Render Cloud deployment blueprint
@@ -148,7 +147,6 @@ KaushalDrishti/
 
 ---
 
-## 👥 Authors & Sponsoring Apex Body
-- **Problem Statement ID:** 26246
+## 👥 Sponsoring Apex Body
 - **Apex Ministry:** Ministry of Skill Development and Entrepreneurship (MSDE), Government of India.
-- **Built for:** National / State / District Skill Development Planners.
+- **Target Users:** National / State / District Skill Development Planners (DSO, SSDM, NCVET).
