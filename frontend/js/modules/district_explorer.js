@@ -145,7 +145,8 @@ const DistrictExplorerModule = {
       <!-- Main Two-Column Layout (Map & Detail Panel) -->
       <div class="geo-view-grid" id="geoMainGrid">
         <!-- Left: India Map Container -->
-        <div class="map-container-card">
+        <div class="map-container-card" style="position:relative; overflow:hidden;">
+          <img src="/assets/kaushaldrishti/decor-left.png" alt="" class="corner-decor corner-decor-left" style="bottom:6px; left:8px; width:75px; opacity:0.35; pointer-events:none;" />
           <!-- India Map Visual SVG with Pune Callout -->
           <div class="map-svg-wrap" id="stateMapSvgWrap">
             ${this.renderIndiaMapSvg()}
@@ -179,7 +180,8 @@ const DistrictExplorerModule = {
         </div>
 
         <!-- Right: State Overview + High-Demand Trades Breakdown -->
-        <div class="district-detail-card" id="districtDetailCard">
+        <div class="district-detail-card" id="districtDetailCard" style="position:relative; overflow:hidden;">
+          <img src="/assets/kaushaldrishti/leaf-right.png" alt="" class="corner-decor corner-decor-right" style="bottom:6px; right:6px; width:65px; opacity:0.4; pointer-events:none;" />
           ${this.renderDetailCardContent("Maharashtra", "Pune")}
         </div>
       </div>
@@ -290,8 +292,26 @@ const DistrictExplorerModule = {
 
   renderDetailCardContent(state, dist) {
     const sData = this.districtData[state] || this.districtData["Maharashtra"];
+    if (!sData) {
+      return `
+        <div class="empty-state-box">
+          <img src="/assets/kaushaldrishti/empty-map.png" alt="No Geographic Data" class="empty-state-img" />
+          <h4 class="empty-state-title">No Geographic Records Found</h4>
+          <p class="empty-state-desc">Select an active state or district to view localized demand-supply intelligence.</p>
+        </div>
+      `;
+    }
     const overview = sData.stateOverview;
     const d = sData[dist] || sData["Pune"];
+    if (!d) {
+      return `
+        <div class="empty-state-box">
+          <img src="/assets/kaushaldrishti/empty-map.png" alt="No District Data" class="empty-state-img" />
+          <h4 class="empty-state-title">No District Records Found</h4>
+          <p class="empty-state-desc">District "${dist}" does not currently have active telemetry records.</p>
+        </div>
+      `;
+    }
 
     const tradesList = d.topTrades.map(t => `
       <div style="display:flex; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--border-subtle); font-size:12px;">

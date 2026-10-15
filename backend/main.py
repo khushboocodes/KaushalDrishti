@@ -36,6 +36,11 @@ app.add_middleware(
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 app.include_router(api_router, prefix="/api") # convenience alias
 
+# Mount public static assets directory if present
+public_dir = settings.BASE_PATH / "public"
+if public_dir.exists():
+    app.mount("/public", StaticFiles(directory=str(public_dir)), name="public")
+
 # Mount frontend directory for single-server serving
 frontend_dir = settings.FRONTEND_PATH
 if frontend_dir.exists():

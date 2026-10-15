@@ -106,46 +106,9 @@ const AlertCenterModule = {
             </a>
           </div>
 
-          <!-- Bottom Heritage & Skilled Worker SVG Artwork -->
-          <div style="background:var(--bg-sidebar); border:1px solid var(--border-color); border-radius:12px; padding:16px; text-align:center;">
-            <svg viewBox="0 0 260 110" width="100%" height="95" fill="none">
-              <!-- Indian Monuments in Background (India gate + domes) -->
-              <path d="M20 90h220v2H20z" fill="var(--color-terracotta)" opacity="0.6"/>
-              <rect x="90" y="35" width="40" height="55" fill="var(--color-saffron)" opacity="0.4"/>
-              <path d="M85 35h50v4h-50z" fill="var(--color-terracotta)" opacity="0.7"/>
-              <path d="M100 55c0-6 10-6 10-6s10 0 10 6v35h-20V55z" fill="#FFFDF9"/>
-              <circle cx="110" cy="45" r="2" fill="var(--color-terracotta)"/>
-
-              <!-- Left Temple / Chhatri -->
-              <path d="M40 90V45l8-6 8 6v45H40z" fill="var(--color-saffron)" opacity="0.5"/>
-              <circle cx="48" cy="36" r="2" fill="var(--color-terracotta)"/>
-
-              <!-- Right Stupa / Fort -->
-              <path d="M165 90V45c0-8 12-12 12-12s12 4 12 12v45h-24z" fill="var(--color-soft-coral)" opacity="0.5"/>
-              <circle cx="177" cy="30" r="2" fill="var(--color-terracotta)"/>
-
-              <!-- Worker 1 (Engineer with Hard Hat) -->
-              <g transform="translate(65, 55)">
-                <circle cx="10" cy="8" r="5" fill="#D97706"/>
-                <path d="M5 6c0-4 10-4 10 0v2H5V6z" fill="var(--color-saffron)"/>
-                <path d="M4 18c0-5 4-7 8-7s8 2 8 7v17H4V18z" fill="#17604D"/>
-              </g>
-
-              <!-- Worker 2 (Healthcare Professional / Nurse) -->
-              <g transform="translate(100, 52)">
-                <circle cx="10" cy="8" r="5" fill="#D97706"/>
-                <path d="M4 18c0-5 4-7 8-7s8 2 8 7v20H4V18z" fill="#17604D"/>
-                <path d="M9 16h4M11 14v4" stroke="#FFFFFF" stroke-width="1.5"/>
-              </g>
-
-              <!-- Worker 3 (Solar PV / Technician with tool) -->
-              <g transform="translate(135, 54)">
-                <circle cx="10" cy="8" r="5" fill="#D97706"/>
-                <path d="M5 5c0-3 10-3 10 0v3H5V5z" fill="var(--color-terracotta)"/>
-                <path d="M4 18c0-5 4-7 8-7s8 2 8 7v18H4V18z" fill="#173F35"/>
-                <line x1="16" y1="18" x2="22" y2="12" stroke="#64716D" stroke-width="2"/>
-              </g>
-            </svg>
+          <!-- Bottom Heritage & Skilled Worker Artwork (Extracted mini-illustration.png) -->
+          <div style="background:var(--bg-surface); border:1px solid var(--border-color); border-radius:12px; padding:10px 14px; text-align:center; overflow:hidden;">
+            <img src="/assets/kaushaldrishti/mini-illustration.png" alt="Heritage Architecture & Skilled Workforce" style="width:100%; height:auto; max-height:85px; object-fit:contain; display:block; margin:0 auto;" />
           </div>
         </div>
       </div>
@@ -157,7 +120,13 @@ const AlertCenterModule = {
   renderAlertCards(tab) {
     const list = tab === "all" ? this.alertsList : this.alertsList.filter(a => a.category === tab);
     if (!list.length) {
-      return `<div style="padding:20px; text-align:center; color:var(--text-secondary); font-size:13px;">No alerts in this category.</div>`;
+      return `
+        <div class="empty-state-box" style="padding:28px 16px;">
+          <img src="/assets/kaushaldrishti/empty-analysis.png" alt="No Analysis Results" class="empty-state-img" style="width:110px;" />
+          <h4 class="empty-state-title">No Active Alerts</h4>
+          <p class="empty-state-desc">No high-risk mismatch warnings or saturation alerts currently detected in this category.</p>
+        </div>
+      `;
     }
 
     return list.map(item => `

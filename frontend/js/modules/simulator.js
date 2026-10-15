@@ -21,7 +21,10 @@ const SimulatorModule = {
         <!-- Controls Panel -->
         <div class="card-panel sim-controls-panel">
           <div class="panel-header" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-            <h3 class="card-title">Policy Levers & Capacity Parameters</h3>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <img src="/assets/kaushaldrishti/icon-filter.png" alt="Filter" style="width:14px; height:14px; opacity:0.8;" />
+              <h3 class="card-title">Policy Levers & Capacity Parameters</h3>
+            </div>
             <button class="btn-ghost" id="btnResetSim" data-i18n="btn_reset">Reset</button>
           </div>
 
@@ -305,6 +308,16 @@ const SimulatorModule = {
 
     } catch (err) {
       console.error("Simulation request failed:", err);
+      const outputPanel = document.querySelector(".sim-output-panel");
+      if (outputPanel) {
+        outputPanel.innerHTML = `
+          <div class="empty-state-box" style="padding:48px 20px;">
+            <img src="/assets/kaushaldrishti/empty-training.png" alt="No Training Capacity Records" class="empty-state-img" />
+            <h4 class="empty-state-title">No Training Capacity Records</h4>
+            <p class="empty-state-desc">Unable to load simulation parameters for the selected district and trade combination. Please verify training seat records.</p>
+          </div>
+        `;
+      }
     }
   }
 };

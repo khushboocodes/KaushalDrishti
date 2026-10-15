@@ -19,21 +19,39 @@ class AppCoordinator {
         async init(containerId) {
           const c = document.getElementById(containerId);
           if (c) {
-            c.innerHTML = `
-              <div class="page-title-wrap" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-                <div>
-                  <h2 style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-primary);">Data Explorer</h2>
-                  <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">National cross-sectional skill diagnostic repository</p>
-                </div>
-                <div style="display:flex; align-items:center; gap:10px;">
-                  <input type="text" placeholder="Filter NCO or Trade..." class="form-input" style="width:200px; height:32px; font-size:12px;" id="dataExplorerFilter" />
-                  <button class="btn-dark-navy" style="height:32px; padding:0 12px; font-size:11.5px;" onclick="window.open('/api/v1/intelligence/national-summary', '_blank')">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                    <span>Export JSON</span>
-                  </button>
-                </div>
-              </div>
-              <div class="card-panel">
+            const rawData = [
+              { nco: "7411.0101", trade: "Solar PV Installation Technician", sector: "Green Jobs", level: "Level 4", demand: "1,240", supply: "320", statusHtml: '<span class="badge-shortage">Critical Shortage</span>' },
+              { nco: "7231.0102", trade: "Electric Vehicle Diagnostic Specialist", sector: "Automotive", level: "Level 5", demand: "980", supply: "210", statusHtml: '<span class="badge-shortage">Critical Shortage</span>' },
+              { nco: "5321.0100", trade: "General Duty Nursing Assistant", sector: "Healthcare", level: "Level 4", demand: "1,650", supply: "680", statusHtml: '<span class="badge-shortage">Critical Shortage</span>' },
+              { nco: "2511.0100", trade: "Data Analyst / BI Specialist", sector: "IT/ITeS", level: "Level 6", demand: "2,400", supply: "1,800", statusHtml: '<span class="badge-balanced">Balanced</span>' },
+              { nco: "4132.0100", trade: "Data Entry Operator", sector: "IT/ITeS", level: "Level 3", demand: "450", supply: "2,800", statusHtml: '<span class="badge-shortage" style="background:#FFFBEB; color:#D97706; border-color:#FDE68A;">Severe Oversupply</span>' }
+            ];
+
+            const renderRows = (query = "") => {
+              const q = query.trim().toLowerCase();
+              const filtered = !q ? rawData : rawData.filter(r => r.trade.toLowerCase().includes(q) || r.nco.toLowerCase().includes(q) || r.sector.toLowerCase().includes(q));
+              if (!filtered.length) {
+                return `
+                  <div class="empty-state-box" style="padding:40px 16px;">
+                    <img src="/assets/kaushaldrishti/empty-search.png" alt="No Search Results" class="empty-state-img" />
+                    <h4 class="empty-state-title">No Matching Diagnostic Records</h4>
+                    <p class="empty-state-desc">No records matched "${query}". Try searching for Solar, Nursing, EV, or Data Analyst.</p>
+                  </div>
+                `;
+              }
+              const rowsHtml = filtered.map(r => `
+                <tr>
+                  <td><strong>${r.nco}</strong></td>
+                  <td>${r.trade}</td>
+                  <td><span class="tag-badge">${r.sector}</span></td>
+                  <td>${r.level}</td>
+                  <td>${r.demand}</td>
+                  <td>${r.supply}</td>
+                  <td>${r.statusHtml}</td>
+                </tr>
+              `).join("");
+
+              return `
                 <table class="growth-table-wrap">
                   <thead>
                     <tr>
@@ -47,15 +65,41 @@ class AppCoordinator {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td><strong>7411.0101</strong></td><td>Solar PV Installation Technician</td><td><span class="tag-badge">Green Jobs</span></td><td>Level 4</td><td>1,240</td><td>320</td><td><span class="badge-shortage">Critical Shortage</span></td></tr>
-                    <tr><td><strong>7231.0102</strong></td><td>Electric Vehicle Diagnostic Specialist</td><td><span class="tag-badge">Automotive</span></td><td>Level 5</td><td>980</td><td>210</td><td><span class="badge-shortage">Critical Shortage</span></td></tr>
-                    <tr><td><strong>5321.0100</strong></td><td>General Duty Nursing Assistant</td><td><span class="tag-badge">Healthcare</span></td><td>Level 4</td><td>1,650</td><td>680</td><td><span class="badge-shortage">Critical Shortage</span></td></tr>
-                    <tr><td><strong>2511.0100</strong></td><td>Data Analyst / BI Specialist</td><td><span class="tag-badge">IT/ITeS</span></td><td>Level 6</td><td>2,400</td><td>1,800</td><td><span class="badge-balanced">Balanced</span></td></tr>
-                    <tr><td><strong>4132.0100</strong></td><td>Data Entry Operator</td><td><span class="tag-badge">IT/ITeS</span></td><td>Level 3</td><td>450</td><td>2,800</td><td><span class="badge-shortage" style="background:#FFFBEB; color:#D97706; border-color:#FDE68A;">Severe Oversupply</span></td></tr>
+                    ${rowsHtml}
                   </tbody>
                 </table>
+              `;
+            };
+
+            c.innerHTML = `
+              <div class="page-title-wrap" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                <div>
+                  <h2 style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-primary);">Data Explorer</h2>
+                  <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">National cross-sectional skill diagnostic repository</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div style="position:relative; width:220px;">
+                    <img src="/assets/kaushaldrishti/icon-search.png" alt="" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); width:13px; height:13px; opacity:0.6; pointer-events:none;" />
+                    <input type="text" placeholder="Filter NCO or Trade..." class="form-input" style="width:100%; height:32px; font-size:12px; padding-left:30px;" id="dataExplorerFilter" />
+                  </div>
+                  <button class="btn-dark-navy" style="height:32px; padding:0 12px; font-size:11.5px;" onclick="window.open('/api/v1/intelligence/national-summary', '_blank')">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    <span>Export JSON</span>
+                  </button>
+                </div>
+              </div>
+              <div class="card-panel" id="dataExplorerTableCard">
+                ${renderRows()}
               </div>
             `;
+
+            const filterInput = document.getElementById("dataExplorerFilter");
+            const tableCard = document.getElementById("dataExplorerTableCard");
+            if (filterInput && tableCard) {
+              filterInput.addEventListener("input", (e) => {
+                tableCard.innerHTML = renderRows(e.target.value);
+              });
+            }
           }
         }
       },

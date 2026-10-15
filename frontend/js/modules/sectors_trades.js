@@ -59,17 +59,20 @@ const SectorsTradesModule = {
           <h2 data-i18n="sector_title" style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-primary);">Sector-wise Analysis</h2>
           <p data-i18n="sector_subtitle" style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Compare demand, supply, growth and skill gaps across sectors</p>
         </div>
-        <div style="display:flex; align-items:center; gap:12px;">
-          <select class="form-select filter-select" style="min-width:140px; height:34px;">
-            <option>All Sectors</option>
-            <option>IT/ITeS</option>
-            <option>Healthcare</option>
-            <option>Manufacturing</option>
-            <option>Green Jobs</option>
-            <option>Retail</option>
-            <option>Agriculture</option>
-            <option>Hospitality</option>
-          </select>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="display:flex; align-items:center; gap:6px; background:var(--bg-surface); border:1px solid var(--border-color); border-radius:var(--radius-pill); padding:2px 10px 2px 8px;">
+            <img src="/assets/kaushaldrishti/icon-filter.png" alt="Filter" style="width:14px; height:14px; object-fit:contain; opacity:0.75;" />
+            <select class="form-select filter-select" style="min-width:130px; height:32px; border:none; background:transparent; padding:0; outline:none;">
+              <option>All Sectors</option>
+              <option>IT/ITeS</option>
+              <option>Healthcare</option>
+              <option>Manufacturing</option>
+              <option>Green Jobs</option>
+              <option>Retail</option>
+              <option>Agriculture</option>
+              <option>Hospitality</option>
+            </select>
+          </div>
           <button class="btn-primary" id="btnExportSector">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
             <span data-i18n="btn_export">Export Report</span>
@@ -85,7 +88,8 @@ const SectorsTradesModule = {
       <!-- Two-Column Grid: Dual Horizontal Bar Chart on Left, Top 10 Growth on Right -->
       <div class="two-col-grid" style="grid-template-columns: 1.15fr 1fr; position:relative;">
         <!-- Left: Sector-wise Demand-Supply Gap -->
-        <div class="card-panel">
+        <div class="card-panel" style="position:relative; overflow:hidden;">
+          <img src="/assets/kaushaldrishti/decor-left.png" alt="" class="corner-decor corner-decor-left" style="bottom:6px; left:8px; width:80px; opacity:0.22; pointer-events:none;" />
           <div class="card-header-row">
             <span class="card-title" data-i18n="chart_sector_gap">Sector-wise Demand-Supply Gap</span>
             <div class="chart-legend">
@@ -99,7 +103,8 @@ const SectorsTradesModule = {
         </div>
 
         <!-- Right: Top 10 Trades by Projected Growth -->
-        <div class="card-panel">
+        <div class="card-panel" style="position:relative; overflow:hidden;">
+          <img src="/assets/kaushaldrishti/leaf-right.png" alt="" class="corner-decor corner-decor-right" style="bottom:6px; right:8px; width:65px; opacity:0.3; pointer-events:none;" />
           <div class="card-header-row">
             <span class="card-title" data-i18n="top_10_growth_title">Top 10 Trades by Projected Growth (Next 3 Years)</span>
           </div>

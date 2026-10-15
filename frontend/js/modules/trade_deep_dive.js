@@ -22,6 +22,9 @@ const TradeDeepDiveModule = {
 
       <!-- Filter Controls Strip -->
       <div class="filter-toolbar-row">
+        <div style="display:flex; align-items:center; gap:6px; margin-right:4px;">
+          <img src="/assets/kaushaldrishti/icon-filter.png" alt="Filter" style="width:14px; height:14px; opacity:0.75;" />
+        </div>
         <div class="filter-group">
           <label data-i18n="filter_sector">Sector</label>
           <select id="forecastSectorSelect" class="form-select filter-select">
@@ -93,7 +96,8 @@ const TradeDeepDiveModule = {
           </div>
 
           <!-- Key Factors Influencing Demand -->
-          <div class="card-panel">
+          <div class="card-panel" style="position:relative; overflow:hidden;">
+            <img src="/assets/kaushaldrishti/decor-left.png" alt="" class="corner-decor corner-decor-left" style="bottom:4px; left:6px; width:75px; opacity:0.2; pointer-events:none;" />
             <div class="card-title" style="margin-bottom:12px;" data-i18n="key_factors_title">Key Factors Influencing Demand</div>
             <div class="factors-list">
               <div class="factor-item">

@@ -18,41 +18,10 @@ const CommandCenterModule = {
           <p data-i18n="dashboard_subtitle">Real-time insights to align training capacity with industry demand</p>
         </div>
         
-        <!-- Heritage Monument Skyline Watermark -->
-        <svg class="heritage-skyline-bg" viewBox="0 0 320 60" fill="none">
-          <!-- Trees on left -->
-          <circle cx="20" cy="40" r="14" fill="#86EFAC" opacity="0.6"/>
-          <circle cx="34" cy="42" r="10" fill="#4ADE80" opacity="0.7"/>
-          <rect x="26" y="44" width="4" height="16" fill="#78350F" opacity="0.6"/>
-          
-          <!-- Chhatri / Indian Temple Pavilion -->
-          <path d="M60 60V32l10-8 10 8v28H60z" fill="#FDBA74" opacity="0.7"/>
-          <path d="M65 32c0-8 10-12 10-12s10 4 10 12H65z" fill="#FB923C" opacity="0.9"/>
-          <circle cx="75" cy="18" r="2.5" fill="#C2410C"/>
-
-          <!-- India Gate / Grand Portal arch -->
-          <rect x="105" y="18" width="50" height="42" fill="#E2E8F0" opacity="0.4"/>
-          <path d="M100 18h60v5h-60z" fill="#EA580C" opacity="0.8"/>
-          <rect x="104" y="23" width="12" height="37" fill="#F97316" opacity="0.85"/>
-          <rect x="144" y="23" width="12" height="37" fill="#F97316" opacity="0.85"/>
-          <path d="M116 38c0-8 14-8 14-8s14 0 14 8v22h-28V38z" fill="#FFFBEB"/>
-          <circle cx="130" cy="27" r="3" fill="#D97706"/>
-
-          <!-- Dome / Stupa with kalash -->
-          <path d="M175 60V34c0-12 18-18 18-18s18 6 18 18v26h-36z" fill="#FED7AA" opacity="0.85"/>
-          <path d="M185 60v-16a8 8 0 0 1 16 0v16h-16z" fill="#EA580C" opacity="0.5"/>
-          <line x1="193" y1="16" x2="193" y2="10" stroke="#C2410C" stroke-width="2"/>
-          <circle cx="193" cy="9" r="2" fill="#B45309"/>
-
-          <!-- Red Fort style battlements & minaret -->
-          <path d="M230 60V28h6v-4h4v4h6v-4h4v4h6v32h-26z" fill="#F87171" opacity="0.7"/>
-          <path d="M270 60V22l7-6 7 6v38h-14z" fill="#FBBF24" opacity="0.75"/>
-          <circle cx="277" cy="14" r="2" fill="#D97706"/>
-
-          <!-- Foliage right -->
-          <circle cx="300" cy="42" r="12" fill="#86EFAC" opacity="0.6"/>
-          <circle cx="312" cy="44" r="8" fill="#4ADE80" opacity="0.7"/>
-        </svg>
+        <!-- Header Illustration Banner (Extracted from Reference Sheet) -->
+        <div class="header-illustration-wrap">
+          <img src="/assets/kaushaldrishti/header-illustration.png" alt="India Skill Landscape" class="header-illustration-img" />
+        </div>
       </div>
 
       <!-- 4 Top KPI Cards Grid -->

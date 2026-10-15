@@ -17,44 +17,6 @@ const DemandSupplyModule = {
   ],
 
   async init(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    const rows = this.trades.map(t => {
-      let badgeClass = "badge-balanced";
-      let gapColor = "var(--text-primary)";
-      if (t.type === "shortage") {
-        badgeClass = "badge-shortage";
-        gapColor = "var(--color-terracotta)";
-      } else if (t.type === "caution") {
-        badgeClass = "badge-shortage";
-        gapColor = "#B45309";
-      } else if (t.type === "oversupply") {
-        badgeClass = "badge-shortage";
-        gapColor = "var(--color-terracotta)";
-      } else {
-        gapColor = "#17604D";
-      }
-
-      return `
-        <tr>
-          <td style="font-weight:700; color:var(--text-secondary);">${t.nco}</td>
-          <td><strong style="color:var(--text-primary); font-size:12.5px;">${t.title}</strong></td>
-          <td><span class="tag-badge">${t.sector}</span></td>
-          <td style="color:var(--text-secondary); font-size:11.5px;">${t.level}</td>
-          <td style="font-weight:600; color:var(--text-primary);">${t.demand}</td>
-          <td style="font-weight:600; color:var(--text-primary);">${t.supply}</td>
-          <td style="font-weight:700; color:${gapColor};">${t.gap}</td>
-          <td><span class="${badgeClass}">${t.status}</span></td>
-          <td>
-            <button class="action-btn-sm" onclick="AppCoordinator.instance && AppCoordinator.instance.switchView('simulator')" style="border:1px solid var(--border-color); background:var(--bg-app); border-radius:4px; padding:3px 8px; font-size:11px; cursor:pointer; color:var(--text-primary);">
-              Simulate Target
-            </button>
-          </td>
-        </tr>
-      `;
-    }).join("");
-
     container.innerHTML = `
       <!-- Page Header -->
       <div class="page-title-wrap" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
@@ -63,20 +25,25 @@ const DemandSupplyModule = {
           <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Compare employer hiring vacancy telemetry with certified training supply</p>
         </div>
         <div style="display:flex; align-items:center; gap:10px;">
-          <select class="form-select filter-select" id="dsStateFilter" style="height:34px; font-size:12px;">
-            <option>All States</option>
-            <option>Maharashtra</option>
-            <option>Uttar Pradesh</option>
-            <option>Odisha</option>
-            <option>Karnataka</option>
-          </select>
+          <div style="display:flex; align-items:center; gap:6px; background:var(--bg-surface); border:1px solid var(--border-color); border-radius:var(--radius-pill); padding:2px 10px 2px 8px;">
+            <img src="/assets/kaushaldrishti/icon-filter.png" alt="Filter" style="width:14px; height:14px; opacity:0.75;" />
+            <select class="form-select filter-select" id="dsStateFilter" style="height:32px; font-size:12px; border:none; background:transparent; padding:0; outline:none;">
+              <option>All States</option>
+              <option>Maharashtra</option>
+              <option>Uttar Pradesh</option>
+              <option>Odisha</option>
+              <option>Karnataka</option>
+            </select>
+          </div>
           <select class="form-select filter-select" id="dsSectorFilter" style="height:34px; font-size:12px;">
             <option>All Sectors</option>
             <option>IT/ITeS</option>
             <option>Green Jobs</option>
-            <option>Automotive & EV</option>
+            <option>Automotive</option>
             <option>Healthcare</option>
             <option>Manufacturing</option>
+            <option>Apparel</option>
+            <option>Mining & Heavy Engineering</option>
           </select>
           <button class="btn-primary" id="btnExportDS" style="height:34px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
@@ -147,29 +114,127 @@ const DemandSupplyModule = {
             <h3 class="card-title">National Trade-Level Mismatch Ledger</h3>
             <p style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">Calibrated against NCS postings, e-Shram registrations, and SIP certified capacity</p>
           </div>
-          <input type="text" placeholder="Search trade or NCO code..." class="form-input" style="width:240px; height:32px; font-size:12px;" />
+          <div style="position:relative; width:250px;">
+            <img src="/assets/kaushaldrishti/icon-search.png" alt="" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); width:13px; height:13px; opacity:0.6; pointer-events:none;" />
+            <input type="text" id="dsTradeSearch" placeholder="Search trade or NCO code..." class="form-input" style="width:100%; height:32px; font-size:12px; padding-left:30px;" />
+          </div>
         </div>
 
-        <table class="growth-table-wrap">
-          <thead>
-            <tr>
-              <th style="width:110px;">NCO Code</th>
-              <th>Trade Title</th>
-              <th>Sector</th>
-              <th>NSQF</th>
-              <th>Demand</th>
-              <th>Supply</th>
-              <th>Gap (Delta)</th>
-              <th>Tension Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows}
-          </tbody>
-        </table>
+        <div id="dsTableContainer">
+          ${this.renderTable()}
+        </div>
       </div>
     `;
+
+    this.bindEvents();
+  },
+
+  renderTable(query = "", sector = "All Sectors") {
+    let list = this.trades;
+    if (sector && sector !== "All Sectors") {
+      list = list.filter(t => t.sector.toLowerCase().includes(sector.toLowerCase()));
+    }
+    if (query) {
+      const q = query.toLowerCase();
+      list = list.filter(t => t.title.toLowerCase().includes(q) || t.nco.toLowerCase().includes(q) || t.sector.toLowerCase().includes(q));
+    }
+
+    if (!list.length) {
+      if (query) {
+        return `
+          <div class="empty-state-box">
+            <img src="/assets/kaushaldrishti/empty-search.png" alt="No Search Results" class="empty-state-img" />
+            <h4 class="empty-state-title">No Matching Trades Found</h4>
+            <p class="empty-state-desc">No trade classification matched your query "${query}". Try searching for Solar, Nursing, EV, or Data Analyst.</p>
+          </div>
+        `;
+      } else {
+        return `
+          <div class="empty-state-box">
+            <img src="/assets/kaushaldrishti/empty-data.png" alt="No Data Available" class="empty-state-img" />
+            <h4 class="empty-state-title">No Trade Records in this Sector</h4>
+            <p class="empty-state-desc">There are currently no certified trade records or active vacancy signals recorded for "${sector}".</p>
+          </div>
+        `;
+      }
+    }
+
+    const rows = list.map(t => {
+      let badgeClass = "badge-balanced";
+      let gapColor = "var(--text-primary)";
+      if (t.type === "shortage") {
+        badgeClass = "badge-shortage";
+        gapColor = "var(--color-terracotta)";
+      } else if (t.type === "caution") {
+        badgeClass = "badge-shortage";
+        gapColor = "#B45309";
+      } else if (t.type === "oversupply") {
+        badgeClass = "badge-shortage";
+        gapColor = "var(--color-terracotta)";
+      } else {
+        gapColor = "#17604D";
+      }
+
+      return `
+        <tr>
+          <td style="font-weight:700; color:var(--text-secondary);">${t.nco}</td>
+          <td><strong style="color:var(--text-primary); font-size:12.5px;">${t.title}</strong></td>
+          <td><span class="tag-badge">${t.sector}</span></td>
+          <td style="color:var(--text-secondary); font-size:11.5px;">${t.level}</td>
+          <td style="font-weight:600; color:var(--text-primary);">${t.demand}</td>
+          <td style="font-weight:600; color:var(--text-primary);">${t.supply}</td>
+          <td style="font-weight:700; color:${gapColor};">${t.gap}</td>
+          <td><span class="${badgeClass}">${t.status}</span></td>
+          <td>
+            <button class="action-btn-sm" onclick="window.app && window.app.switchView('simulator', { nco_code: '${t.nco}' })" style="border:1px solid var(--border-color); background:var(--bg-app); border-radius:4px; padding:3px 8px; font-size:11px; cursor:pointer; color:var(--text-primary);">
+              Simulate Target
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    return `
+      <table class="growth-table-wrap">
+        <thead>
+          <tr>
+            <th style="width:110px;">NCO Code</th>
+            <th>Trade Title</th>
+            <th>Sector</th>
+            <th>NSQF</th>
+            <th>Demand</th>
+            <th>Supply</th>
+            <th>Gap (Delta)</th>
+            <th>Tension Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    `;
+  },
+
+  bindEvents() {
+    const searchInput = document.getElementById("dsTradeSearch");
+    const sectorFilter = document.getElementById("dsSectorFilter");
+    const container = document.getElementById("dsTableContainer");
+
+    const update = () => {
+      if (container) {
+        const q = searchInput ? searchInput.value.trim() : "";
+        const s = sectorFilter ? sectorFilter.value : "All Sectors";
+        container.innerHTML = this.renderTable(q, s);
+      }
+    };
+
+    if (searchInput) {
+      searchInput.addEventListener("input", update);
+    }
+    if (sectorFilter) {
+      sectorFilter.addEventListener("change", update);
+    }
   }
 };
 

@@ -94,10 +94,17 @@ const ExportHubModule = {
             </div>
           </div>
           <div style="margin-top:14px;">
-            <a href="#" style="color:var(--color-terracotta); font-size:12px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+            <a href="#" id="btnToggleCentres" style="color:var(--color-terracotta); font-size:12px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
               <span>View Details</span>
               <span>&rarr;</span>
             </a>
+          </div>
+          <div id="newCentresDetailPanel" style="display:none; margin-top:12px; border-top:1px dashed var(--border-color); padding-top:10px;">
+            <div class="empty-state-box" style="padding:16px 8px;">
+              <img src="/assets/kaushaldrishti/empty-construction.png" alt="No Infrastructure Work Needed" class="empty-state-img" style="width:105px;" />
+              <h4 class="empty-state-title">Infrastructure Pipeline Up-to-Date</h4>
+              <p class="empty-state-desc">Current PMKK/ITI facilities satisfy training standards. No new building construction is currently required in this district.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -153,12 +160,8 @@ const ExportHubModule = {
           </div>
         </div>
 
-        <!-- Heritage Foliage Watermark on Right -->
-        <svg viewBox="0 0 100 80" width="80" height="60" style="position:absolute; right:10px; bottom:6px; opacity:0.18; pointer-events:none;" fill="none">
-          <path d="M80 75 C 60 50, 40 35, 10 20" stroke="#D96843" stroke-width="2"/>
-          <path d="M65 60 C 55 50, 45 55, 50 65 Z" fill="#D96843"/>
-          <path d="M45 42 C 35 32, 25 38, 30 48 Z" fill="#F2B968"/>
-        </svg>
+        <!-- Heritage Foliage Watermark on Right (Extracted leaf-right.png) -->
+        <img src="/assets/kaushaldrishti/leaf-right.png" alt="" class="corner-decor corner-decor-right" style="bottom:4px; right:8px; width:65px; opacity:0.35; pointer-events:none;" />
       </div>
 
       <!-- District Skill Development Plan (DSDP) Operational Audit Section -->
@@ -169,13 +172,17 @@ const ExportHubModule = {
             <p style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">Automated district reallocation schedule compliant with MSDE Common Cost Norms</p>
           </div>
           <div style="display:flex; align-items:center; gap:10px;">
-            <select id="exportDistrictSelect" class="form-select filter-select" style="height:32px; font-size:12px;">
-              <option value="158" selected>Kanpur Nagar, Uttar Pradesh (LGD 158)</option>
-              <option value="492">Pune, Maharashtra (LGD 492)</option>
-              <option value="365">Khordha / Bhubaneswar, Odisha (LGD 365)</option>
-              <option value="160">Lucknow, Uttar Pradesh (LGD 160)</option>
-              <option value="485">Mumbai, Maharashtra (LGD 485)</option>
-            </select>
+            <div style="display:flex; align-items:center; gap:6px; background:var(--bg-surface); border:1px solid var(--border-color); border-radius:var(--radius-pill); padding:2px 10px 2px 8px;">
+              <img src="/assets/kaushaldrishti/icon-filter.png" alt="Filter" style="width:14px; height:14px; opacity:0.75;" />
+              <select id="exportDistrictSelect" class="form-select filter-select" style="height:32px; font-size:12px; border:none; background:transparent; padding:0; outline:none;">
+                <option value="158" selected>Kanpur Nagar, Uttar Pradesh (LGD 158)</option>
+                <option value="492">Pune, Maharashtra (LGD 492)</option>
+                <option value="365">Khordha / Bhubaneswar, Odisha (LGD 365)</option>
+                <option value="160">Lucknow, Uttar Pradesh (LGD 160)</option>
+                <option value="485">Mumbai, Maharashtra (LGD 485)</option>
+                <option value="999">Bhadrak, Odisha (LGD 999 - No Draft Plan)</option>
+              </select>
+            </div>
             <button class="btn-primary" id="btnDownloadCsv" style="height:32px; padding:0 12px; font-size:11.5px;">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
               <span>Download Official CSV</span>
@@ -183,67 +190,103 @@ const ExportHubModule = {
           </div>
         </div>
 
-        <table class="growth-table-wrap">
-          <thead>
-            <tr>
-              <th>Trade Title</th>
-              <th>Sector</th>
-              <th>Action</th>
-              <th>Current Sanctioned</th>
-              <th>Target Delta</th>
-              <th>Proposed Target</th>
-              <th>Fiscal Impact</th>
-            </tr>
-          </thead>
-          <tbody id="exportTableBody">
-            <tr>
-              <td><strong style="color:var(--text-primary);">Solar PV Installation Technician</strong></td>
-              <td><span class="tag-badge">Green Jobs</span></td>
-              <td><span style="color:#17604D; font-weight:700;">EXPAND (+100%)</span></td>
-              <td>250</td>
-              <td style="color:#17604D; font-weight:700;">+250</td>
-              <td><strong style="color:var(--text-primary);">500</strong></td>
-              <td style="color:#17604D; font-weight:600;">+₹32.5 Lakh</td>
-            </tr>
-            <tr>
-              <td><strong style="color:var(--text-primary);">EV Diagnostic Specialist</strong></td>
-              <td><span class="tag-badge">Automotive</span></td>
-              <td><span style="color:#17604D; font-weight:700;">EXPAND (+80%)</span></td>
-              <td>200</td>
-              <td style="color:#17604D; font-weight:700;">+160</td>
-              <td><strong style="color:var(--text-primary);">360</strong></td>
-              <td style="color:#17604D; font-weight:600;">+₹20.8 Lakh</td>
-            </tr>
-            <tr>
-              <td><strong style="color:var(--text-primary);">Data Entry Operator</strong></td>
-              <td><span class="tag-badge">IT/ITeS</span></td>
-              <td><span style="color:var(--color-terracotta); font-weight:700;">CURTAIL (-50%)</span></td>
-              <td>800</td>
-              <td style="color:var(--color-terracotta); font-weight:700;">-400</td>
-              <td><strong style="color:var(--text-primary);">400</strong></td>
-              <td style="color:#173F35; font-weight:600;">-₹52.0 Lakh (Freed)</td>
-            </tr>
-            <tr>
-              <td><strong style="color:var(--text-primary);">Sewing Machine Operator</strong></td>
-              <td><span class="tag-badge">Apparel</span></td>
-              <td><span style="color:var(--color-terracotta); font-weight:700;">CURTAIL (-35%)</span></td>
-              <td>600</td>
-              <td style="color:var(--color-terracotta); font-weight:700;">-210</td>
-              <td><strong style="color:var(--text-primary);">390</strong></td>
-              <td style="color:#173F35; font-weight:600;">-₹27.3 Lakh (Freed)</td>
-            </tr>
-          </tbody>
-        </table>
+        <div id="exportTableContainer">
+          ${this.renderDsdpTable("158")}
+        </div>
       </div>
     `;
 
     this.bindEvents();
   },
 
+  renderDsdpTable(districtLgd) {
+    if (districtLgd === "999") {
+      return `
+        <div class="empty-state-box" style="padding:40px 16px;">
+          <img src="/assets/kaushaldrishti/empty-reports.png" alt="No Reports Generated" class="empty-state-img" />
+          <h4 class="empty-state-title">No Draft DSDP Report Generated</h4>
+          <p class="empty-state-desc">Target reallocation parameters have not been finalized for this district yet. Generate targets in the Training Capacity Sandbox first.</p>
+        </div>
+      `;
+    }
+
+    return `
+      <table class="growth-table-wrap">
+        <thead>
+          <tr>
+            <th>Trade Title</th>
+            <th>Sector</th>
+            <th>Action</th>
+            <th>Current Sanctioned</th>
+            <th>Target Delta</th>
+            <th>Proposed Target</th>
+            <th>Fiscal Impact</th>
+          </tr>
+        </thead>
+        <tbody id="exportTableBody">
+          <tr>
+            <td><strong style="color:var(--text-primary);">Solar PV Installation Technician</strong></td>
+            <td><span class="tag-badge">Green Jobs</span></td>
+            <td><span style="color:#17604D; font-weight:700;">EXPAND (+100%)</span></td>
+            <td>250</td>
+            <td style="color:#17604D; font-weight:700;">+250</td>
+            <td><strong style="color:var(--text-primary);">500</strong></td>
+            <td style="color:#17604D; font-weight:600;">+₹32.5 Lakh</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--text-primary);">EV Diagnostic Specialist</strong></td>
+            <td><span class="tag-badge">Automotive</span></td>
+            <td><span style="color:#17604D; font-weight:700;">EXPAND (+80%)</span></td>
+            <td>200</td>
+            <td style="color:#17604D; font-weight:700;">+160</td>
+            <td><strong style="color:var(--text-primary);">360</strong></td>
+            <td style="color:#17604D; font-weight:600;">+₹20.8 Lakh</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--text-primary);">Data Entry Operator</strong></td>
+            <td><span class="tag-badge">IT/ITeS</span></td>
+            <td><span style="color:var(--color-terracotta); font-weight:700;">CURTAIL (-50%)</span></td>
+            <td>800</td>
+            <td style="color:var(--color-terracotta); font-weight:700;">-400</td>
+            <td><strong style="color:var(--text-primary);">400</strong></td>
+            <td style="color:#173F35; font-weight:600;">-₹52.0 Lakh (Freed)</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--text-primary);">Sewing Machine Operator</strong></td>
+            <td><span class="tag-badge">Apparel</span></td>
+            <td><span style="color:var(--color-terracotta); font-weight:700;">CURTAIL (-35%)</span></td>
+            <td>600</td>
+            <td style="color:var(--color-terracotta); font-weight:700;">-210</td>
+            <td><strong style="color:var(--text-primary);">390</strong></td>
+            <td style="color:#173F35; font-weight:600;">-₹27.3 Lakh (Freed)</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  },
+
   bindEvents() {
     const csvBtn = document.getElementById("btnDownloadCsv");
     const distSelect = document.getElementById("exportDistrictSelect");
     const reportBtn = document.getElementById("btnDownloadReport");
+    const toggleCentresBtn = document.getElementById("btnToggleCentres");
+    const centresPanel = document.getElementById("newCentresDetailPanel");
+    const tableContainer = document.getElementById("exportTableContainer");
+
+    if (distSelect && tableContainer) {
+      distSelect.addEventListener("change", (e) => {
+        tableContainer.innerHTML = this.renderDsdpTable(e.target.value);
+      });
+    }
+
+    if (toggleCentresBtn && centresPanel) {
+      toggleCentresBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const isHidden = centresPanel.style.display === "none";
+        centresPanel.style.display = isHidden ? "block" : "none";
+        toggleCentresBtn.querySelector("span").textContent = isHidden ? "Hide Details" : "View Details";
+      });
+    }
 
     if (csvBtn) {
       csvBtn.addEventListener("click", () => {
