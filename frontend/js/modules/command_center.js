@@ -1,7 +1,7 @@
 /**
  * Dashboard Module — "India's Skill Landscape at a Glance"
  * KaushalDrishti (कौशल दृष्टि)
- * Directly matches the reference enterprise SaaS design layout.
+ * Directly matches the reference enterprise SaaS design layout and warm heritage aesthetic.
  */
 
 const CommandCenterModule = {
@@ -9,19 +9,50 @@ const CommandCenterModule = {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    // Render screen structure matching user's reference image
+    // Render screen structure matching reference image 1
     container.innerHTML = `
-      <!-- Page Header Row -->
-      <div class="page-header">
+      <!-- Page Header Banner with Heritage Skyline -->
+      <div class="page-header-heritage">
         <div class="page-title-wrap">
           <h2 data-i18n="dashboard_title">India's Skill Landscape at a Glance</h2>
-          <p data-i18n="dashboard_subtitle">Real-time insights for a future-ready workforce</p>
+          <p data-i18n="dashboard_subtitle">Real-time insights to align training capacity with industry demand</p>
         </div>
-        <div class="time-pills-group">
-          <button class="time-pill-btn" data-time="3M" data-i18n="time_last_3m">Last 3 Months</button>
-          <button class="time-pill-btn active" data-time="1Y" data-i18n="time_last_1y">Last 1 Year</button>
-          <button class="time-pill-btn" data-time="NEXT_1Y" data-i18n="time_next_1y">Next 1 Year (Forecast)</button>
-        </div>
+        
+        <!-- Heritage Monument Skyline Watermark -->
+        <svg class="heritage-skyline-bg" viewBox="0 0 320 60" fill="none">
+          <!-- Trees on left -->
+          <circle cx="20" cy="40" r="14" fill="#86EFAC" opacity="0.6"/>
+          <circle cx="34" cy="42" r="10" fill="#4ADE80" opacity="0.7"/>
+          <rect x="26" y="44" width="4" height="16" fill="#78350F" opacity="0.6"/>
+          
+          <!-- Chhatri / Indian Temple Pavilion -->
+          <path d="M60 60V32l10-8 10 8v28H60z" fill="#FDBA74" opacity="0.7"/>
+          <path d="M65 32c0-8 10-12 10-12s10 4 10 12H65z" fill="#FB923C" opacity="0.9"/>
+          <circle cx="75" cy="18" r="2.5" fill="#C2410C"/>
+
+          <!-- India Gate / Grand Portal arch -->
+          <rect x="105" y="18" width="50" height="42" fill="#E2E8F0" opacity="0.4"/>
+          <path d="M100 18h60v5h-60z" fill="#EA580C" opacity="0.8"/>
+          <rect x="104" y="23" width="12" height="37" fill="#F97316" opacity="0.85"/>
+          <rect x="144" y="23" width="12" height="37" fill="#F97316" opacity="0.85"/>
+          <path d="M116 38c0-8 14-8 14-8s14 0 14 8v22h-28V38z" fill="#FFFBEB"/>
+          <circle cx="130" cy="27" r="3" fill="#D97706"/>
+
+          <!-- Dome / Stupa with kalash -->
+          <path d="M175 60V34c0-12 18-18 18-18s18 6 18 18v26h-36z" fill="#FED7AA" opacity="0.85"/>
+          <path d="M185 60v-16a8 8 0 0 1 16 0v16h-16z" fill="#EA580C" opacity="0.5"/>
+          <line x1="193" y1="16" x2="193" y2="10" stroke="#C2410C" stroke-width="2"/>
+          <circle cx="193" cy="9" r="2" fill="#B45309"/>
+
+          <!-- Red Fort style battlements & minaret -->
+          <path d="M230 60V28h6v-4h4v4h6v-4h4v4h6v32h-26z" fill="#F87171" opacity="0.7"/>
+          <path d="M270 60V22l7-6 7 6v38h-14z" fill="#FBBF24" opacity="0.75"/>
+          <circle cx="277" cy="14" r="2" fill="#D97706"/>
+
+          <!-- Foliage right -->
+          <circle cx="300" cy="42" r="12" fill="#86EFAC" opacity="0.6"/>
+          <circle cx="312" cy="44" r="8" fill="#4ADE80" opacity="0.7"/>
+        </svg>
       </div>
 
       <!-- 4 Top KPI Cards Grid -->
@@ -35,14 +66,12 @@ const CommandCenterModule = {
                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
               </svg>
             </div>
-            <span class="badge-growth badge-growth-green">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"></polyline></svg>
-              +18%
-            </span>
           </div>
           <div class="kpi-label" data-i18n="kpi_total_demand">Total Job Demand</div>
-          <div class="kpi-value" id="kpiDemandVal">12.4 Lakh</div>
-          <div class="kpi-subtext" data-i18n="kpi_demand_sub">New job postings (NCO mapped)</div>
+          <div class="kpi-value" id="kpiDemandVal">1.24 Cr</div>
+          <div class="kpi-subtext">
+            <span class="text-green">+18%</span> vs. previous year
+          </div>
         </div>
 
         <!-- KPI 2: Trained Candidates -->
@@ -50,20 +79,16 @@ const CommandCenterModule = {
           <div class="kpi-top-row">
             <div class="kpi-icon-box kpi-icon-green">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
               </svg>
             </div>
-            <span class="badge-growth badge-growth-green">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"></polyline></svg>
-              +12%
-            </span>
           </div>
           <div class="kpi-label" data-i18n="kpi_trained_candidates">Trained Candidates</div>
-          <div class="kpi-value" id="kpiSupplyVal">10.8 Lakh</div>
-          <div class="kpi-subtext" data-i18n="kpi_trained_sub">Across NSQF trades</div>
+          <div class="kpi-value" id="kpiSupplyVal">1.08 Cr</div>
+          <div class="kpi-subtext">
+            <span class="text-green">+12%</span> Across NSQF trades
+          </div>
         </div>
 
         <!-- KPI 3: Demand-Supply Gap -->
@@ -78,7 +103,7 @@ const CommandCenterModule = {
             </div>
           </div>
           <div class="kpi-label" data-i18n="kpi_demand_supply_gap">Demand-Supply Gap</div>
-          <div class="kpi-value gap-red" id="kpiGapVal">+1.6 Lakh</div>
+          <div class="kpi-value gap-red" id="kpiGapVal">+16 Lakh</div>
           <div class="kpi-subtext" style="color:#DC2626; font-weight:500;" data-i18n="kpi_undersupply_overall">Undersupply (overall)</div>
         </div>
 
@@ -87,7 +112,8 @@ const CommandCenterModule = {
           <div class="kpi-top-row">
             <div class="kpi-icon-box kpi-icon-purple">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
               </svg>
             </div>
           </div>
@@ -103,18 +129,24 @@ const CommandCenterModule = {
         <div class="card-panel">
           <div class="card-header-row">
             <span class="card-title" data-i18n="chart_demand_vs_trained">Job Demand vs Trained Candidates</span>
-            <div class="chart-legend">
-              <div class="legend-item">
-                <div class="legend-box box-blue"></div>
-                <span data-i18n="legend_job_demand">Job Demand</span>
+            <div class="card-controls-right">
+              <div class="chart-legend">
+                <div class="legend-item">
+                  <div class="legend-box box-purple"></div>
+                  <span data-i18n="legend_job_demand">Job Demand</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-box box-pink"></div>
+                  <span data-i18n="legend_trained_candidates">Trained Candidates</span>
+                </div>
               </div>
-              <div class="legend-item">
-                <div class="legend-box box-teal"></div>
-                <span data-i18n="legend_trained_candidates">Trained Candidates</span>
-              </div>
+              <select class="select-sm" id="timeGranularitySelect">
+                <option value="yearly" selected>Yearly</option>
+                <option value="quarterly">Quarterly</option>
+              </select>
             </div>
           </div>
-          <div style="position: relative; width: 100%; height: 260px;">
+          <div style="position: relative; width: 100%; height: 250px;">
             <canvas id="demandVsSupplyCanvas" style="width: 100%; height: 100%;"></canvas>
           </div>
         </div>
@@ -127,7 +159,7 @@ const CommandCenterModule = {
           <div class="donut-chart-layout">
             <!-- Donut Visual with Center Metric -->
             <div class="donut-visual-wrap">
-              <canvas id="donutChartCanvas" width="170" height="170"></canvas>
+              <canvas id="donutChartCanvas" width="165" height="165"></canvas>
               <div class="donut-center-label">
                 <div class="donut-center-count">1,245</div>
                 <div class="donut-center-sub" data-i18n="donut_total_trades">Total Trades</div>
@@ -154,12 +186,71 @@ const CommandCenterModule = {
           </div>
         </div>
       </div>
+
+      <!-- Quick Insights (4 Cards Row) -->
+      <div style="margin-top: 10px;">
+        <div class="quick-insights-header">Quick Insights</div>
+        <div class="quick-insights-strip">
+          <!-- Quick 1: Healthcare -->
+          <div class="insight-pill-card">
+            <div class="insight-icon-square" style="background:#FEE2E2; color:#DC2626;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </div>
+            <div class="insight-text-wrap">
+              <span class="insight-name">Healthcare</span>
+              <span class="insight-desc">High demand in 14 districts</span>
+            </div>
+          </div>
+
+          <!-- Quick 2: Green Jobs -->
+          <div class="insight-pill-card">
+            <div class="insight-icon-square" style="background:#DCFCE7; color:#16A34A;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
+              </svg>
+            </div>
+            <div class="insight-text-wrap">
+              <span class="insight-name">Green Jobs</span>
+              <span class="insight-desc"><strong style="color:#16A34A;">32%</strong> projected growth</span>
+            </div>
+          </div>
+
+          <!-- Quick 3: IT/ITeS -->
+          <div class="insight-pill-card">
+            <div class="insight-icon-square" style="background:#EFF6FF; color:#2563EB;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </div>
+            <div class="insight-text-wrap">
+              <span class="insight-name">IT/ITeS</span>
+              <span class="insight-desc">Consistent demand</span>
+            </div>
+          </div>
+
+          <!-- Quick 4: Construction -->
+          <div class="insight-pill-card">
+            <div class="insight-icon-square" style="background:#FFF7ED; color:#EA580C;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/>
+              </svg>
+            </div>
+            <div class="insight-text-wrap">
+              <span class="insight-name">Construction</span>
+              <span class="insight-desc">Shortage risk in 8 states</span>
+            </div>
+          </div>
+        </div>
+      </div>
     `;
 
     // Render the custom canvas charts
     this.renderGroupedBarChart();
     this.renderDonutChart();
-    this.bindTimePills();
   },
 
   renderGroupedBarChart() {
@@ -174,74 +265,76 @@ const CommandCenterModule = {
 
     const w = rect.width;
     const h = rect.height;
-    const padLeft = 45;
-    const padBottom = 30;
+    const padLeft = 48;
+    const padBottom = 28;
     const padTop = 15;
     const padRight = 15;
 
     const chartW = w - padLeft - padRight;
     const chartH = h - padTop - padBottom;
 
-    // Sector data matching reference image
-    const sectors = [
-      { name: "IT/ITeS", demand: 135000, supply: 105000 },
-      { name: "Healthcare", demand: 110000, supply: 92000 },
-      { name: "Construction", demand: 98000, supply: 84000 },
-      { name: "Manufacturing", demand: 142000, supply: 115000 },
-      { name: "Retail", demand: 90000, supply: 80000 },
-      { name: "Agriculture", demand: 75000, supply: 65000 },
-      { name: "Hospitality", demand: 62000, supply: 50000 },
+    // Timeline data matching reference image: 2022, 2023, 2024, 2025, 2026 (F)
+    const years = [
+      { year: "2022", demand: 750000, supply: 680000 },
+      { year: "2023", demand: 920000, supply: 820000 },
+      { year: "2024", demand: 1100000, supply: 960000 },
+      { year: "2025", demand: 1240000, supply: 1080000 },
+      { year: "2026 (F)", demand: 1420000, supply: 1180000 },
     ];
 
-    const maxVal = 200000;
-    const ySteps = [0, 50000, 100000, 150000, 200000];
+    const maxVal = 1600000;
+    const ySteps = [
+      { val: 0, label: "0" },
+      { val: 500000, label: "50L" },
+      { val: 1000000, label: "1.0 Cr" },
+      { val: 1500000, label: "1.5 Cr" }
+    ];
 
     // Draw horizontal grid lines and y labels
-    ctx.strokeStyle = "#F1F5F9";
+    ctx.strokeStyle = "#F1EFEA";
     ctx.lineWidth = 1;
-    ctx.fillStyle = "#94A3B8";
+    ctx.fillStyle = "#A8A29E";
     ctx.font = "11px Inter, sans-serif";
     ctx.textAlign = "right";
 
-    ySteps.forEach(val => {
-      const y = padTop + chartH - (val / maxVal) * chartH;
+    ySteps.forEach(step => {
+      const y = padTop + chartH - (step.val / maxVal) * chartH;
       ctx.beginPath();
       ctx.moveTo(padLeft, y);
       ctx.lineTo(w - padRight, y);
       ctx.stroke();
 
-      const label = val === 0 ? "0" : (val / 1000) + "K";
-      ctx.fillText(label, padLeft - 8, y + 4);
+      ctx.fillText(step.label, padLeft - 8, y + 4);
     });
 
-    // Draw grouped bars
-    const n = sectors.length;
+    // Draw grouped bars matching reference palette (Purple #7B78B8 vs Soft Coral #F49D9D)
+    const n = years.length;
     const groupW = chartW / n;
-    const barW = Math.min(18, groupW * 0.32);
+    const barW = Math.min(22, groupW * 0.32);
     const gapBetween = 4;
 
-    sectors.forEach((sec, i) => {
+    years.forEach((item, i) => {
       const groupCenterX = padLeft + i * groupW + groupW / 2;
 
-      // Demand Bar (Blue)
-      const dH = (sec.demand / maxVal) * chartH;
+      // Demand Bar (Purple)
+      const dH = (item.demand / maxVal) * chartH;
       const dX = groupCenterX - barW - gapBetween / 2;
       const dY = padTop + chartH - dH;
-      ctx.fillStyle = "#3B82F6";
-      this.drawRoundedRect(ctx, dX, dY, barW, dH, 3);
+      ctx.fillStyle = "#7B78B8";
+      this.drawRoundedRect(ctx, dX, dY, barW, dH, 4);
 
-      // Supply Bar (Teal)
-      const sH = (sec.supply / maxVal) * chartH;
+      // Supply Bar (Soft Coral / Pink)
+      const sH = (item.supply / maxVal) * chartH;
       const sX = groupCenterX + gapBetween / 2;
       const sY = padTop + chartH - sH;
-      ctx.fillStyle = "#14B8A6";
-      this.drawRoundedRect(ctx, sX, sY, barW, sH, 3);
+      ctx.fillStyle = "#F49D9D";
+      this.drawRoundedRect(ctx, sX, sY, barW, sH, 4);
 
       // X-axis label
       ctx.fillStyle = "#64748B";
-      ctx.font = "11px Inter, sans-serif";
+      ctx.font = item.year.includes("(F)") ? "600 11px Inter, sans-serif" : "11px Inter, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText(sec.name, groupCenterX, h - 8);
+      ctx.fillText(item.year, groupCenterX, h - 8);
     });
   },
 
@@ -264,21 +357,21 @@ const CommandCenterModule = {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     const dpr = window.devicePixelRatio || 1;
-    const size = 170;
+    const size = 165;
     canvas.width = size * dpr;
     canvas.height = size * dpr;
     ctx.scale(dpr, dpr);
 
     const cx = size / 2;
     const cy = size / 2;
-    const outerR = 75;
-    const innerR = 52;
+    const outerR = 72;
+    const innerR = 48;
 
-    // Percentages: 38% Undersupply (Red), 42% Balanced (Green), 20% Oversupply (Orange)
+    // Percentages matching reference image: 38% Undersupply (Red), 42% Balanced (Teal/Green), 20% Oversupply (Orange/Blue)
     const segments = [
       { pct: 0.38, color: "#EF4444" },  // Undersupply
       { pct: 0.42, color: "#10B981" },  // Balanced
-      { pct: 0.20, color: "#F59E0B" }   // Oversupply
+      { pct: 0.20, color: "#60A5FA" }   // Oversupply
     ];
 
     let startAngle = -Math.PI / 2;
@@ -295,16 +388,6 @@ const CommandCenterModule = {
       ctx.fill();
 
       startAngle = endAngle;
-    });
-  },
-
-  bindTimePills() {
-    const pills = document.querySelectorAll(".time-pill-btn");
-    pills.forEach(btn => {
-      btn.addEventListener("click", () => {
-        pills.forEach(p => p.classList.remove("active"));
-        btn.classList.add("active");
-      });
     });
   }
 };

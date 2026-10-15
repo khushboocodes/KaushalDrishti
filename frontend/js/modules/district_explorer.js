@@ -1,7 +1,7 @@
 /**
- * Geographic View Module — "India - District Level Labour Demand-Supply"
+ * Geographic View Module — "India – District Level Labour Demand-Supply"
  * KaushalDrishti (कौशल दृष्टि)
- * Directly matches the reference enterprise SaaS design layout.
+ * Directly matches the reference enterprise SaaS design layout and warm heritage aesthetic.
  */
 
 const DistrictExplorerModule = {
@@ -12,113 +12,83 @@ const DistrictExplorerModule = {
 
   districtData: {
     "Maharashtra": {
+      stateOverview: {
+        demand: "3.2 Lakh",
+        supply: "2.6 Lakh",
+        gap: "+60,000",
+        status: "Undersupply"
+      },
       "Pune": {
         demand: "48,200",
-        demandGrowth: "+22%",
         supply: "32,500",
-        supplyGrowth: "+10%",
         gap: "+15,700",
-        gapType: "Undersupply",
+        status: "Undersupply",
         topTrades: [
-          { name: "Software Developer", count: "8,200" },
-          { name: "CNC Operator", count: "3,400" },
-          { name: "Electrician", count: "2,800" },
-          { name: "Retail Sales Associate", count: "2,600" },
-          { name: "AC Technician", count: "2,100" }
+          { rank: 1, name: "Software Developer", count: "8,200" },
+          { rank: 2, name: "CNC Operator", count: "3,400" },
+          { rank: 3, name: "Electrician", count: "2,800" },
+          { rank: 4, name: "Retail Sales Associate", count: "2,600" },
+          { rank: 5, name: "AC Technician", count: "2,100" }
         ]
       },
       "Mumbai": {
         demand: "56,400",
-        demandGrowth: "+18%",
         supply: "44,100",
-        supplyGrowth: "+12%",
         gap: "+12,300",
-        gapType: "Undersupply",
+        status: "Undersupply",
         topTrades: [
-          { name: "Data Analyst", count: "9,400" },
-          { name: "Retail Sales Associate", count: "4,600" },
-          { name: "Hospitality Associate", count: "3,800" },
-          { name: "EV Diagnostic Tech", count: "2,900" },
-          { name: "Logistics Coordinator", count: "2,400" }
+          { rank: 1, name: "Data Analyst", count: "9,400" },
+          { rank: 2, name: "Retail Sales Associate", count: "4,600" },
+          { rank: 3, name: "Hospitality Associate", count: "3,800" },
+          { rank: 4, name: "EV Diagnostic Tech", count: "2,900" },
+          { rank: 5, name: "Logistics Coordinator", count: "2,400" }
         ]
       },
       "Nagpur": {
         demand: "24,800",
-        demandGrowth: "+14%",
         supply: "21,200",
-        supplyGrowth: "+9%",
         gap: "+3,600",
-        gapType: "Undersupply",
+        status: "Undersupply",
         topTrades: [
-          { name: "Solar PV Technician", count: "4,100" },
-          { name: "Electrician", count: "2,600" },
-          { name: "Automotive Fitter", count: "2,100" },
-          { name: "General Duty Assistant", count: "1,800" },
-          { name: "Welder / Fabricator", count: "1,400" }
+          { rank: 1, name: "Solar PV Technician", count: "4,100" },
+          { rank: 2, name: "Electrician", count: "2,600" },
+          { rank: 3, name: "Automotive Fitter", count: "2,100" },
+          { rank: 4, name: "General Duty Assistant", count: "1,800" },
+          { rank: 5, name: "Welder / Fabricator", count: "1,400" }
         ]
       }
     },
     "Uttar Pradesh": {
+      stateOverview: {
+        demand: "5.4 Lakh",
+        supply: "4.1 Lakh",
+        gap: "+1.3 Lakh",
+        status: "Undersupply"
+      },
       "Kanpur Nagar": {
         demand: "38,400",
-        demandGrowth: "+26%",
         supply: "24,100",
-        supplyGrowth: "+14%",
         gap: "+14,300",
-        gapType: "Undersupply",
+        status: "Undersupply",
         topTrades: [
-          { name: "Solar PV Installation Tech", count: "6,800" },
-          { name: "Industrial Electrician", count: "3,900" },
-          { name: "CNC Machining Tech", count: "3,100" },
-          { name: "General Duty Nursing Assistant", count: "2,400" },
-          { name: "Leather & Footwear Tech", count: "1,900" }
+          { rank: 1, name: "Solar PV Installation Tech", count: "6,800" },
+          { rank: 2, name: "Industrial Electrician", count: "3,900" },
+          { rank: 3, name: "CNC Machining Tech", count: "3,100" },
+          { rank: 4, name: "General Duty Nursing Assistant", count: "2,400" },
+          { rank: 5, name: "Leather & Footwear Tech", count: "1,900" }
         ]
       },
       "Lucknow": {
         demand: "42,100",
-        demandGrowth: "+20%",
         supply: "35,600",
-        supplyGrowth: "+11%",
         gap: "+6,500",
-        gapType: "Undersupply",
+        status: "Undersupply",
         topTrades: [
-          { name: "Software Developer", count: "7,200" },
-          { name: "Solar Micro-grid Specialist", count: "3,800" },
-          { name: "Allied Health Assistant", count: "3,100" },
-          { name: "EV Two-Wheeler Tech", count: "2,500" },
-          { name: "Telecommunication Tech", count: "1,800" }
-        ]
-      },
-      "Varanasi": {
-        demand: "28,200",
-        demandGrowth: "+19%",
-        supply: "22,400",
-        supplyGrowth: "+8%",
-        gap: "+5,800",
-        gapType: "Undersupply",
-        topTrades: [
-          { name: "Textile Handloom Master", count: "4,900" },
-          { name: "Solar Water Pump Tech", count: "3,200" },
-          { name: "Geriatric Care Aide", count: "2,400" },
-          { name: "Electrician", count: "2,100" },
-          { name: "Hospitality Executive", count: "1,700" }
-        ]
-      }
-    },
-    "Odisha": {
-      "Khordha / Bhubaneswar": {
-        demand: "32,600",
-        demandGrowth: "+21%",
-        supply: "24,800",
-        supplyGrowth: "+11%",
-        gap: "+7,800",
-        gapType: "Undersupply",
-        topTrades: [
-          { name: "IT Data Engineer", count: "5,400" },
-          { name: "Solar Plant Installer", count: "3,600" },
-          { name: "Mining Equipment Tech", count: "2,900" },
-          { name: "General Duty Assistant", count: "2,200" },
-          { name: "Industrial Fitter", count: "1,800" }
+          { rank: 1, name: "Software Developer", count: "7,200" },
+          { rank: 2, name: "Solar Micro-grid Specialist", count: "3,800" },
+          { rank: 3, name: "Allied Health Assistant", count: "3,100" },
+          { rank: 4, name: "EV Two-Wheeler Tech", count: "2,500" },
+          { rank: 5, name: "Telecommunication Tech", count: "1,800" }
         ]
       }
     }
@@ -130,26 +100,23 @@ const DistrictExplorerModule = {
 
     container.innerHTML = `
       <!-- Page Header -->
-      <div class="page-header">
-        <div class="page-title-wrap">
-          <h2 data-i18n="geo_title">India - District Level Labour Demand-Supply</h2>
-          <p data-i18n="geo_subtitle">Explore demand, supply and gap across States and Districts</p>
-        </div>
+      <div class="page-title-wrap" style="margin-bottom: 16px;">
+        <h2 data-i18n="geo_title" style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-main);">India – District Level Labour Demand-Supply</h2>
+        <p data-i18n="geo_subtitle" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">Explore demand, supply and gaps across States and Districts</p>
       </div>
 
-      <!-- Filter Toolbar -->
+      <!-- Filter Toolbar Row -->
       <div class="filter-toolbar-row">
         <div class="filter-group">
-          <label data-i18n="filter_state">Select State</label>
+          <label data-i18n="filter_state">State</label>
           <select id="geoSelectState" class="filter-select">
             <option value="Maharashtra" selected>Maharashtra</option>
             <option value="Uttar Pradesh">Uttar Pradesh</option>
-            <option value="Odisha">Odisha</option>
           </select>
         </div>
 
         <div class="filter-group">
-          <label data-i18n="filter_district">Select District</label>
+          <label data-i18n="filter_district">District</label>
           <select id="geoSelectDistrict" class="filter-select">
             <option value="Pune" selected>Pune</option>
             <option value="Mumbai">Mumbai</option>
@@ -158,13 +125,13 @@ const DistrictExplorerModule = {
         </div>
 
         <div class="filter-group">
-          <label data-i18n="filter_sector">Select Sector</label>
+          <label data-i18n="filter_sector">Sector</label>
           <select id="geoSelectSector" class="filter-select">
             <option value="all" selected>All Sectors</option>
-            <option value="green">Green Jobs / Solar PV</option>
-            <option value="auto">Automotive & EV</option>
-            <option value="health">Healthcare & Allied</option>
-            <option value="it">IT-ITeS & Digital</option>
+            <option value="green">Green Jobs</option>
+            <option value="it">IT/ITeS</option>
+            <option value="auto">Manufacturing & EV</option>
+            <option value="health">Healthcare</option>
           </select>
         </div>
 
@@ -177,19 +144,11 @@ const DistrictExplorerModule = {
 
       <!-- Main Two-Column Layout (Map & Detail Panel) -->
       <div class="geo-view-grid" id="geoMainGrid">
-        <!-- Left: Map Container -->
+        <!-- Left: India Map Container -->
         <div class="map-container-card">
-          <!-- Floating Metric Switcher Pills -->
-          <div class="map-floating-metrics">
-            <button class="map-metric-pill active" data-metric="demand" data-i18n="map_pill_demand">Job Demand</button>
-            <button class="map-metric-pill" data-metric="supply" data-i18n="map_pill_supply">Trained Candidates</button>
-            <button class="map-metric-pill" data-metric="gap" data-i18n="map_pill_gap">Demand-Supply Gap</button>
-            <button class="map-metric-pill" data-metric="growth" data-i18n="map_pill_growth">Growth Rate</button>
-          </div>
-
-          <!-- Map Visual SVG -->
+          <!-- India Map Visual SVG with Pune Callout -->
           <div class="map-svg-wrap" id="stateMapSvgWrap">
-            ${this.renderStateMapSvg("Maharashtra", "Pune")}
+            ${this.renderIndiaMapSvg()}
           </div>
 
           <!-- Zoom Controls -->
@@ -198,20 +157,28 @@ const DistrictExplorerModule = {
             <button class="zoom-btn" title="Zoom out">-</button>
           </div>
 
-          <!-- Floating Legend (Bottom Right) -->
-          <div class="map-legend-card">
-            <div class="map-legend-title" data-i18n="legend_gap_title">Demand-Supply Gap</div>
-            <div class="map-legend-list">
-              <div class="map-legend-row"><div class="legend-box" style="background:#DC2626;"></div><span data-i18n="legend_high_under">High Undersupply</span></div>
-              <div class="map-legend-row"><div class="legend-box" style="background:#F97316;"></div><span data-i18n="legend_mod_under">Moderate Undersupply</span></div>
-              <div class="map-legend-row"><div class="legend-box" style="background:#10B981;"></div><span data-i18n="legend_balanced">Balanced</span></div>
-              <div class="map-legend-row"><div class="legend-box" style="background:#A3E635;"></div><span data-i18n="legend_mod_over">Moderate Oversupply</span></div>
-              <div class="map-legend-row"><div class="legend-box" style="background:#C084FC;"></div><span data-i18n="legend_high_over">High Oversupply</span></div>
+          <!-- Horizontal Legend at Bottom -->
+          <div class="map-legend-horizontal">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:#EF4444;"></span>
+              <span>High Undersupply</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:#FB923C;"></span>
+              <span>Moderate</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:#FEF08A;"></span>
+              <span>Balanced</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:#10B981;"></span>
+              <span>High Oversupply</span>
             </div>
           </div>
         </div>
 
-        <!-- Right: District Detail Card -->
+        <!-- Right: State Overview + High-Demand Trades Breakdown -->
         <div class="district-detail-card" id="districtDetailCard">
           ${this.renderDetailCardContent("Maharashtra", "Pune")}
         </div>
@@ -242,151 +209,146 @@ const DistrictExplorerModule = {
     this.bindEvents();
   },
 
-  renderStateMapSvg(state, selectedDist) {
-    // High-fidelity district cluster SVG for Maharashtra & UP
+  renderIndiaMapSvg() {
     return `
-      <svg viewBox="0 0 460 380" width="100%" height="340" style="max-height:360px;">
-        <defs>
-          <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
-            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.12"/>
-          </filter>
-        </defs>
+      <div style="position:relative; width:100%; height:100%; min-height:430px; display:flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 520 460" width="100%" height="420" style="max-width:520px; overflow:visible;">
+          <defs>
+            <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+            </filter>
+          </defs>
 
-        <!-- District Polygons (Maharashtra stylized cluster) -->
-        <g id="stateDistrictsGroup" filter="url(#shadow)">
-          <!-- Pune (Highlighted Red/Undersupply) -->
-          <path id="dist_pune" d="M 175 165 L 215 155 L 245 185 L 230 225 L 180 230 L 160 190 Z" 
-                fill="${selectedDist === 'Pune' ? '#EF4444' : '#F87171'}" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer; transition:all 0.2s;">
-            <title>Pune District: High Undersupply (+15,700)</title>
-          </path>
-          <text x="195" y="195" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Pune</text>
+          <!-- Stylized Multi-state Map of India -->
+          <g filter="url(#softGlow)" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round">
+            <!-- J&K / Ladakh -->
+            <path d="M 175 40 L 210 25 L 245 45 L 255 80 L 225 100 L 180 85 Z" fill="#FDE047" opacity="0.85"/>
+            <!-- Himachal & Punjab -->
+            <path d="M 160 85 L 185 85 L 200 115 L 165 125 Z" fill="#BBF7D0" opacity="0.9"/>
+            <!-- Rajasthan -->
+            <path d="M 120 135 L 175 125 L 185 185 L 130 195 L 105 160 Z" fill="#FED7AA" opacity="0.9"/>
+            <!-- Uttar Pradesh -->
+            <path d="M 185 125 L 265 120 L 295 155 L 230 185 L 185 175 Z" fill="#FCA5A5" opacity="0.85"/>
+            <!-- Gujarat -->
+            <path d="M 95 195 L 140 190 L 155 240 L 115 255 L 75 220 Z" fill="#FEF08A" opacity="0.9"/>
+            <!-- Madhya Pradesh -->
+            <path d="M 160 190 L 255 185 L 270 235 L 175 245 Z" fill="#FED7AA" opacity="0.9"/>
+            <!-- Bihar & Jharkhand -->
+            <path d="M 270 145 L 340 145 L 350 205 L 295 210 Z" fill="#FCA5A5" opacity="0.85"/>
+            <!-- West Bengal & Northeast -->
+            <path d="M 345 165 L 380 150 L 420 155 L 430 195 L 380 200 L 355 235 Z" fill="#86EFAC" opacity="0.85"/>
+            <!-- Odisha -->
+            <path d="M 285 220 L 340 215 L 325 275 L 275 260 Z" fill="#FED7AA" opacity="0.9"/>
+            <!-- Chhattisgarh -->
+            <path d="M 250 220 L 285 215 L 275 285 L 235 270 Z" fill="#FEF08A" opacity="0.9"/>
+            
+            <!-- Maharashtra (Highlighted - Terracotta/Coral) -->
+            <path id="mapMaharashtra" d="M 145 235 L 225 230 L 250 280 L 195 315 L 135 280 Z" fill="#F87171" stroke="#C2410C" stroke-width="2.5" style="cursor:pointer;">
+              <title>Maharashtra State (Pune District Highlighted)</title>
+            </path>
+            
+            <!-- Andhra & Telangana -->
+            <path d="M 205 295 L 275 275 L 295 350 L 235 365 Z" fill="#FDE047" opacity="0.85"/>
+            <!-- Karnataka -->
+            <path d="M 155 315 L 205 305 L 210 385 L 160 375 Z" fill="#FED7AA" opacity="0.9"/>
+            <!-- Tamil Nadu & Kerala -->
+            <path d="M 185 380 L 230 370 L 210 440 L 175 425 Z" fill="#86EFAC" opacity="0.9"/>
+          </g>
 
-          <!-- Mumbai / Thane -->
-          <path id="dist_mumbai" d="M 125 150 L 160 145 L 175 165 L 160 190 L 120 180 Z" 
-                fill="#38BDF8" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
-            <title>Mumbai: Undersupply</title>
-          </path>
-          <text x="142" y="170" font-size="9" font-weight="600" fill="#FFFFFF" text-anchor="middle">Mumbai</text>
+          <!-- Pulsing Map Marker for Pune, Maharashtra -->
+          <g transform="translate(178, 275)">
+            <circle cx="0" cy="0" r="10" fill="#EF4444" opacity="0.3">
+              <animate attributeName="r" values="6;14;6" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="0" cy="0" r="5" fill="#DC2626" stroke="#FFFFFF" stroke-width="2"/>
+            <!-- Leader Line pointing to Pune Callout -->
+            <path d="M 4 -4 L 40 -30 L 70 -30" stroke="#C2410C" stroke-width="1.5" stroke-dasharray="2,2" fill="none"/>
+          </g>
+        </svg>
 
-          <!-- Nashik -->
-          <path d="M 145 110 L 195 95 L 215 135 L 160 145 L 135 125 Z" 
-                fill="#34D399" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
-            <title>Nashik: Balanced</title>
-          </path>
-          <text x="175" y="125" font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">Nashik</text>
-
-          <!-- Aurangabad / Chhatrapati Sambhajinagar -->
-          <path d="M 215 135 L 275 120 L 290 160 L 245 185 L 215 155 Z" 
-                fill="#FBBF24" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
-            <title>Chhatrapati Sambhajinagar</title>
-          </path>
-          <text x="250" y="155" font-size="9" font-weight="600" fill="#1E293B" text-anchor="middle">Sambhajinagar</text>
-
-          <!-- Ahmednagar -->
-          <path d="M 195 95 L 255 85 L 275 120 L 215 135 Z" 
-                fill="#A3E635" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
-            <title>Ahmednagar: Moderate Oversupply</title>
-          </path>
-
-          <!-- Satara & Kolhapur -->
-          <path d="M 160 190 L 180 230 L 190 280 L 140 260 L 135 210 Z" 
-                fill="#60A5FA" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
-            <title>Satara: Balanced</title>
-          </path>
-          <text x="160" y="240" font-size="9" font-weight="600" fill="#FFFFFF" text-anchor="middle">Satara</text>
-
-          <!-- Solapur -->
-          <path d="M 230 225 L 280 215 L 300 270 L 240 280 L 190 280 L 180 230 Z" 
-                fill="#F87171" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
-            <title>Solapur: Undersupply</title>
-          </path>
-          <text x="245" y="255" font-size="9" font-weight="600" fill="#FFFFFF" text-anchor="middle">Solapur</text>
-
-          <!-- Nagpur & Vidarbha East -->
-          <path d="M 330 90 L 400 80 L 420 130 L 350 145 L 310 115 Z" 
-                fill="#F472B6" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
-            <title>Nagpur: High Demand</title>
-          </path>
-          <text x="365" y="115" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">Nagpur</text>
-
-          <!-- Amravati -->
-          <path d="M 275 120 L 330 90 L 350 145 L 300 165 Z" 
-                fill="#818CF8" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
-            <title>Amravati</title>
-          </path>
-
-          <!-- Nanded & Marathwada -->
-          <path d="M 290 160 L 350 145 L 370 205 L 310 220 Z" 
-                fill="#FBBF24" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
-            <title>Nanded</title>
-          </path>
-          <text x="330" y="185" font-size="9" font-weight="600" fill="#1E293B" text-anchor="middle">Nanded</text>
-
-          <!-- Latur -->
-          <path d="M 280 215 L 310 220 L 330 260 L 285 270 Z" 
-                fill="#34D399" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
-            <title>Latur</title>
-          </path>
-
-          <!-- Konkan South -->
-          <path d="M 140 260 L 190 280 L 180 340 L 130 320 Z" 
-                fill="#4ADE80" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;">
-            <title>Ratnagiri / Sindhudurg</title>
-          </path>
-          <text x="155" y="300" font-size="9" font-weight="600" fill="#FFFFFF" text-anchor="middle">Konkan</text>
-        </g>
-      </svg>
+        <!-- Floating Interactive Callout Box for Pune (Exactly matching reference screen) -->
+        <div style="position:absolute; top:130px; right:35px; width:195px; background:rgba(255,255,255,0.96); border:1px solid #E2E8F0; border-radius:8px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:10px 12px; font-size:11.5px; z-index:15; backdrop-filter:blur(4px);">
+          <div style="font-weight:700; color:#0F172A; font-size:12px; margin-bottom:6px; border-bottom:1px solid #F1F5F9; padding-bottom:4px;">
+            Pune, Maharashtra
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:#64748B;">
+            <span>Job Demand</span>
+            <span style="font-weight:700; color:#0F172A;">48,200</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px; color:#64748B;">
+            <span>Trained Candidates</span>
+            <span style="font-weight:700; color:#0F172A;">32,500</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="color:#64748B;">Status</span>
+            <span style="background:#FEE2E2; color:#DC2626; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;">Undersupply</span>
+          </div>
+        </div>
+      </div>
     `;
   },
 
-  renderDetailCardContent(state, district) {
-    const stateGroup = this.districtData[state] || this.districtData["Maharashtra"];
-    const d = stateGroup[district] || Object.values(stateGroup)[0];
+  renderDetailCardContent(state, dist) {
+    const sData = this.districtData[state] || this.districtData["Maharashtra"];
+    const overview = sData.stateOverview;
+    const d = sData[dist] || sData["Pune"];
 
-    const rows = d.topTrades.map((t, idx) => `
-      <tr>
-        <td>${idx + 1}. ${t.name}</td>
-        <td>${t.count}</td>
-      </tr>
+    const tradesList = d.topTrades.map(t => `
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:1px solid #FAF7F2; font-size:12px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-weight:600; color:#94A3B8; width:16px;">${t.rank}.</span>
+          <span style="color:#1E293B; font-weight:500;">${t.name}</span>
+        </div>
+        <span style="font-weight:700; color:#0F172A;">${t.count}</span>
+      </div>
     `).join("");
 
     return `
-      <div class="district-detail-header">
-        <h3 id="detailDistTitle">${district} District</h3>
-        <p id="detailStateSub">${state}</p>
-      </div>
+      <!-- Maharashtra State Overview Box with Mini State Graphic -->
+      <div class="state-overview-box">
+        <div class="state-title-row">
+          <div>
+            <h3>${state} <span style="font-size:11px; font-weight:500; color:var(--text-muted);">(State Overview)</span></h3>
+          </div>
+          <!-- Mini Golden Silhouette Outline of State -->
+          <svg viewBox="0 0 40 36" width="34" height="30" fill="#F59E0B" opacity="0.85">
+            <path d="M4 6 L18 4 L34 12 L38 24 L28 32 L16 30 L6 20 Z"/>
+          </svg>
+        </div>
 
-      <!-- Quick KPI Split -->
-      <div class="district-stat-row">
-        <div class="district-stat-box">
-          <div class="stat-label-small" data-i18n="stat_job_demand">Job Demand</div>
-          <div class="stat-val-med">
-            ${d.demand}
-            <span class="badge-growth badge-growth-green">${d.demandGrowth}</span>
+        <div class="state-stats-three">
+          <div class="stat-metric-cell">
+            <span class="label">Total Job Demand</span>
+            <span class="val">${overview.demand}</span>
+          </div>
+          <div class="stat-metric-cell">
+            <span class="label">Trained Candidates</span>
+            <span class="val">${overview.supply}</span>
+          </div>
+          <div class="stat-metric-cell">
+            <span class="label">Gap</span>
+            <span class="val red">${overview.gap}</span>
           </div>
         </div>
-        <div class="district-stat-box">
-          <div class="stat-label-small" data-i18n="stat_trained_candidates">Trained Candidates</div>
-          <div class="stat-val-med">
-            ${d.supply}
-            <span class="badge-growth badge-growth-green">${d.supplyGrowth}</span>
-          </div>
+      </div>
+
+      <!-- Top High-Demand Trades (Pune) -->
+      <div class="state-overview-box" style="margin-top:14px;">
+        <div style="font-size:13px; font-weight:700; color:#0F172A; margin-bottom:10px;">
+          Top High-Demand Trades (${dist})
+        </div>
+        <div>
+          ${tradesList}
+        </div>
+        
+        <!-- View Detailed District Report Link Button -->
+        <div style="margin-top:14px; text-align:left;">
+          <a href="#" style="color:#C2410C; font-size:12px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+            <span>&gt; View Detailed District Report</span>
+            <span style="font-size:14px;">&rarr;</span>
+          </a>
         </div>
       </div>
-
-      <!-- Demand-Supply Gap Box -->
-      <div class="district-gap-box">
-        <div class="gap-box-label" data-i18n="kpi_demand_supply_gap">Demand-Supply Gap</div>
-        <div class="gap-box-val">${d.gap} <span style="font-size:14px; font-weight:600;">${d.gapType}</span></div>
-      </div>
-
-      <!-- Top 5 High-Demand Trades -->
-      <div class="trades-list-header" data-i18n="top_5_trades_title">Top 5 High-Demand Trades</div>
-      <table class="top-trades-table">
-        <tbody>
-          ${rows}
-        </tbody>
-      </table>
     `;
   },
 
@@ -420,15 +382,6 @@ const DistrictExplorerModule = {
         <td>Data Analyst (9,400)</td>
       </tr>
       <tr>
-        <td><strong>Khordha / Bhubaneswar</strong></td>
-        <td>Odisha</td>
-        <td>32,600</td>
-        <td>24,800</td>
-        <td style="color:#DC2626; font-weight:700;">+7,800</td>
-        <td><span class="badge-growth badge-growth-green" style="background:#FEF2F2; color:#DC2626;">Undersupply</span></td>
-        <td>IT Data Engineer (5,400)</td>
-      </tr>
-      <tr>
         <td><strong>Lucknow</strong></td>
         <td>Uttar Pradesh</td>
         <td>42,100</td>
@@ -448,27 +401,24 @@ const DistrictExplorerModule = {
     const mapGrid = document.getElementById("geoMainGrid");
     const tableWrap = document.getElementById("geoTableWrap");
 
-    // State change updates district dropdown
     if (stateSel) {
       stateSel.addEventListener("change", (e) => {
         const state = e.target.value;
         this.currentState = state;
-        const dists = Object.keys(this.districtData[state] || {});
+        const dists = Object.keys(this.districtData[state] || {}).filter(k => k !== "stateOverview");
         distSel.innerHTML = dists.map(d => `<option value="${d}">${d}</option>`).join("");
         this.currentDistrict = dists[0] || "";
-        this.updateView();
+        this.updateDetailCard();
       });
     }
 
-    // District change updates detail card
     if (distSel) {
       distSel.addEventListener("change", (e) => {
         this.currentDistrict = e.target.value;
-        this.updateView();
+        this.updateDetailCard();
       });
     }
 
-    // View mode Map vs Table
     if (btnMap && btnTable) {
       btnMap.addEventListener("click", () => {
         btnMap.classList.add("active");
@@ -483,43 +433,12 @@ const DistrictExplorerModule = {
         tableWrap.style.display = "block";
       });
     }
-
-    // Metric switcher pills
-    const metricPills = document.querySelectorAll(".map-metric-pill");
-    metricPills.forEach(pill => {
-      pill.addEventListener("click", () => {
-        metricPills.forEach(p => p.classList.remove("active"));
-        pill.classList.add("active");
-      });
-    });
-
-    // Interactive map polygon click
-    const punePath = document.getElementById("dist_pune");
-    const mumbaiPath = document.getElementById("dist_mumbai");
-    if (punePath) {
-      punePath.addEventListener("click", () => {
-        distSel.value = "Pune";
-        this.currentDistrict = "Pune";
-        this.updateView();
-      });
-    }
-    if (mumbaiPath) {
-      mumbaiPath.addEventListener("click", () => {
-        distSel.value = "Mumbai";
-        this.currentDistrict = "Mumbai";
-        this.updateView();
-      });
-    }
   },
 
-  updateView() {
-    const detailCard = document.getElementById("districtDetailCard");
-    if (detailCard) {
-      detailCard.innerHTML = this.renderDetailCardContent(this.currentState, this.currentDistrict);
-    }
-    const mapWrap = document.getElementById("stateMapSvgWrap");
-    if (mapWrap) {
-      mapWrap.innerHTML = this.renderStateMapSvg(this.currentState, this.currentDistrict);
+  updateDetailCard() {
+    const card = document.getElementById("districtDetailCard");
+    if (card) {
+      card.innerHTML = this.renderDetailCardContent(this.currentState, this.currentDistrict);
     }
   }
 };

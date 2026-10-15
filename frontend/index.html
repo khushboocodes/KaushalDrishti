@@ -22,16 +22,16 @@
       <!-- Brand Header -->
       <div class="sidebar-brand">
         <div class="brand-icon">
-          <!-- Geometric Multi-colored Flower/Sparkle SVG -->
+          <!-- Tree / Emblem Heritage SVG -->
           <svg viewBox="0 0 36 36" width="32" height="32" fill="none">
-            <circle cx="18" cy="18" r="4.5" fill="#10B981" />
-            <path d="M18 4v8M18 24v8M4 18h8M24 18h8" stroke="#2563EB" stroke-width="3" stroke-linecap="round" />
-            <path d="M8 8l6 6M22 22l6 6M8 28l6-6M22 14l6-6" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="18" cy="18" r="16" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5" />
+            <path d="M18 7v22M11 15l7-5 7 5M9 22l9-6 9 6" stroke="#15803D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="18" cy="10" r="2" fill="#D97706" />
           </svg>
         </div>
         <div class="brand-text-wrap">
           <span class="brand-name">KaushalDrishti</span>
-          <span class="brand-subtitle">AI-Powered Labour Market Intelligence</span>
+          <span class="brand-subtitle">Anticipating Skills, Empowering India.</span>
         </div>
       </div>
 
@@ -45,7 +45,7 @@
           <span data-i18n="nav_dashboard">Dashboard</span>
         </a>
 
-        <a class="nav-link" data-view="sectors-trades">
+        <a class="nav-link" data-view="demand-supply">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="20" x2="18" y2="10"></line>
             <line x1="12" y1="20" x2="12" y2="4"></line>
@@ -131,23 +131,50 @@
           <span data-i18n="nav_settings">Settings</span>
         </a>
       </nav>
+
+      <!-- Bottom Indian Heritage Banner -->
+      <div class="sidebar-footer-graphic">
+        <svg class="footer-graphic-svg" viewBox="0 0 44 40" fill="none">
+          <!-- Stylized Indian monument silhouette (India gate + stupa + trees) -->
+          <path d="M2 36h40v2H2z" fill="#D97706"/>
+          <path d="M5 36V22l3-5 3 5v14H5z" fill="#E08338" opacity="0.8"/>
+          <path d="M12 36V18l4-6 4 6v18h-8z" fill="#C2410C" opacity="0.7"/>
+          <path d="M18 36V14c0-3 3-5 6-5s6 2 6 5v22h-12z" fill="#B45309"/>
+          <path d="M21 36v-9a3 3 0 0 1 6 0v9h-6z" fill="#FFFDF9"/>
+          <path d="M31 36V20l3-5 3 5v16h-6z" fill="#D97706" opacity="0.8"/>
+          <circle cx="24" cy="6" r="1.5" fill="#D97706"/>
+        </svg>
+        <div class="footer-graphic-text">
+          Skilled India
+          <span>Stronger India</span>
+        </div>
+      </div>
     </aside>
 
     <!-- Main Content Wrapper -->
     <div class="main-wrapper">
       <!-- Fixed Top Header -->
       <header class="top-header">
-        <!-- Search Bar -->
+        <!-- Search Bar with Ctrl+K shortcut pill -->
         <div class="header-search">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
           <input type="text" id="globalSearchInput" placeholder="Search sector, trade, district..." data-i18n-placeholder="search_placeholder" />
+          <span class="search-shortcut-badge">Ctrl + K</span>
         </div>
 
-        <!-- Header Actions: Language, Notifications, Admin Profile -->
+        <!-- Header Actions: Time Filter, Language, Notifications, Admin Profile -->
         <div class="header-right">
+          <!-- Time Dropdown Selector: Last 1 Year -->
+          <button class="time-dropdown-btn" id="timePeriodBtn">
+            <span>Last 1 Year</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
           <!-- Language Selector -->
           <div class="lang-selector-wrap">
             <button class="lang-dropdown-btn" id="langToggleBtn">
@@ -182,6 +209,9 @@
       <main class="content-area">
         <!-- Screen 1: Dashboard View -->
         <section id="view-dashboard" class="view-panel active"></section>
+
+        <!-- Screen 1b: Demand & Supply View -->
+        <section id="view-demand-supply" class="view-panel"></section>
 
         <!-- Screen 2: Geographic View -->
         <section id="view-geographic-view" class="view-panel"></section>

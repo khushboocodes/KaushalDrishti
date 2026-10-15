@@ -1,81 +1,72 @@
 /* ==========================================================================
-   KaushalDrishti Design Tokens — Enterprise Modern Clean SaaS Theme
-   Matching reference UI design: Crisp white surfaces, tech blue accents,
-   soft tinted icon badges, and clean typography.
+   KaushalDrishti Design Tokens — Warm Indian Heritage & Modern SaaS Theme
+   Exact Match for the Reference Image Design:
+   Warm cream/sand canvas, terracotta/saffron/coral accents, dark navy controls,
+   and indigo/coral dual chart colors.
    ========================================================================== */
 
 :root {
-  /* Brand Primary & Accents */
-  --color-primary: #2563EB;             /* Tech Blue */
-  --color-primary-hover: #1D4ED8;
-  --color-primary-light: #EEF4FF;       /* Active Nav Pill Background */
-  --color-primary-border: #BFDBFE;
-  
-  --color-teal: #0D9488;
-  --color-teal-light: #ECFDF5;
-  --color-cyan: #06B6D4;
-  --color-cyan-light: #ECFEFF;
-  --color-purple: #8B5CF6;
-  --color-purple-light: #FAF5FF;
-  --color-orange: #F97316;
-  --color-orange-light: #FFF7ED;
-  --color-amber: #F59E0B;
-  --color-amber-light: #FEF3C7;
-  --color-red: #EF4444;
-  --color-red-light: #FEF2F2;
-  --color-green: #10B981;
-  --color-green-light: #ECFDF5;
-
-  /* App Canvas & Surface Backgrounds */
-  --bg-app: #F4F7FB;                   /* Clean light gray/blue canvas */
-  --bg-sidebar: #FFFFFF;               /* Pure white sidebar */
-  --bg-header: #FFFFFF;                /* Pure white header */
-  --bg-card: #FFFFFF;                  /* Pure white cards */
-  --bg-card-hover: #F8FAFC;
-  --bg-subtle: #F8FAFC;
+  /* Warm Cultural Canvas & Surface Palettes */
+  --bg-app: #FAF7F2;                    /* Warm soft ivory / sand canvas */
+  --bg-sidebar: #FBF8F5;                /* Warm cream sidebar */
+  --bg-header: #FFFFFF;                 /* Crisp white header with warm border */
+  --bg-card: #FFFFFF;                   /* Pure white card surface */
+  --bg-card-hover: #FFFDFB;
+  --bg-subtle: #F6F1EA;                 /* Soft warm gray-sand */
   --bg-input: #FFFFFF;
 
-  /* Borders & Dividers */
-  --border-light: #E2E8F0;             /* Clean subtle border */
-  --border-card: #E5E9F0;              /* Card outline */
-  --border-hover: #CBD5E1;
-  --border-focus: #2563EB;
+  /* Accent Colors */
+  --color-primary: #1E293B;             /* Dark Navy/Slate for active buttons/pills */
+  --color-terracotta: #C2410C;          /* Indian Terracotta */
+  --color-saffron: #D97706;             /* Saffron/Gold */
+  --color-saffron-light: #FEF3C7;
+  --color-coral: #E11D48;               /* Vibrant Coral / Red */
+  --color-coral-light: #FDEEE9;         /* Soft Peach Pill for Active Nav */
+  --color-coral-border: #FBCFE8;
 
-  /* Typography Colors */
-  --text-main: #1E293B;                /* Dark Charcoal Navy for headings */
-  --text-body: #334155;                /* Slate body text */
-  --text-muted: #64748B;               /* Secondary subtitle gray */
-  --text-light: #94A3B8;               /* Tertiary subtle text */
-  --text-white: #FFFFFF;
+  /* Chart Colors (Exact match to reference bars & lines) */
+  --chart-demand-purple: #7B78B8;       /* Indigo/Slate Purple (Job Demand) */
+  --chart-supply-pink: #F49D9D;         /* Soft Coral/Pink (Trained Candidates) */
+  --chart-line-purple: #8B5CF6;         /* Historical line */
+  --chart-line-pink: #FB7185;           /* Forecast line */
 
   /* Status Colors */
-  --status-undersupply: #EF4444;       /* Red */
-  --status-undersupply-bg: #FEF2F2;
-  --status-balanced: #10B981;          /* Green */
-  --status-balanced-bg: #ECFDF5;
-  --status-oversupply: #F59E0B;        /* Orange/Amber */
-  --status-oversupply-bg: #FFFBEB;
-  --status-high-growth: #8B5CF6;       /* Violet */
-  --status-high-growth-bg: #FAF5FF;
+  --color-green: #10B981;
+  --color-green-light: #ECFDF5;
+  --color-blue: #3B82F6;
+  --color-blue-light: #EFF6FF;
+  --color-orange: #F97316;
+  --color-orange-light: #FFF7ED;
+  --color-red: #EF4444;
+  --color-red-light: #FEF2F2;
 
-  /* Shadows */
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
-  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.03);
-  --shadow-dropdown: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-  --shadow-pill: 0 1px 2px rgba(37, 99, 235, 0.12);
+  /* Borders & Dividers */
+  --border-light: #EFE8E0;              /* Warm subtle border */
+  --border-card: #EAE2D8;               /* Warm card outline */
+  --border-focus: #C2410C;
 
-  /* Border Radii */
+  /* Typography Colors */
+  --text-main: #0F172A;                 /* Deep charcoal navy */
+  --text-body: #334155;                 /* Slate body */
+  --text-muted: #64748B;                /* Subtitles */
+  --text-light: #94A3B8;
+  --text-terracotta: #C2410C;
+
+  /* Radii & Shadows */
   --radius-sm: 6px;
   --radius-md: 10px;
-  --radius-lg: 14px;                   /* Standard card corner */
+  --radius-lg: 14px;
   --radius-xl: 20px;
   --radius-pill: 9999px;
 
-  /* Typography Specs */
+  --shadow-card: 0 1px 3px rgba(120, 80, 40, 0.04), 0 4px 14px rgba(120, 80, 40, 0.02);
+  --shadow-hover: 0 4px 12px rgba(120, 80, 40, 0.06), 0 8px 20px rgba(120, 80, 40, 0.03);
+
+  /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Outfit', 'Inter', sans-serif;
 
-  /* Layout Dimensions */
-  --sidebar-width: 240px;
-  --header-height: 70px;
+  /* Dimensions */
+  --sidebar-width: 235px;
+  --header-height: 66px;
 }

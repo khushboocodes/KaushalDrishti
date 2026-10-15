@@ -1,7 +1,7 @@
 /**
- * Alerts & Insights Module
+ * Alerts & Insights Module — "Alerts & Insights"
  * KaushalDrishti (कौशल दृष्टि)
- * Directly matches the reference enterprise SaaS design layout.
+ * Directly matches Panel 5 of the reference enterprise SaaS design layout.
  */
 
 const AlertCenterModule = {
@@ -10,35 +10,45 @@ const AlertCenterModule = {
   alertsList: [
     {
       id: "alt_1",
-      type: "undersupply",
-      title: "Acute Shortage - Solar PV Technician",
-      titleColor: "alert-title-red",
+      category: "undersupply",
+      title: "Acute Shortage – Solar PV Technician (7412.03)",
+      titleColor: "#DC2626",
       desc: "Projected undersupply of 18,000 candidates in 2026",
-      tags: ["Green Jobs", "5 districts"]
+      tags: [
+        { label: "Green Jobs", color: "#15803D", bg: "#DCFCE7" },
+        { label: "6 districts", color: "#B91C1C", bg: "#FEE2E2" },
+        { label: "2 hours ago", color: "#64748B", bg: "#F1F5F9" }
+      ],
+      iconSvg: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+      iconBg: "#FEE2E2"
     },
     {
       id: "alt_2",
-      type: "oversupply",
-      title: "Approaching Saturation - Data Entry Operator",
-      titleColor: "alert-title-orange",
+      category: "oversupply",
+      title: "Approaching Saturation – Data Entry Operator (4120.01)",
+      titleColor: "#D97706",
       desc: "Oversupply expected in 12 districts by 2026",
-      tags: ["IT/ITeS", "12 districts"]
+      tags: [
+        { label: "IT/ITeS", color: "#2563EB", bg: "#EFF6FF" },
+        { label: "12 districts", color: "#C2410C", bg: "#FFEDD5" },
+        { label: "5 hours ago", color: "#64748B", bg: "#F1F5F9" }
+      ],
+      iconSvg: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+      iconBg: "#FFEDD5"
     },
     {
       id: "alt_3",
-      type: "growth",
-      title: "Surging Demand - EV Diagnostic Technician",
-      titleColor: "alert-title-red",
-      desc: "Industrial hiring expanded by +48% YoY across EV manufacturing hubs",
-      tags: ["Automotive & EV", "8 districts"]
-    },
-    {
-      id: "alt_4",
-      type: "undersupply",
-      title: "Healthcare Deficit - Geriatric Care Assistant",
-      titleColor: "alert-title-red",
-      desc: "Critical shortage of 6,200 certified care assistants projected",
-      tags: ["Healthcare", "6 districts"]
+      category: "growth",
+      title: "High Growth Opportunity – AI/ML Engineer (2512.01)",
+      titleColor: "#16A34A",
+      desc: "Demand expected to grow by 35% in next 3 years",
+      tags: [
+        { label: "IT/ITeS", color: "#2563EB", bg: "#EFF6FF" },
+        { label: "8 districts", color: "#15803D", bg: "#DCFCE7" },
+        { label: "1 day ago", color: "#64748B", bg: "#F1F5F9" }
+      ],
+      iconSvg: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+      iconBg: "#DCFCE7"
     }
   ],
 
@@ -48,141 +58,94 @@ const AlertCenterModule = {
 
     container.innerHTML = `
       <!-- Page Header -->
-      <div class="page-header">
-        <div class="page-title-wrap">
-          <h2 data-i18n="alerts_main_title">Alerts & Insights</h2>
-          <p data-i18n="alerts_main_subtitle">Early warning signals and actionable capacity planning recommendations</p>
-        </div>
+      <div class="page-title-wrap" style="margin-bottom:16px;">
+        <h2 data-i18n="alerts_main_title" style="font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text-main);">Alerts & Insights</h2>
+        <p data-i18n="alerts_main_subtitle" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">Early warnings for emerging shortages and saturation risks</p>
       </div>
 
-      <!-- Tri-Panel Layout matching reference image -->
-      <div class="alerts-tri-grid">
-        <!-- Left Panel: Selected Trade Detail (Electrician) -->
-        <div class="card-panel">
-          <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:4px;">
-            <div>
-              <h3 style="font-size:16px; font-weight:700; color:var(--text-main);">Electrician (7412.01)</h3>
-              <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
-                Sector: Construction • NSQF Level 4
-              </div>
-            </div>
-            <span class="badge-growth badge-growth-green">In Demand</span>
-          </div>
+      <!-- Filter Subtabs -->
+      <div class="alert-subtabs">
+        <button class="alert-tab-btn active" data-tab="all">All Alerts (24)</button>
+        <button class="alert-tab-btn" data-tab="undersupply">Undersupply (10)</button>
+        <button class="alert-tab-btn" data-tab="oversupply">Oversupply (8)</button>
+        <button class="alert-tab-btn" data-tab="growth">High Growth (6)</button>
+      </div>
 
-          <!-- Mini sub-tabs -->
-          <div style="display:flex; gap:6px; border-bottom:1px solid var(--border-light); padding:10px 0 8px 0; margin-bottom:14px; overflow-x:auto;">
-            <span style="font-size:11.5px; font-weight:600; color:var(--color-primary); cursor:pointer;">Overview</span>
-            <span style="font-size:11.5px; color:var(--text-muted); cursor:pointer;">Demand & Supply</span>
-            <span style="font-size:11.5px; color:var(--text-muted); cursor:pointer;">Geographic</span>
-          </div>
-
-          <!-- Metrics List -->
-          <div style="display:flex; flex-direction:column; gap:12px;">
-            <div class="district-stat-box">
-              <div class="stat-label-small">Job Demand</div>
-              <div class="stat-val-med">
-                52,000
-                <span class="badge-growth badge-growth-green">+16%</span>
-              </div>
-            </div>
-
-            <div class="district-stat-box">
-              <div class="stat-label-small">Trained Candidates</div>
-              <div class="stat-val-med">
-                68,000
-                <span class="badge-growth badge-growth-green">+8%</span>
-              </div>
-            </div>
-
-            <div style="background:#FFFBEB; border:1px solid #FEF3C7; border-radius:var(--radius-md); padding:10px 12px;">
-              <div class="stat-label-small" style="color:#B45309;">Demand-Supply Gap</div>
-              <div style="font-size:17px; font-weight:700; color:#D97706;">-16,000 <span style="font-size:12px; font-weight:600;">Oversupply</span></div>
-            </div>
-
-            <div class="district-stat-box">
-              <div class="stat-label-small">Average Local Salary</div>
-              <div style="font-size:16px; font-weight:700; color:var(--text-main);">₹18,500 <span style="font-size:11px; font-weight:500; color:var(--text-muted);">/ month</span></div>
-            </div>
-          </div>
+      <!-- Two-Column Layout: Left Alerts List (1.6fr) vs Right Insight Summary (1fr) -->
+      <div class="two-col-grid" style="grid-template-columns: 1.6fr 1fr;">
+        <!-- Left: Alerts List -->
+        <div id="alertsFeedContainer" style="display:flex; flex-direction:column; gap:12px;">
+          ${this.renderAlertCards("all")}
         </div>
 
-        <!-- Center Panel: Alerts & Insights List -->
-        <div class="card-panel">
-          <div class="card-header-row">
-            <span class="card-title">Alerts & Insights</span>
-            <button style="background:none; border:none; font-size:11.5px; color:var(--color-primary); font-weight:600; cursor:pointer;" id="btnMarkRead">
-              Mark all as read
-            </button>
-          </div>
-
-          <!-- Alert Category Filter Tabs -->
-          <div class="alert-subtabs">
-            <button class="alert-tab-btn active" data-tab="all">All Alerts (24)</button>
-            <button class="alert-tab-btn" data-tab="undersupply">Undersupply (10)</button>
-            <button class="alert-tab-btn" data-tab="oversupply">Oversupply (9)</button>
-            <button class="alert-tab-btn" data-tab="growth">High Growth (5)</button>
-          </div>
-
-          <!-- Alerts Feed -->
-          <div id="alertsFeedContainer">
-            ${this.renderAlertCards("all")}
-          </div>
-        </div>
-
-        <!-- Right Panel: Planning Recommendations -->
-        <div class="card-panel">
-          <div class="card-header-row">
-            <span class="card-title">Planning Recommendations</span>
-            <button class="action-btn-sm" style="display:flex; align-items:center; gap:4px;" id="btnDownloadReport">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-              Download Report
-            </button>
-          </div>
-
-          <div style="display:flex; flex-direction:column; gap:10px;">
-            <!-- Recommendation 1 -->
-            <div class="recom-item-card">
-              <div class="recom-icon" style="background:#ECFDF5; color:#059669;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
-              </div>
-              <div class="recom-text">
-                <h4>Increase Training Capacity</h4>
-                <p>Scale up training for 12 high-demand trades in 8 districts</p>
-              </div>
+        <!-- Right: Insight Summary Box with Heritage Artwork -->
+        <div class="card-panel" style="display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              </svg>
+              <h3 style="font-size:15px; font-weight:700; color:var(--text-main);">Insight Summary</h3>
             </div>
 
-            <!-- Recommendation 2 -->
-            <div class="recom-item-card">
-              <div class="recom-icon" style="background:#FFF7ED; color:#EA580C;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="10" r="3"></circle><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path></svg>
-              </div>
-              <div class="recom-text">
-                <h4>Consider New Centres</h4>
-                <p>Set up 18 new training centres in identified districts</p>
-              </div>
-            </div>
+            <p style="font-size:12.5px; color:#475569; line-height:1.6; margin-bottom:16px;">
+              Healthcare and Green Jobs show strong demand across <strong>70%</strong> of districts, while data entry and basic IT support roles are approaching saturation in urban areas.
+            </p>
 
-            <!-- Recommendation 3 -->
-            <div class="recom-item-card">
-              <div class="recom-icon" style="background:#EFF6FF; color:#2563EB;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-              </div>
-              <div class="recom-text">
-                <h4>Revise Curriculum</h4>
-                <p>Update NSQF content for 5 emerging trades</p>
-              </div>
-            </div>
+            <a href="#" style="color:#C2410C; font-size:12px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:20px;">
+              <span>View Full Report</span>
+              <span>&rarr;</span>
+            </a>
+          </div>
 
-            <!-- Recommendation 4 -->
-            <div class="recom-item-card">
-              <div class="recom-icon" style="background:#FEF2F2; color:#DC2626;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              </div>
-              <div class="recom-text">
-                <h4>Phase Out / Reduce Seats</h4>
-                <p>Reduce intake for 7 oversupplied trades</p>
-              </div>
-            </div>
+          <!-- Bottom Heritage & Skilled Worker SVG Artwork -->
+          <div style="background:#FFFDF9; border:1px solid #FEF3C7; border-radius:12px; padding:16px; text-align:center;">
+            <svg viewBox="0 0 260 110" width="100%" height="95" fill="none">
+              <!-- Indian Monuments in Background (India gate + domes) -->
+              <path d="M20 90h220v2H20z" fill="#D97706" opacity="0.6"/>
+              <rect x="90" y="35" width="40" height="55" fill="#FED7AA" opacity="0.5"/>
+              <path d="M85 35h50v4h-50z" fill="#F97316" opacity="0.7"/>
+              <path d="M100 55c0-6 10-6 10-6s10 0 10 6v35h-20V55z" fill="#FFFBEB"/>
+              <circle cx="110" cy="45" r="2" fill="#D97706"/>
+
+              <!-- Left Temple / Chhatri -->
+              <path d="M40 90V45l8-6 8 6v45H40z" fill="#FDBA74" opacity="0.5"/>
+              <circle cx="48" cy="36" r="2" fill="#C2410C"/>
+
+              <!-- Right Stupa / Fort -->
+              <path d="M165 90V45c0-8 12-12 12-12s12 4 12 12v45h-24z" fill="#FCA5A5" opacity="0.5"/>
+              <circle cx="177" cy="30" r="2" fill="#DC2626"/>
+
+              <!-- Worker 1 (Engineer with Hard Hat) -->
+              <g transform="translate(65, 55)">
+                <circle cx="10" cy="8" r="5" fill="#D97706"/>
+                <path d="M5 6c0-4 10-4 10 0v2H5V6z" fill="#F59E0B"/>
+                <path d="M4 18c0-5 4-7 8-7s8 2 8 7v17H4V18z" fill="#2563EB"/>
+              </g>
+
+              <!-- Worker 2 (Healthcare Professional / Nurse) -->
+              <g transform="translate(100, 52)">
+                <circle cx="10" cy="8" r="5" fill="#D97706"/>
+                <path d="M4 18c0-5 4-7 8-7s8 2 8 7v20H4V18z" fill="#10B981"/>
+                <path d="M9 16h4M11 14v4" stroke="#FFFFFF" stroke-width="1.5"/>
+              </g>
+
+              <!-- Worker 3 (Solar PV / Technician with tool) -->
+              <g transform="translate(135, 54)">
+                <circle cx="10" cy="8" r="5" fill="#D97706"/>
+                <path d="M5 5c0-3 10-3 10 0v3H5V5z" fill="#EA580C"/>
+                <path d="M4 18c0-5 4-7 8-7s8 2 8 7v18H4V18z" fill="#7C3AED"/>
+                <line x1="16" y1="18" x2="22" y2="12" stroke="#475569" stroke-width="2"/>
+              </g>
+            </svg>
           </div>
         </div>
       </div>
@@ -191,57 +154,45 @@ const AlertCenterModule = {
     this.bindEvents();
   },
 
-  renderAlertCards(filterType) {
-    const list = (filterType === "all") 
-      ? this.alertsList 
-      : this.alertsList.filter(a => a.type === filterType);
-
+  renderAlertCards(tab) {
+    const list = tab === "all" ? this.alertsList : this.alertsList.filter(a => a.category === tab);
     if (!list.length) {
-      return `<p style="padding:20px; font-size:12px; color:var(--text-muted); text-align:center;">No alerts in this category.</p>`;
+      return `<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:13px;">No alerts in this category.</div>`;
     }
 
-    return list.map(a => `
-      <div class="alert-item-card">
-        <div class="alert-card-title ${a.titleColor}">${a.title}</div>
-        <div class="alert-card-sub">${a.desc}</div>
-        <div class="alert-card-footer">
-          <div style="display:flex; gap:6px;">
-            ${a.tags.map(t => `<span class="tag-badge">${t}</span>`).join("")}
+    return list.map(item => `
+      <div class="alert-item-card" style="display:flex; align-items:flex-start; justify-content:space-between; gap:14px;">
+        <div style="display:flex; align-items:flex-start; gap:12px;">
+          <div style="width:34px; height:34px; border-radius:6px; background:${item.iconBg}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            ${item.iconSvg}
           </div>
-          <button class="action-btn-sm" onclick="alert('Viewing detailed telemetry for: ${a.title}')">View Details</button>
+          <div>
+            <h4 style="font-size:13.5px; font-weight:700; color:#0F172A; margin-bottom:3px;">${item.title}</h4>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">${item.desc}</p>
+            <div style="display:flex; align-items:center; gap:6px;">
+              ${item.tags.map(t => `<span style="font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:4px; color:${t.color}; background:${t.bg};">${t.label}</span>`).join("")}
+            </div>
+          </div>
         </div>
+        <button class="action-btn-sm" style="flex-shrink:0; font-weight:600; color:#1E293B;">
+          View Details
+        </button>
       </div>
     `).join("");
   },
 
   bindEvents() {
-    const tabBtns = document.querySelectorAll(".alert-tab-btn");
-    tabBtns.forEach(btn => {
+    const tabs = document.querySelectorAll(".alert-tab-btn");
+    tabs.forEach(btn => {
       btn.addEventListener("click", () => {
-        tabBtns.forEach(b => b.classList.remove("active"));
+        tabs.forEach(t => t.classList.remove("active"));
         btn.classList.add("active");
-        const tab = btn.getAttribute("data-tab");
-        const container = document.getElementById("alertsFeedContainer");
-        if (container) {
-          container.innerHTML = this.renderAlertCards(tab);
+        const feed = document.getElementById("alertsFeedContainer");
+        if (feed) {
+          feed.innerHTML = this.renderAlertCards(btn.dataset.tab);
         }
       });
     });
-
-    const btnMark = document.getElementById("btnMarkRead");
-    if (btnMark) {
-      btnMark.addEventListener("click", () => {
-        btnMark.innerText = "All marked as read ✓";
-        btnMark.style.color = "#059669";
-      });
-    }
-
-    const btnDownload = document.getElementById("btnDownloadReport");
-    if (btnDownload) {
-      btnDownload.addEventListener("click", () => {
-        window.location.href = "/api/v1/exports/dsdp-csv?district_lgd_code=158";
-      });
-    }
   }
 };
 
