@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppShell } from './components/AppShell';
+import { LoginPage } from './components/LoginPage';
+import { UserSession } from './components/AuthModal';
 import {
   DashboardOverviewPage,
   GeographicViewPage,
@@ -21,10 +23,60 @@ import { NavRouteId } from './types';
 import { LanguageProvider } from './context/LanguageContext';
 
 function AppContent() {
-  const [activeRoute, setActiveRoute] = useState<NavRouteId>('dashboard');
+  const [userSession, setUserSession] = useState<UserSession | null>(() => {
+    // If URL explicitly requests login via hash or query, force login
+    if (typeof window !== 'undefined') {
+      if (window.location.hash === '#/login' || window.location.search.includes('login')) {
+        return null;
+      }
+      try {
+        const saved =
+          localStorage.getItem('kd_user_session') ||
+          sessionStorage.getItem('kd_user_session');
+        return saved ? JSON.parse(saved) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
+
+  const [activeRoute, setActiveRoute] = useState<NavRouteId>(() => {
+    if (typeof window !== 'undefined') {
+      if (window.location.hash === '#/login' || window.location.search.includes('login')) {
+        return 'login';
+      }
+    }
+    return 'login';
+  });
+
   const [canvasMode, setCanvasMode] = useState<'single' | 'six-grid'>('single');
   const [globalSearch, setGlobalSearch] = useState<string>('');
   const [dateRange, setDateRange] = useState<string>('Last 1 Year');
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash === '#/login') {
+        setActiveRoute('login');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const handleLogout = () => {
+    setUserSession(null);
+    try {
+      localStorage.removeItem('kd_user_session');
+      sessionStorage.removeItem('kd_user_session');
+    } catch {
+      // ignore
+    }
+    setActiveRoute('login');
+    if (window.location.hash !== '#/login') {
+      window.location.hash = '/login';
+    }
+  };
 
   const primarySixFrames: {
     id: NavRouteId;
@@ -76,6 +128,20 @@ function AppContent() {
     }
   };
 
+  if (activeRoute === 'login' || !userSession) {
+    return (
+      <LoginPage
+        onLoginSuccess={(session) => {
+          setUserSession(session);
+          setActiveRoute('dashboard');
+          if (window.location.hash === '#/login') {
+            window.location.hash = '';
+          }
+        }}
+      />
+    );
+  }
+
   return (
     <AppShell
       activeRoute={activeRoute}
@@ -86,10 +152,21 @@ function AppContent() {
       onGlobalSearchChange={setGlobalSearch}
       dateRange={dateRange}
       onDateRangeChange={setDateRange}
+      userSession={userSession}
+      onUserSessionChange={setUserSession}
+      onLogout={handleLogout}
     >
       {/* Quick Reference Frame Bar for Seamless Jumping Across the 6 Primary Pages */}
       <div className="mb-4 pb-2.5 border-b border-[#E9E0D3] flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-1.5">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-[#FDF2F0] text-[#D96843] hover:bg-[#FBE8E4] transition-colors cursor-pointer whitespace-nowrap"
+            title="Switch back to KaushalDrishti Login Screen"
+          >
+            🔒 Login Page
+          </button>
           {primarySixFrames.map((frame) => {
             const isCurrent =
               canvasMode === 'single' && activeRoute === frame.id;

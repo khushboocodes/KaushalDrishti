@@ -49,3 +49,38 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #B8ADA0;
 }
+
+/* KaushalDrishti Login Page Background Scaling & Zero-Scroll Layout */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.login-page {
+  height: 100vh;
+  width: 100vw;
+  max-height: 100vh;
+  max-width: 100vw;
+  overflow: hidden;
+  position: relative;
+  background-image: url("/login-bg.jpg");
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+@media (min-width: 1024px) {
+  .login-page {
+    background-size: 100% 100%;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 1023px) {
+  .login-page {
+    background-size: cover;
+    overflow-y: auto;
+  }
+}
+

@@ -1,4 +1,5 @@
 export type NavRouteId =
+  | 'login'
   | 'dashboard'
   | 'demand-supply'
   | 'forecasting'

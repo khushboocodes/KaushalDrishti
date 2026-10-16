@@ -43,6 +43,9 @@ interface AppShellProps {
   onGlobalSearchChange: (q: string) => void;
   dateRange: string;
   onDateRangeChange: (d: string) => void;
+  userSession?: UserSession | null;
+  onUserSessionChange?: (session: UserSession | null) => void;
+  onLogout?: () => void;
   children: React.ReactNode;
 }
 
@@ -75,13 +78,23 @@ export const AppShell: React.FC<AppShellProps> = ({
   onGlobalSearchChange,
   dateRange,
   onDateRangeChange,
+  userSession: propUserSession,
+  onUserSessionChange,
+  onLogout,
   children,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [notifOpen, setNotifOpen] = useState<boolean>(false);
+  const [profileOpen, setProfileOpen] = useState<boolean>(false);
   const { language, toggleLanguage } = useLanguage();
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
-  const [userSession, setUserSession] = useState<UserSession | null>(null);
+  const [localSession, setLocalSession] = useState<UserSession | null>(null);
+
+  const userSession = propUserSession !== undefined ? propUserSession : localSession;
+  const setUserSession = (session: UserSession | null) => {
+    setLocalSession(session);
+    if (onUserSessionChange) onUserSessionChange(session);
+  };
 
   const renderSidebarContent = () => (
     <div className="flex flex-col h-full justify-between bg-[#F5F0E7] border-r border-[#E9E0D3] w-[205px] shrink-0 select-none">
@@ -366,24 +379,77 @@ export const AppShell: React.FC<AppShellProps> = ({
             </div>
 
             {/* Admin / MSDE Officer Profile */}
-            <button
-              type="button"
-              onClick={() => setAuthModalOpen(true)}
-              className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-[#F5F0E7] transition-colors cursor-pointer text-left"
-              title="Click to switch Government Officer Session"
-            >
-              <div className="w-8 h-8 rounded-full bg-[#1B2B44] text-white flex items-center justify-center text-xs font-bold shrink-0">
-                {userSession ? userSession.name.charAt(0) : 'A'}
-              </div>
-              <div className="hidden sm:block leading-tight">
-                <div className="text-xs font-bold text-[#173F35]">
-                  {userSession ? userSession.name : 'Officer Sign In'}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-[#F5F0E7] transition-colors cursor-pointer text-left"
+                title="Click to view Government Officer details or sign out"
+              >
+                <div className="w-8 h-8 rounded-full bg-[#1B2B44] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                  {userSession ? userSession.name.charAt(0) : 'A'}
                 </div>
-                <div className="text-[10px] text-[#64716D] font-medium">
-                  {userSession ? userSession.role : 'MSDE / NCVET'}
+                <div className="hidden sm:block leading-tight">
+                  <div className="text-xs font-bold text-[#173F35]">
+                    {userSession ? userSession.name : 'Officer Sign In'}
+                  </div>
+                  <div className="text-[10px] text-[#64716D] font-medium">
+                    {userSession ? userSession.role : 'MSDE / NCVET'}
+                  </div>
                 </div>
-              </div>
-            </button>
+              </button>
+
+              {/* Profile Dropdown Menu */}
+              {profileOpen && (
+                <div className="absolute right-0 mt-2 w-64 bg-[#FFFEFB] border border-[#E9E0D3] rounded-xl shadow-xl p-3 z-50 text-xs">
+                  <div className="pb-2.5 mb-2.5 border-b border-[#E9E0D3]">
+                    <div className="font-bold text-[#173F35] text-sm">
+                      {userSession ? userSession.name : 'Government Officer'}
+                    </div>
+                    <div className="text-[11px] text-[#17604D] font-medium mt-0.5">
+                      {userSession ? userSession.designation : 'Labour Market Intelligence Portal'}
+                    </div>
+                    <div className="text-[10px] text-[#64716D] mt-0.5">
+                      {userSession ? userSession.department : 'MSDE National Portal'}
+                    </div>
+                    {userSession?.badge && (
+                      <span className="inline-block mt-1.5 px-2 py-0.5 rounded bg-[#F5F0E7] text-[#173F35] font-mono text-[10px] font-semibold">
+                        Badge: {userSession.badge}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileOpen(false);
+                        setAuthModalOpen(true);
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-[#173F35] hover:bg-[#F5F0E7] transition-colors cursor-pointer font-medium"
+                    >
+                      Switch Officer Role / Credentials
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileOpen(false);
+                        if (onLogout) {
+                          onLogout();
+                        } else {
+                          setUserSession(null);
+                        }
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-[#D96843] hover:bg-[#FDF2F0] transition-colors cursor-pointer font-medium flex items-center justify-between"
+                    >
+                      <span>Sign Out to Login Page</span>
+                      <span>→</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
