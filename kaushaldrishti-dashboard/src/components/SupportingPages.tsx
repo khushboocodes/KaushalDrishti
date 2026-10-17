@@ -811,7 +811,7 @@ export const SettingsPage: React.FC = () => {
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
 
   return (
-    <div className="space-y-4 max-w-4xl">
+    <div className="space-y-5 w-full">
       <div>
         <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
           Platform &amp; Planner Settings
@@ -821,11 +821,11 @@ export const SettingsPage: React.FC = () => {
         </p>
       </div>
 
-      <SurfaceCard className="space-y-4 p-5">
-        <h2 className="text-sm font-bold text-[#173F35] pb-2 border-b border-[#E9E0D3]">
+      <SurfaceCard className="space-y-5 p-6 w-full">
+        <h2 className="text-sm font-bold text-[#173F35] pb-2.5 border-b border-[#E9E0D3]">
           Planner Profile &amp; Jurisdiction
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
           <div>
             <label className="text-[11px] font-medium text-[#64716D] block mb-1">
               Directorate / Authority Name
@@ -864,16 +864,16 @@ export const SettingsPage: React.FC = () => {
           />
         </div>
 
-        <h2 className="text-sm font-bold text-[#173F35] pt-3 pb-2 border-b border-[#E9E0D3]">
+        <h2 className="text-sm font-bold text-[#173F35] pt-2 pb-2.5 border-b border-[#E9E0D3]">
           Alert &amp; Digest Notifications
         </h2>
-        <div className="space-y-2.5 text-xs">
-          <label className="flex items-center justify-between p-2.5 rounded-lg bg-[#FAF7F2] border border-[#EFE7DA] cursor-pointer">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <label className="flex items-center justify-between p-3.5 rounded-lg bg-[#FAF7F2] border border-[#EFE7DA] cursor-pointer hover:bg-[#F5F0E7] transition-colors">
             <div>
               <div className="font-semibold text-[#173F35]">
                 Immediate District Shortage Alerts
               </div>
-              <div className="text-[11px] text-[#64716D]">
+              <div className="text-[11px] text-[#64716D] mt-0.5">
                 Notify when any NSQF Level 3–6 trade exceeds projected undersupply threshold
               </div>
             </div>
@@ -881,16 +881,16 @@ export const SettingsPage: React.FC = () => {
               type="checkbox"
               checked={emailAlerts}
               onChange={(e) => setEmailAlerts(e.target.checked)}
-              className="accent-[#17604D] w-4 h-4"
+              className="accent-[#17604D] w-4 h-4 shrink-0 ml-3"
             />
           </label>
 
-          <label className="flex items-center justify-between p-2.5 rounded-lg bg-[#FAF7F2] border border-[#EFE7DA] cursor-pointer">
+          <label className="flex items-center justify-between p-3.5 rounded-lg bg-[#FAF7F2] border border-[#EFE7DA] cursor-pointer hover:bg-[#F5F0E7] transition-colors">
             <div>
               <div className="font-semibold text-[#173F35]">
                 Weekly State Skill Gap Briefing PDF
               </div>
-              <div className="text-[11px] text-[#64716D]">
+              <div className="text-[11px] text-[#64716D] mt-0.5">
                 Automated Monday summary for State Skill Development Mission directors
               </div>
             </div>
@@ -898,7 +898,7 @@ export const SettingsPage: React.FC = () => {
               type="checkbox"
               checked={weeklyDigest}
               onChange={(e) => setWeeklyDigest(e.target.checked)}
-              className="accent-[#17604D] w-4 h-4"
+              className="accent-[#17604D] w-4 h-4 shrink-0 ml-3"
             />
           </label>
         </div>
@@ -921,8 +921,8 @@ export const SettingsPage: React.FC = () => {
       </SurfaceCard>
 
       {/* MSDE Officer Authentication & Access Delegation (Added on) */}
-      <SurfaceCard className="space-y-3 p-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#E9E0D3]">
+      <SurfaceCard className="space-y-4 p-6 w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E9E0D3]">
           <div>
             <h2 className="text-sm font-bold text-[#173F35]">
               MSDE Government Officer Authentication &amp; Delegation
@@ -940,18 +940,18 @@ export const SettingsPage: React.FC = () => {
             <span>Launch Officer Auth Dialog</span>
           </SecondaryButton>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div className="p-3 bg-[#FAF7F2] rounded-lg border border-[#E9E0D3]">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div className="p-3.5 bg-[#FAF7F2] rounded-lg border border-[#E9E0D3]">
             <div className="text-[10px] uppercase font-bold text-[#64716D]">Access Tier</div>
             <div className="text-sm font-bold text-[#173F35] mt-1">Level-3 Restricted</div>
             <div className="text-[11px] text-[#17604D] mt-0.5">Authorized for DSDP Allocation</div>
           </div>
-          <div className="p-3 bg-[#FAF7F2] rounded-lg border border-[#E9E0D3]">
+          <div className="p-3.5 bg-[#FAF7F2] rounded-lg border border-[#E9E0D3]">
             <div className="text-[10px] uppercase font-bold text-[#64716D]">Compliance Standard</div>
             <div className="text-sm font-bold text-[#173F35] mt-1">DPDP Act (2023)</div>
             <div className="text-[11px] text-[#64716D] mt-0.5">256-Bit TLS End-to-End</div>
           </div>
-          <div className="p-3 bg-[#FAF7F2] rounded-lg border border-[#E9E0D3]">
+          <div className="p-3.5 bg-[#FAF7F2] rounded-lg border border-[#E9E0D3]">
             <div className="text-[10px] uppercase font-bold text-[#64716D]">Active Gateway</div>
             <div className="text-sm font-bold text-[#173F35] mt-1">NIC e-Gov Single Sign-On</div>
             <div className="text-[11px] text-[#64716D] mt-0.5">MSDE Planner Domain</div>
