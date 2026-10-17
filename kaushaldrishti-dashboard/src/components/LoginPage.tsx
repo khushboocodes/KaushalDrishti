@@ -49,7 +49,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [noticeMessage, setNoticeMessage] = useState<string>('');
@@ -114,29 +113,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         };
       }
 
-      if (rememberMe) {
-        try {
-          localStorage.setItem('kd_user_session', JSON.stringify(session));
-        } catch {
-          // ignore
-        }
-      } else {
-        try {
-          sessionStorage.setItem('kd_user_session', JSON.stringify(session));
-        } catch {
-          // ignore
-        }
+      try {
+        sessionStorage.setItem('kd_user_session', JSON.stringify(session));
+        localStorage.setItem('kd_user_session', JSON.stringify(session));
+      } catch {
+        // ignore
       }
 
       onLoginSuccess(session);
     }, 600);
-  };
-
-  const handleForgotPassword = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setNoticeMessage(
-      'Password recovery instructions sent to registered security administrator.'
-    );
   };
 
   return (
@@ -297,31 +282,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               </div>
             </div>
 
-            {/* Remember me & Forgot Password */}
-            <div className="flex items-center justify-between pt-0.5 pb-0.5">
-              <label className="flex items-center gap-2 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded-[4px] border-[#9AA6A2] text-[#17604D] focus:ring-[#17604D] accent-[#17604D] cursor-pointer"
-                />
-                <span className="text-[12px] sm:text-[12.5px] text-[#173F35] font-medium">
-                  Remember me
-                </span>
-              </label>
-
-              <button
-                type="button"
-                onClick={handleForgotPassword}
-                className="text-[12px] sm:text-[12.5px] text-[#17604D] font-medium hover:underline cursor-pointer focus:outline-none"
-              >
-                Forgot password?
-              </button>
-            </div>
-
             {/* Primary Sign In Button */}
-            <div className="pt-0.5">
+            <div className="pt-1 sm:pt-1.5">
               <button
                 type="submit"
                 disabled={loading}
