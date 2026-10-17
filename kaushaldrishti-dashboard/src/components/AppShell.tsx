@@ -158,6 +158,9 @@ export const AppShell: React.FC<AppShellProps> = ({
                   onToggleCanvasMode('single');
                   onSelectRoute(item.id);
                   setMobileMenuOpen(false);
+                  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                  if (document.documentElement) document.documentElement.scrollTop = 0;
+                  if (document.body) document.body.scrollTop = 0;
                 }}
                 className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs transition-colors cursor-pointer whitespace-nowrap ${
                   isActive

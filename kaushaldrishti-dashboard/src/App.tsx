@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { AppShell } from './components/AppShell';
 import { LoginPage } from './components/LoginPage';
 import { UserSession } from './components/AuthModal';
@@ -65,6 +65,39 @@ function AppContent() {
   const [canvasMode, setCanvasMode] = useState<'single' | 'six-grid'>('single');
   const [globalSearch, setGlobalSearch] = useState<string>('');
   const [dateRange, setDateRange] = useState<string>('Last 1 Year');
+
+  // Disable browser's automatic scroll restoration so page transitions always start cleanly from the top
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+
+  // Whenever activeRoute changes, immediately scroll window and viewport to the very top
+  useLayoutEffect(() => {
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      if (document.documentElement) {
+        document.documentElement.scrollTop = 0;
+      }
+      if (document.body) {
+        document.body.scrollTop = 0;
+      }
+      const mainEl = document.querySelector('main');
+      if (mainEl) {
+        mainEl.scrollTop = 0;
+      }
+    };
+
+    scrollToTop();
+    const rafId = requestAnimationFrame(scrollToTop);
+    const timeoutId = setTimeout(scrollToTop, 50);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      clearTimeout(timeoutId);
+    };
+  }, [activeRoute]);
 
   // Lock and block browser Back button when user is logged into the dashboard
   useEffect(() => {
