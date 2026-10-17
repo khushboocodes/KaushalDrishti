@@ -86,7 +86,8 @@ def test_simhash_deduplication():
     assert len(unique) == 2
 
 def test_temporal_stale_decay():
-    decay_engine = TemporalDecayEngine()
+    from datetime import date
+    decay_engine = TemporalDecayEngine(reference_date=date(2026, 10, 15))
     # Fresh posting: age 0
     w_fresh = decay_engine.compute_decay_weight("2026-10-15", "COMMERCIAL")
     assert w_fresh >= 0.95
