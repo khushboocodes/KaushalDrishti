@@ -1,4 +1,5 @@
 import React from 'react';
+import kaushalLogo from '../assets/kaushaldrishti-logo.png';
 
 /**
  * High-precision standalone SVG recreations of the KaushalDrishti Asset Sheet (Reference Image 2).
@@ -79,20 +80,12 @@ export const LogoHorizontal: React.FC<{ className?: string; compact?: boolean }>
   className = '',
   compact = false,
 }) => (
-  <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
-    <LogoIcon size={compact ? 32 : 36} className="shrink-0" />
-    <div className="flex flex-col leading-none">
-      <span
-        className={`font-serif-heading font-bold tracking-tight text-[#173F35] ${
-          compact ? 'text-[15px]' : 'text-[17px]'
-        }`}
-      >
-        KaushalDrishti
-      </span>
-      <span className="text-[9.5px] font-medium text-[#64716D] tracking-tight mt-0.5 whitespace-nowrap">
-        Anticipating Skills. Empowering India.
-      </span>
-    </div>
+  <div className={`inline-flex items-center select-none ${className}`}>
+    <img
+      src={kaushalLogo}
+      alt="KaushalDrishti — AI-Powered Labour Market Intelligence"
+      className={`${compact ? 'h-[36px] max-w-[178px]' : 'h-[46px] max-w-[220px]'} w-auto object-contain`}
+    />
   </div>
 );
 
