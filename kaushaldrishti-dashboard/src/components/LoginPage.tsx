@@ -45,17 +45,19 @@ const LeafMotif: React.FC = () => (
   </div>
 );
 
+type AuthPhase = 'idle' | 'verifying' | 'granted';
+
 export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [rememberMe, setRememberMe] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [authPhase, setAuthPhase] = useState<AuthPhase>('idle');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [noticeMessage, setNoticeMessage] = useState<string>('');
 
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
+    if (authPhase !== 'idle') return;
     setErrorMessage('');
     setNoticeMessage('');
 
@@ -69,12 +71,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
       return;
     }
 
-    setLoading(true);
+    // Phase 2: Verifying RBAC credentials
+    setAuthPhase('verifying');
 
-    // Simulate authentic authentication process
     setTimeout(() => {
-      setLoading(false);
-
       let session: UserSession;
       const lower = cleanUser.toLowerCase();
 
@@ -114,29 +114,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         };
       }
 
-      if (rememberMe) {
-        try {
-          localStorage.setItem('kd_user_session', JSON.stringify(session));
-        } catch {
-          // ignore
-        }
-      } else {
-        try {
-          sessionStorage.setItem('kd_user_session', JSON.stringify(session));
-        } catch {
-          // ignore
-        }
+      try {
+        sessionStorage.setItem('kd_user_session', JSON.stringify(session));
+        localStorage.setItem('kd_user_session', JSON.stringify(session));
+      } catch {
+        // ignore
       }
 
-      onLoginSuccess(session);
-    }, 600);
-  };
+      // Phase 3: Access Granted
+      setAuthPhase('granted');
 
-  const handleForgotPassword = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setNoticeMessage(
-      'Password recovery instructions sent to registered security administrator.'
-    );
+      setTimeout(() => {
+        onLoginSuccess(session);
+      }, 750);
+    }, 950);
   };
 
   return (
@@ -187,10 +178,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         </div>
       </div>
 
-      {/* Main Login Card Container - Elongated upwards from top, bottom strictly anchored */}
+      {/* Main Login Card Container - Preserves exact outer bounds; never touches logo and never goes outside page */}
       <div className="w-full flex justify-center lg:justify-end px-4 sm:px-6 lg:px-0 lg:mr-[7vw] xl:mr-[7.5vw] 2xl:mr-[9vw] z-10 translate-y-2 sm:translate-y-4 lg:translate-y-6 xl:translate-y-7">
         <div
-          className="w-full max-w-[370px] sm:max-w-[395px] lg:w-[31.5vw] lg:max-w-[425px] xl:max-w-[440px] rounded-[24px] border border-[#ECE3D6] px-6 py-10 sm:px-7 sm:py-11.5 xl:px-7.5 xl:py-12.5 transition-all select-auto flex flex-col justify-between"
+          className={`w-full max-w-[370px] sm:max-w-[395px] lg:w-[31.5vw] lg:max-w-[425px] xl:max-w-[440px] min-h-[580px] sm:min-h-[592px] xl:min-h-[600px] h-auto rounded-[24px] border border-[#ECE3D6] ${
+            errorMessage || noticeMessage
+              ? 'px-5.5 pt-5.5 pb-5 sm:px-6.5 sm:pt-6 sm:pb-5.5 xl:px-7 xl:pt-6.5 xl:pb-6'
+              : 'px-6 pt-8 pb-7 sm:px-7 sm:pt-9 sm:pb-8 xl:px-7.5 xl:pt-9.5 xl:pb-8.5'
+          } select-auto flex flex-col justify-between`}
           style={{
             backgroundColor: '#FFFEFB',
             boxShadow:
@@ -198,7 +193,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
           }}
         >
           {/* Card Header */}
-          <div className="text-center mb-5 sm:mb-6">
+          <div className={`text-center ${errorMessage || noticeMessage ? 'mb-2 sm:mb-2.5' : 'mb-4 sm:mb-5'}`}>
             <div className="text-[13px] sm:text-[13.5px] font-normal text-[#5A6863] mb-0.5">
               Welcome to
             </div>
@@ -216,26 +211,32 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
           {/* Validation / Status Banners */}
           {errorMessage && (
-            <div className="mb-3.5 p-2.5 bg-[#FDF2F0] border border-[#F5D7CC] rounded-lg flex items-center gap-2 text-[12px] text-[#D96843]">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{errorMessage}</span>
+            <div className="mb-2 p-2 sm:p-2.5 bg-[#FDF2F0] border border-[#F5D7CC] rounded-[10px] flex items-center gap-2 text-[11.5px] sm:text-[12px] text-[#D96843] shrink-0">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0 text-[#D96843]" />
+              <span className="font-medium">{errorMessage}</span>
             </div>
           )}
 
           {noticeMessage && (
-            <div className="mb-3.5 p-2.5 bg-[#EFF7EE] border border-[#DCE9D9] rounded-lg flex items-center gap-2 text-[12px] text-[#17604D]">
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
-              <span>{noticeMessage}</span>
+            <div className="mb-2 p-2 sm:p-2.5 bg-[#EFF7EE] border border-[#DCE9D9] rounded-[10px] flex items-center gap-2 text-[11.5px] sm:text-[12px] text-[#17604D] shrink-0">
+              <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-[#17604D]" />
+              <span className="font-medium">{noticeMessage}</span>
             </div>
           )}
 
           {/* Login Form */}
-          <form onSubmit={handleSignIn} noValidate className="space-y-4 sm:space-y-4.5">
+          <form
+            onSubmit={handleSignIn}
+            noValidate
+            className={errorMessage || noticeMessage ? 'space-y-2.5 sm:space-y-3' : 'space-y-4 sm:space-y-4.5'}
+          >
             {/* Username Field */}
             <div>
               <label
                 htmlFor="kd-username"
-                className="block text-[12.5px] sm:text-[13px] font-semibold text-[#173F35] mb-1.5"
+                className={`block ${
+                  errorMessage || noticeMessage ? 'text-[12px] sm:text-[12.5px] mb-1' : 'text-[12.5px] sm:text-[13px] mb-1.5'
+                } font-semibold text-[#173F35]`}
               >
                 Username
               </label>
@@ -253,7 +254,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                     if (errorMessage) setErrorMessage('');
                   }}
                   placeholder="Enter your username"
-                  className="w-full h-[43px] sm:h-[45px] pl-10 pr-3 bg-white border border-[#E5DDD1] rounded-[11px] text-[13.5px] text-[#173F35] placeholder:text-[#A8B3AF] focus:outline-none focus:border-[#17604D] focus:ring-1 focus:ring-[#17604D] transition-colors"
+                  className={`w-full ${
+                    errorMessage || noticeMessage ? 'h-[40px] sm:h-[42px]' : 'h-[44px] sm:h-[46px]'
+                  } pl-10 pr-3 bg-white border border-[#E5DDD1] rounded-[11px] text-[13.5px] text-[#173F35] placeholder:text-[#A8B3AF] focus:outline-none focus:border-[#17604D] focus:ring-1 focus:ring-[#17604D] transition-colors`}
                 />
               </div>
             </div>
@@ -262,7 +265,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             <div>
               <label
                 htmlFor="kd-password"
-                className="block text-[12.5px] sm:text-[13px] font-semibold text-[#173F35] mb-1.5"
+                className={`block ${
+                  errorMessage || noticeMessage ? 'text-[12px] sm:text-[12.5px] mb-1' : 'text-[12.5px] sm:text-[13px] mb-1.5'
+                } font-semibold text-[#173F35]`}
               >
                 Password
               </label>
@@ -280,7 +285,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                     if (errorMessage) setErrorMessage('');
                   }}
                   placeholder="Enter your password"
-                  className="w-full h-[43px] sm:h-[45px] pl-10 pr-10 bg-white border border-[#E5DDD1] rounded-[11px] text-[13.5px] text-[#173F35] placeholder:text-[#A8B3AF] focus:outline-none focus:border-[#17604D] focus:ring-1 focus:ring-[#17604D] transition-colors"
+                  className={`w-full ${
+                    errorMessage || noticeMessage ? 'h-[40px] sm:h-[42px]' : 'h-[44px] sm:h-[46px]'
+                  } pl-10 pr-10 bg-white border border-[#E5DDD1] rounded-[11px] text-[13.5px] text-[#173F35] placeholder:text-[#A8B3AF] focus:outline-none focus:border-[#17604D] focus:ring-1 focus:ring-[#17604D] transition-colors`}
                 />
                 <button
                   type="button"
@@ -297,40 +304,32 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               </div>
             </div>
 
-            {/* Remember me & Forgot Password */}
-            <div className="flex items-center justify-between pt-0.5 pb-0.5">
-              <label className="flex items-center gap-2 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded-[4px] border-[#9AA6A2] text-[#17604D] focus:ring-[#17604D] accent-[#17604D] cursor-pointer"
-                />
-                <span className="text-[12px] sm:text-[12.5px] text-[#173F35] font-medium">
-                  Remember me
-                </span>
-              </label>
-
-              <button
-                type="button"
-                onClick={handleForgotPassword}
-                className="text-[12px] sm:text-[12.5px] text-[#17604D] font-medium hover:underline cursor-pointer focus:outline-none"
-              >
-                Forgot password?
-              </button>
-            </div>
-
-            {/* Primary Sign In Button */}
-            <div className="pt-0.5">
+            {/* Primary Action Button - 3 Phased Authentication (Theme-Aligned) */}
+            <div className={errorMessage || noticeMessage ? 'pt-1 sm:pt-1.5' : 'pt-2 sm:pt-2.5'}>
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full h-[45px] sm:h-[47px] bg-[#175C4B] hover:bg-[#124B3C] active:bg-[#0E3D31] text-white font-medium text-[15px] rounded-[12px] flex items-center justify-center gap-2 transition-all duration-150 shadow-sm hover:shadow cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#17604D] focus:ring-offset-1"
+                disabled={authPhase !== 'idle'}
+                className={`w-full ${
+                  errorMessage || noticeMessage ? 'h-[43px] sm:h-[45px]' : 'h-[46px] sm:h-[48px]'
+                } text-white font-medium text-[14px] sm:text-[14.5px] rounded-[12px] flex items-center justify-center gap-2 transition-colors duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#17604D] focus:ring-offset-1 select-none overflow-hidden px-3 ${
+                  authPhase === 'idle'
+                    ? 'bg-[#175C4B] hover:bg-[#124B3C] active:bg-[#0E3D31] hover:shadow cursor-pointer'
+                    : authPhase === 'verifying'
+                    ? 'bg-[#1D4ED8] cursor-wait shadow-inner text-white'
+                    : 'bg-[#16A34A] font-semibold cursor-default shadow-md text-white'
+                }`}
               >
-                {loading ? (
-                  <span className="flex items-center gap-2 text-xs">
+                {authPhase === 'idle' && (
+                  <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">
+                    <span>Authenticate & Access Dashboard</span>
+                    <span className="text-base leading-none">→</span>
+                  </span>
+                )}
+
+                {authPhase === 'verifying' && (
+                  <span className="flex items-center justify-center gap-2 whitespace-nowrap text-[13.5px] sm:text-[14px]">
                     <svg
-                      className="animate-spin h-4 w-4 text-white"
+                      className="animate-spin h-4 w-4 text-blue-200"
                       fill="none"
                       viewBox="0 0 24 24"
                     >
@@ -340,28 +339,34 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                         cy="12"
                         r="10"
                         stroke="currentColor"
-                        strokeWidth="4"
+                        strokeWidth="3.5"
                       />
                       <path
-                        className="opacity-75"
+                        className="opacity-90"
                         fill="currentColor"
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       />
                     </svg>
-                    <span>Authenticating...</span>
+                    <span>Verifying RBAC credentials...</span>
                   </span>
-                ) : (
-                  <>
-                    <span>Sign In</span>
-                    <span className="text-base leading-none">→</span>
-                  </>
+                )}
+
+                {authPhase === 'granted' && (
+                  <span className="flex items-center justify-center gap-2 whitespace-nowrap text-[13.5px] sm:text-[14px]">
+                    <CheckCircle2 className="w-4 h-4 text-white shrink-0 stroke-[2.5]" />
+                    <span>Access Granted</span>
+                  </span>
                 )}
               </button>
             </div>
           </form>
 
           {/* Divider */}
-          <div className="relative flex items-center justify-center my-3 sm:my-3.5">
+          <div
+            className={`relative flex items-center justify-center ${
+              errorMessage || noticeMessage ? 'my-2 sm:my-2.5' : 'my-3 sm:my-3.5'
+            }`}
+          >
             <div className="w-full border-t border-[#E8DFC0]" />
             <span className="absolute bg-[#FFFEFB] px-2.5 text-[11px] text-[#7E8D88] font-normal">
               or
@@ -369,8 +374,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
           </div>
 
           {/* Demo Login Credentials Panel */}
-          <div className="bg-[#FAF5EB] border border-[#EBDCC7] rounded-[12px] p-2.5 sm:p-3">
-            <div className="flex items-center justify-between mb-2">
+          <div
+            className={`bg-[#FAF5EB] border border-[#EBDCC7] rounded-[13px] ${
+              errorMessage || noticeMessage ? 'p-2 sm:p-2.5' : 'p-2.5 sm:p-3'
+            }`}
+          >
+            <div
+              className={`flex items-center justify-between ${
+                errorMessage || noticeMessage ? 'mb-1.5' : 'mb-2'
+              }`}
+            >
               <div className="flex items-center gap-1.5">
                 <KeyRound className="w-3.5 h-3.5 text-[#17604D]" />
                 <span className="text-[11.5px] sm:text-[12px] font-bold text-[#173F35]">
@@ -390,7 +403,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                   setPassword('admin123');
                   setErrorMessage('');
                 }}
-                className={`py-1.5 px-1 rounded-md text-[10.5px] font-semibold transition-all text-center cursor-pointer shadow-xs border ${
+                className={`${
+                  errorMessage || noticeMessage ? 'py-1.5' : 'py-2'
+                } px-1 rounded-md text-[10.5px] sm:text-[11px] font-semibold transition-colors text-center cursor-pointer shadow-xs border ${
                   username.trim().toLowerCase() === 'admin'
                     ? 'bg-[#17604D] text-white border-[#17604D]'
                     : 'bg-white hover:bg-[#17604D] text-[#173F35] hover:text-white border-[#DCD0BE] hover:border-[#17604D]'
@@ -406,7 +421,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                   setPassword('admin123');
                   setErrorMessage('');
                 }}
-                className={`py-1.5 px-1 rounded-md text-[10.5px] font-semibold transition-all text-center cursor-pointer shadow-xs border ${
+                className={`${
+                  errorMessage || noticeMessage ? 'py-1.5' : 'py-2'
+                } px-1 rounded-md text-[10.5px] sm:text-[11px] font-semibold transition-colors text-center cursor-pointer shadow-xs border ${
                   username.trim().toLowerCase() === 'dso' || username.trim().toLowerCase().includes('anjali')
                     ? 'bg-[#17604D] text-white border-[#17604D]'
                     : 'bg-white hover:bg-[#17604D] text-[#173F35] hover:text-white border-[#DCD0BE] hover:border-[#17604D]'
@@ -422,7 +439,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                   setPassword('admin123');
                   setErrorMessage('');
                 }}
-                className={`py-1.5 px-1 rounded-md text-[10.5px] font-semibold transition-all text-center cursor-pointer shadow-xs border ${
+                className={`${
+                  errorMessage || noticeMessage ? 'py-1.5' : 'py-2'
+                } px-1 rounded-md text-[10.5px] sm:text-[11px] font-semibold transition-colors text-center cursor-pointer shadow-xs border ${
                   username.trim().toLowerCase() === 'ncvet' || username.trim().toLowerCase().includes('sen')
                     ? 'bg-[#17604D] text-white border-[#17604D]'
                     : 'bg-white hover:bg-[#17604D] text-[#173F35] hover:text-white border-[#DCD0BE] hover:border-[#17604D]'
@@ -431,6 +450,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               >
                 NCVET
               </button>
+            </div>
+            <div
+              className={`text-[10px] text-[#7E8D88] text-center ${
+                errorMessage || noticeMessage ? 'mt-1.5' : 'mt-2'
+              } font-normal`}
+            >
+              Click any role to autofill login credentials
             </div>
           </div>
         </div>
