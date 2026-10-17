@@ -34,7 +34,6 @@ import {
   EmptyStateIllustration,
   AssetOutlineIcon,
 } from './Assets';
-import { PlanningRecommendationsPage } from './PrimaryPages';
 import { PolicySimulationSandbox } from './PolicySimulationSandbox';
 import { BulkUploaderCard } from './BulkUploaderCard';
 import { AuthModal } from './AuthModal';
@@ -367,129 +366,151 @@ export const TrainingCapacityPage: React.FC = () => {
 
 /**
  * ============================================================================
- * SUPPORTING ROUTE: Reports (Combines Page 6 Planning Recommendations + Reports Library)
+ * SUPPORTING ROUTE: Reports (Official MSDE Reports, Assessments & Data Exports)
  * ============================================================================
  */
-export const ReportsAndRecommendationsPage: React.FC = () => {
-  const [subTab, setSubTab] = useState<'recommendations' | 'library'>('recommendations');
+export const ReportsPage: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const filteredReports =
-    categoryFilter === 'All'
-      ? GENERATED_REPORTS
-      : GENERATED_REPORTS.filter((r) => r.category === categoryFilter);
+  const filteredReports = GENERATED_REPORTS.filter((r) => {
+    const matchCategory = categoryFilter === 'All' || r.category === categoryFilter;
+    const matchSearch =
+      !searchQuery.trim() ||
+      r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.period.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchCategory && matchSearch;
+  });
 
   return (
     <div className="space-y-4">
-      {/* Sub-navigation bar allowing instant toggle between Page 6 Reference (Planning Recommendations) & Generated Reports */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-[#E9E0D3]">
-        <div className="flex items-center gap-2">
-          <FilterTabButton
-            active={subTab === 'recommendations'}
-            label="06 — Planning Recommendations"
-            onClick={() => setSubTab('recommendations')}
-          />
-          <FilterTabButton
-            active={subTab === 'library'}
-            label="Generated Reports Archive"
-            count={GENERATED_REPORTS.length}
-            onClick={() => setSubTab('library')}
+      {/* Top Header & Search/Filters */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E9E0D3]">
+        <div>
+          <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
+            Generated Reports &amp; Exports
+          </h1>
+          <p className="text-xs text-[#64716D] mt-1">
+            Download official state skill gap assessments, NSQF curriculum matrices, and ITI capacity reports
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2.5">
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 text-[#64716D] absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search reports..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 pr-3 py-1.5 rounded-lg border border-[#E9E0D3] bg-[#FFFEFB] text-xs text-[#173F35] placeholder:text-[#8E9B97] focus:outline-none focus:border-[#17604D] w-48 sm:w-56"
+            />
+          </div>
+          <SelectControl
+            value={categoryFilter}
+            onChange={setCategoryFilter}
+            options={[
+              { label: 'All Categories', value: 'All' },
+              { label: 'State Skill Gap', value: 'State Skill Gap' },
+              { label: 'Sector Forecast', value: 'Sector Forecast' },
+              { label: 'NSQF Curriculum', value: 'NSQF Curriculum' },
+              { label: 'ITI Capacity', value: 'ITI Capacity' },
+            ]}
+            className="w-40 sm:w-44"
           />
         </div>
-        <span className="text-[11px] text-[#64716D]">
-          MSDE Policy &amp; District Skill Planning Dossiers
-        </span>
       </div>
 
-      {subTab === 'recommendations' ? (
-        <PlanningRecommendationsPage />
+      {/* Reports Summary KPI Bar */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <SurfaceCard className="p-3">
+          <div className="text-[11px] font-medium text-[#64716D]">Total Available Reports</div>
+          <div className="text-xl font-bold text-[#173F35] mt-0.5">{GENERATED_REPORTS.length} Dossiers</div>
+        </SurfaceCard>
+        <SurfaceCard className="p-3">
+          <div className="text-[11px] font-medium text-[#64716D]">Primary Formats</div>
+          <div className="text-xl font-bold text-[#17604D] mt-0.5">PDF · XLSX · CSV</div>
+        </SurfaceCard>
+        <SurfaceCard className="p-3">
+          <div className="text-[11px] font-medium text-[#64716D]">Latest Dossier Update</div>
+          <div className="text-xl font-bold text-[#D97925] mt-0.5">14 Oct 2026</div>
+        </SurfaceCard>
+        <SurfaceCard className="p-3">
+          <div className="text-[11px] font-medium text-[#64716D]">Governance Authority</div>
+          <div className="text-xl font-bold text-[#173F35] mt-0.5">MSDE / NCVET</div>
+        </SurfaceCard>
+      </div>
+
+      {filteredReports.length === 0 ? (
+        <EmptyStateCard
+          variant="reports"
+          title="No Reports Found in Selected Category"
+          description="No generated reports match your search or filter. Reset to view all official MSDE reports."
+          actionLabel="Show All Reports"
+          onAction={() => {
+            setCategoryFilter('All');
+            setSearchQuery('');
+          }}
+        />
       ) : (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-                Generated Reports &amp; Exports
-              </h1>
-              <p className="text-xs text-[#64716D] mt-1">
-                Download official state skill gap assessments, NSQF curriculum matrices, and ITI capacity reports
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <SelectControl
-                value={categoryFilter}
-                onChange={setCategoryFilter}
-                options={[
-                  { label: 'All Categories', value: 'All' },
-                  { label: 'State Skill Gap', value: 'State Skill Gap' },
-                  { label: 'Sector Forecast', value: 'Sector Forecast' },
-                  { label: 'NSQF Curriculum', value: 'NSQF Curriculum' },
-                  { label: 'ITI Capacity', value: 'ITI Capacity' },
-                ]}
-                className="w-44"
-              />
-            </div>
-          </div>
-
-          {filteredReports.length === 0 ? (
-            <EmptyStateCard
-              variant="reports"
-              title="No Reports Found in Selected Category"
-              description="No generated reports match this filter. Reset the category filter to view all MSDE reports."
-              actionLabel="Show All Reports"
-              onAction={() => setCategoryFilter('All')}
-            />
-          ) : (
-            <SurfaceCard className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-[#E9E0D3] bg-[#FAF7F2] text-[#64716D]">
-                    <th className="py-2.5 px-3 font-semibold">Report Title</th>
-                    <th className="py-2.5 px-3 font-semibold">Category</th>
-                    <th className="py-2.5 px-3 font-semibold">Target Period</th>
-                    <th className="py-2.5 px-3 font-semibold">Generated On</th>
-                    <th className="py-2.5 px-3 font-semibold">Format / Size</th>
-                    <th className="py-2.5 px-3 font-semibold text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#F2ECE1]">
-                  {filteredReports.map((rep) => (
-                    <tr key={rep.id} className="hover:bg-[#F8F5EF]">
-                      <td className="py-2.5 px-3 font-semibold text-[#173F35]">
-                        {rep.title}
-                        <div className="text-[11px] font-normal text-[#64716D]">
-                          {rep.author}
-                        </div>
-                      </td>
-                      <td className="py-2.5 px-3 text-[#64716D]">{rep.category}</td>
-                      <td className="py-2.5 px-3 text-[#173F35] tabular-nums">{rep.period}</td>
-                      <td className="py-2.5 px-3 text-[#64716D] tabular-nums">
-                        {rep.generatedDate}
-                      </td>
-                      <td className="py-2.5 px-3 text-[#64716D] font-mono">
-                        {rep.format} · {rep.size}
-                      </td>
-                      <td className="py-2.5 px-3 text-right">
-                        <SecondaryButton
-                          tone="warm"
-                          onClick={() => ApiService.triggerDsdpDownload(492)}
-                          title="Download Official DSDP Target Allocation CSV"
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                          <span>Download</span>
-                        </SecondaryButton>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </SurfaceCard>
-          )}
-        </div>
+        <SurfaceCard className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="border-b border-[#E9E0D3] bg-[#FAF7F2] text-[#64716D]">
+                <th className="py-2.5 px-3 font-semibold">Report Title</th>
+                <th className="py-2.5 px-3 font-semibold">Category</th>
+                <th className="py-2.5 px-3 font-semibold">Target Period</th>
+                <th className="py-2.5 px-3 font-semibold">Generated On</th>
+                <th className="py-2.5 px-3 font-semibold">Format / Size</th>
+                <th className="py-2.5 px-3 font-semibold text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#F2ECE1]">
+              {filteredReports.map((rep) => (
+                <tr key={rep.id} className="hover:bg-[#F8F5EF] transition-colors">
+                  <td className="py-2.5 px-3 font-semibold text-[#173F35]">
+                    {rep.title}
+                    <div className="text-[11px] font-normal text-[#64716D]">
+                      {rep.author}
+                    </div>
+                  </td>
+                  <td className="py-2.5 px-3">
+                    <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#EAF3EE] text-[#166534] border border-[#BBF7D0]">
+                      {rep.category}
+                    </span>
+                  </td>
+                  <td className="py-2.5 px-3 text-[#173F35] tabular-nums font-medium">{rep.period}</td>
+                  <td className="py-2.5 px-3 text-[#64716D] tabular-nums">
+                    {rep.generatedDate}
+                  </td>
+                  <td className="py-2.5 px-3 text-[#64716D] font-mono">
+                    <span className="px-1.5 py-0.5 rounded bg-[#F5F0E7] text-[#173F35] font-semibold text-[10px]">
+                      {rep.format}
+                    </span>{' '}
+                    <span className="text-[11px]">· {rep.size}</span>
+                  </td>
+                  <td className="py-2.5 px-3 text-right">
+                    <SecondaryButton
+                      tone="warm"
+                      onClick={() => ApiService.triggerDsdpDownload(492)}
+                      title="Download Official DSDP Target Allocation Dossier"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Download</span>
+                    </SecondaryButton>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </SurfaceCard>
       )}
     </div>
   );
 };
+
+export const ReportsAndRecommendationsPage = ReportsPage;
 
 /**
  * ============================================================================
