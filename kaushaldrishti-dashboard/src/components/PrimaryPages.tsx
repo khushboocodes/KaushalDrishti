@@ -1542,33 +1542,35 @@ export const AlertsAndInsightsPage: React.FC<{
           })}
         </div>
 
-        {/* Right Column: Insight Summary + Mini Heritage Illustration */}
-        <div className="lg:col-span-4 space-y-3">
-          <SurfaceCard className="p-4">
-            <div className="flex items-center gap-2.5 mb-2.5">
-              <div className="w-8 h-8 rounded-full bg-[#FBF0D9] text-[#D97925] flex items-center justify-center shrink-0">
-                <Lightbulb className="w-4 h-4" />
+        {/* Right Column: Insight Summary Card with Bottom Heritage Illustration */}
+        <div className="lg:col-span-4">
+          <div className="bg-[#FFFEFB] border border-[#E9E0D3] rounded-2xl shadow-sm overflow-hidden flex flex-col justify-between">
+            <div className="p-5 pb-0">
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="w-8 h-8 rounded-full bg-[#FBF0D9] text-[#D97925] flex items-center justify-center shrink-0">
+                  <Lightbulb className="w-4 h-4" />
+                </div>
+                <h2 className="text-sm font-bold text-[#173F35]">Insight Summary</h2>
               </div>
-              <h2 className="text-sm font-bold text-[#173F35]">Insight Summary</h2>
+              <p className="text-xs text-[#64716D] leading-relaxed">
+                Healthcare and Green Jobs show strong demand across 70% of districts, while
+                data entry and basic IT support roles are approaching saturation in urban
+                areas.
+              </p>
+              <button
+                type="button"
+                onClick={() => onNavigate('recommendations')}
+                className="w-full mt-4 py-2.5 px-4 rounded-xl bg-[#FAF0E1] hover:bg-[#F5E6D0] border border-[#ECDCC7] text-[#173F35] font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>View Full Report</span>
+                <span className="text-xs text-[#D97925] leading-none" aria-hidden="true">→</span>
+              </button>
             </div>
-            <p className="text-xs text-[#64716D] leading-relaxed">
-              Healthcare and Green Jobs show strong demand across 70% of districts, while
-              data entry and basic IT support roles are approaching saturation in urban
-              areas.
-            </p>
-            <SecondaryButton
-              tone="warm"
-              onClick={() => onNavigate('recommendations')}
-              className="w-full mt-4 py-2"
-            >
-              <span>View Full Report</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </SecondaryButton>
-          </SurfaceCard>
 
-          {/* Supplied Heritage Artwork at bottom-right matching Reference Image 1 Page 5 */}
-          <div className="rounded-xl overflow-hidden border border-[#E9E0D3] bg-[#FAF6EE] p-2">
-            <MiniIllustration className="w-full h-28" />
+            {/* Heritage Illustration integrated inside the card, flush at the bottom */}
+            <div className="w-full mt-5">
+              <MiniIllustration className="w-full h-auto block" />
+            </div>
           </div>
         </div>
       </div>

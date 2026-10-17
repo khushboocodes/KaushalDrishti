@@ -369,25 +369,34 @@ export const MiniIllustration: React.FC<{ className?: string }> = ({ className =
     className={className}
     aria-hidden="true"
   >
-    <circle cx="210" cy="36" r="24" fill="#F7DFBA" fillOpacity="0.55" />
-    {/* Heritage sandstone gateway on left */}
-    <path d="M48 34 C48 18, 76 18, 76 34 Z" fill="#E5AF84" />
-    <rect x="24" y="42" width="76" height="58" fill="#F0C8A4" stroke="#D59B70" strokeWidth="1" />
-    <rect x="42" y="34" width="40" height="66" fill="#EAB88F" stroke="#D59B70" strokeWidth="1" />
-    <path d="M52 100 L52 64 C52 54, 72 54, 72 64 L72 100 Z" fill="#B56E45" />
-    {/* Domes and spires on right */}
-    <path d="M245 48 C245 34, 267 34, 267 48 Z" fill="#E8BA94" />
-    <rect x="236" y="48" width="40" height="52" fill="#F2DEC4" />
-    <rect x="282" y="36" width="22" height="64" fill="#E9DFCF" />
-    {/* Trees & green canopy */}
-    <circle cx="115" cy="88" r="16" fill="#568F66" />
-    <circle cx="140" cy="92" r="13" fill="#74A882" />
-    <circle cx="205" cy="90" r="15" fill="#4E8763" />
-    <circle cx="228" cy="93" r="12" fill="#689F77" />
-    <circle cx="318" cy="88" r="15" fill="#3B7A57" />
-    {/* Birds */}
-    <path d="M155 26 Q159 22 163 26 Q167 22 171 26" stroke="#C87D4E" strokeWidth="1.4" fill="none" />
-    <rect x="10" y="98" width="340" height="6" rx="3" fill="#79A882" fillOpacity="0.4" />
+    {/* Soft warm background dune */}
+    <path d="M70 108 C115 84, 245 84, 290 108 Z" fill="#F8F0E4" />
+
+    {/* Left Heritage Gateway with White Arch */}
+    <rect x="42" y="68" width="52" height="40" fill="#DFB28A" />
+    <path d="M68 32 C64 48, 49 52, 49 68 L87 68 C87 52, 72 48, 68 32 Z" fill="#CF9369" />
+    <path d="M58 108 L58 84 C58 74, 78 74, 78 84 L78 108 Z" fill="#FFFFFF" />
+
+    {/* Center Monument with Grand Onion Dome and Arch Door */}
+    <rect x="132" y="70" width="86" height="38" fill="#DFB28A" />
+    <path d="M175 28 C169 46, 150 51, 150 70 L200 70 C200 51, 181 46, 175 28 Z" fill="#CF9369" />
+    <path d="M162 108 L162 82 C162 70, 188 70, 188 82 L188 108 Z" fill="#B8764B" />
+
+    {/* Right Minaret & Pavilion */}
+    <rect x="257" y="52" width="10" height="56" fill="#DFB28A" />
+    <rect x="255" y="50" width="14" height="2.5" rx="1" fill="#CF9369" />
+    <circle cx="262" cy="45" r="4.5" fill="#CF9369" />
+    <rect x="276" y="72" width="38" height="36" fill="#DFB28A" />
+
+    {/* Foliage / Green Tree Circles */}
+    <circle cx="34" cy="104" r="13" fill="#477B63" />
+    <circle cx="106" cy="103" r="13" fill="#477B63" />
+    <circle cx="123" cy="105" r="9" fill="#5F9779" />
+    <circle cx="238" cy="103" r="13" fill="#477B63" />
+    <circle cx="316" cy="103" r="13" fill="#477B63" />
+
+    {/* Baseline Green Ground Strip */}
+    <rect x="0" y="108" width="360" height="7" fill="#9EBFA9" />
   </svg>
 );
 
