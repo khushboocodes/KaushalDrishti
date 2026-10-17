@@ -10,9 +10,7 @@ export type NavRouteId =
   | 'recommendations'
   | 'reports'
   | 'data-explorer'
-  | 'api-access'
-  | 'settings'
-  | 'design-system';
+  | 'settings';
 
 export type SupplyStatus = 'Undersupply' | 'Balanced' | 'Oversupply' | 'Moderate';
 

@@ -4,9 +4,6 @@ import {
   Bell,
   Menu,
   X,
-  LayoutGrid,
-  Maximize2,
-  Palette,
   ShieldCheck,
   Lock,
   MapPin,
@@ -26,7 +23,6 @@ import msdeLogo from '../assets/msde-logo.png';
 import {
   getUserRoleType,
   getRoleConfig,
-  DEMO_PROFILES,
   UserRoleType,
 } from '../utils/rbac';
 
@@ -41,9 +37,7 @@ const NAV_LABELS_HI: Record<string, string> = {
   'recommendations': 'योजना सिफारिशें',
   'reports': 'रिपोर्ट एवं निर्यात',
   'data-explorer': 'डेटा अन्वेषक',
-  'api-access': 'एपीआई एकीकरण',
   'settings': 'सिस्टम सेटिंग्स',
-  'design-system': 'डिजाइन सिस्टम',
 };
 
 interface AppShellProps {
@@ -65,19 +59,17 @@ export const SIDEBAR_NAV_ITEMS: {
   id: NavRouteId;
   label: string;
   icon: string;
-  frameBadge?: string;
 }[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'dashboard', frameBadge: '01' },
+  { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
   { id: 'demand-supply', label: 'Demand & Supply', icon: 'demand' },
-  { id: 'forecasting', label: 'Forecasting', icon: 'forecast', frameBadge: '04' },
-  { id: 'sectors', label: 'Sectors & Trades', icon: 'sectors', frameBadge: '03' },
-  { id: 'geographic', label: 'Geographic View', icon: 'map', frameBadge: '02' },
+  { id: 'forecasting', label: 'Forecasting', icon: 'forecast' },
+  { id: 'sectors', label: 'Sectors & Trades', icon: 'sectors' },
+  { id: 'geographic', label: 'Geographic View', icon: 'map' },
   { id: 'training', label: 'Training Capacity', icon: 'training' },
-  { id: 'alerts', label: 'Alerts & Insights', icon: 'alerts', frameBadge: '05' },
-  { id: 'recommendations', label: 'Recommendations', icon: 'recommendations', frameBadge: '06' },
+  { id: 'alerts', label: 'Alerts & Insights', icon: 'alerts' },
+  { id: 'recommendations', label: 'Recommendations', icon: 'recommendations' },
   { id: 'reports', label: 'Reports', icon: 'reports' },
   { id: 'data-explorer', label: 'Data Explorer', icon: 'data' },
-  { id: 'api-access', label: 'API Access', icon: 'api' },
   { id: 'settings', label: 'Settings', icon: 'settings' },
 ];
 
@@ -183,38 +175,9 @@ export const AppShell: React.FC<AppShellProps> = ({
                     {language === 'HI' ? (NAV_LABELS_HI[item.id] || item.label) : item.label}
                   </span>
                 </span>
-                {item.frameBadge && (
-                  <span
-                    className={`text-[10px] font-mono tabular-nums ${
-                      isActive ? 'text-[#9E3B22]' : 'text-[#64716D]/75'
-                    }`}
-                  >
-                    {item.frameBadge}
-                  </span>
-                )}
               </button>
             );
           })}
-
-          {/* Design System & Asset Sheet Catalogue Route */}
-          <div className="pt-1.5 mt-1.5 border-t border-[#E9E0D3]">
-            <button
-              type="button"
-              onClick={() => {
-                onToggleCanvasMode('single');
-                onSelectRoute('design-system');
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs transition-colors cursor-pointer whitespace-nowrap ${
-                canvasMode === 'single' && activeRoute === 'design-system'
-                  ? 'bg-[#F5D7CC] text-[#9E3B22] font-bold'
-                  : 'text-[#64716D] hover:bg-[#ECE4D7] hover:text-[#173F35] font-medium'
-              }`}
-            >
-              <Palette className="w-4 h-4 shrink-0" />
-              <span>Design System &amp; Assets</span>
-            </button>
-          </div>
         </nav>
       </div>
 
@@ -301,33 +264,6 @@ export const AppShell: React.FC<AppShellProps> = ({
 
           {/* Right Zone: Frame Mode Switcher, Date-Range Selector, Language, Notifications, Admin Profile */}
           <div className="flex items-center gap-2.5 shrink-0">
-            {/* Interactive Canvas Switcher: Single Screen vs 6-Frame Reference Overview */}
-            <div className="hidden xl:flex items-center bg-[#F5F0E7] p-0.5 rounded-lg border border-[#E9E0D3]">
-              <button
-                type="button"
-                onClick={() => onToggleCanvasMode('single')}
-                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors cursor-pointer whitespace-nowrap ${
-                  canvasMode === 'single'
-                    ? 'bg-[#FFFEFB] text-[#173F35] shadow-2xs'
-                    : 'text-[#64716D] hover:text-[#173F35]'
-                }`}
-              >
-                <Maximize2 className="w-3 h-3" />
-                <span>Interactive View</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => onToggleCanvasMode('six-grid')}
-                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors cursor-pointer whitespace-nowrap ${
-                  canvasMode === 'six-grid'
-                    ? 'bg-[#FFFEFB] text-[#173F35] shadow-2xs'
-                    : 'text-[#64716D] hover:text-[#173F35]'
-                }`}
-              >
-                <LayoutGrid className="w-3 h-3" />
-                <span>6-Page Reference Grid</span>
-              </button>
-            </div>
 
             {/* Date-Range Selector matching Reference Image 1 ("Last 1 Year") */}
             <div className="relative">
@@ -450,53 +386,91 @@ export const AppShell: React.FC<AppShellProps> = ({
 
               {/* Profile Dropdown Menu */}
               {profileOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-[#FFFEFB] border border-[#E9E0D3] rounded-xl shadow-xl p-3 z-50 text-xs">
-                  <div className="pb-2.5 mb-2.5 border-b border-[#E9E0D3]">
-                    <div className="font-bold text-[#173F35] text-sm">
-                      {userSession ? userSession.name : 'Government Officer'}
-                    </div>
-                    <div className="text-[11px] text-[#17604D] font-medium mt-0.5">
-                      {userSession ? userSession.designation : 'Labour Market Intelligence Portal'}
-                    </div>
-                    <div className="text-[10px] text-[#64716D] mt-0.5">
-                      {userSession ? userSession.department : 'MSDE National Portal'}
-                    </div>
-                    {userSession?.badge && (
-                      <span className="inline-block mt-1.5 px-2 py-0.5 rounded bg-[#F5F0E7] text-[#173F35] font-mono text-[10px] font-semibold">
-                        Badge: {userSession.badge}
-                      </span>
-                    )}
-                  </div>
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setProfileOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-[#FFFEFB] border border-[#E9E0D3] rounded-xl shadow-xl p-3.5 z-50 text-xs animate-in fade-in zoom-in-95 duration-100">
+                    <div className="pb-3 border-b border-[#E9E0D3]">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="font-bold text-[#173F35] text-[14px] leading-tight">
+                            {userSession ? userSession.name : 'Government Officer'}
+                          </div>
+                          <div className="text-[11.5px] text-[#17604D] font-medium mt-0.5">
+                            {userSession ? userSession.designation : 'Labour Market Intelligence Portal'}
+                          </div>
+                          <div className="text-[10.5px] text-[#64716D] mt-0.5">
+                            {userSession ? userSession.department : 'MSDE Government of India'}
+                          </div>
+                        </div>
+                        <span
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
+                            roleConfig.roleType === 'DSO'
+                              ? 'bg-[#EBF3FB] text-[#1E40AF] border border-[#BFDBFE]'
+                              : roleConfig.roleType === 'NCVET'
+                              ? 'bg-[#F3EFFB] text-[#5B21B6] border border-[#DDD6FE]'
+                              : 'bg-[#EAF3EE] text-[#166534] border border-[#BBF7D0]'
+                          }`}
+                        >
+                          {roleConfig.badgeLabel}
+                        </span>
+                      </div>
 
-                  <div className="space-y-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setProfileOpen(false);
-                        setAuthModalOpen(true);
-                      }}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-[#173F35] hover:bg-[#F5F0E7] transition-colors cursor-pointer font-medium"
-                    >
-                      Switch Officer Role / Credentials
-                    </button>
+                      <div className="mt-2 flex items-center gap-2">
+                        <span className="inline-block px-2 py-0.5 rounded bg-[#F5F0E7] text-[#173F35] font-mono text-[10px] font-semibold">
+                          Badge: {userSession?.badge || 'MSDE-SSDM-DIR'}
+                        </span>
+                      </div>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setProfileOpen(false);
-                        if (onLogout) {
-                          onLogout();
-                        } else {
-                          setUserSession(null);
-                        }
-                      }}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-[#D96843] hover:bg-[#FDF2F0] transition-colors cursor-pointer font-medium flex items-center justify-between"
-                    >
-                      <span>Sign Out to Login Page</span>
-                      <span>→</span>
-                    </button>
+                      {/* Transferred Governance & Jurisdiction Information */}
+                      <div className="mt-2.5 p-2.5 bg-[#FAF5EB] border border-[#EADBCA] rounded-lg space-y-1">
+                        <div className="flex items-start gap-1.5 text-[11px] text-[#173F35]">
+                          <ShieldCheck className="w-3.5 h-3.5 text-[#17604D] shrink-0 mt-0.5" />
+                          <div className="leading-tight">
+                            <span className="font-semibold text-[#173F35]">Jurisdiction: </span>
+                            <span className="font-bold text-[#17604D]">{roleConfig.jurisdiction}</span>
+                          </div>
+                        </div>
+                        {roleConfig.governanceScope && (
+                          <div className="text-[10px] text-[#64716D] pl-5 leading-relaxed">
+                            {roleConfig.governanceScope}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-1 pt-2.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProfileOpen(false);
+                          setAuthModalOpen(true);
+                        }}
+                        className="w-full text-left px-2.5 py-1.5 rounded-lg text-[#173F35] hover:bg-[#F5F0E7] transition-colors cursor-pointer font-medium"
+                      >
+                        Switch Officer Role / Credentials
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProfileOpen(false);
+                          if (onLogout) {
+                            onLogout();
+                          } else {
+                            setUserSession(null);
+                          }
+                        }}
+                        className="w-full text-left px-2.5 py-1.5 rounded-lg text-[#D96843] hover:bg-[#FDF2F0] transition-colors cursor-pointer font-medium flex items-center justify-between"
+                      >
+                        <span>Sign Out to Login Page</span>
+                        <span>→</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
+                </>
               )}
             </div>
           </div>
@@ -504,93 +478,6 @@ export const AppShell: React.FC<AppShellProps> = ({
 
         {/* Main Content Viewport */}
         <main className="flex-1 p-4 lg:p-5 max-w-[1440px] w-full mx-auto">
-          {/* RBAC Government Jurisdiction & Clearance Banner */}
-          <div className="mb-4 p-3 sm:p-3.5 rounded-xl border bg-[#FFFEFB] border-[#E8DDD0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
-            <div className="flex items-start sm:items-center gap-3">
-              <div
-                className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 sm:mt-0 ${
-                  roleConfig.roleType === 'DSO'
-                    ? 'bg-[#EBF3FB] text-[#2463EB]'
-                    : roleConfig.roleType === 'NCVET'
-                    ? 'bg-[#F3EFFB] text-[#7C3AED]'
-                    : 'bg-[#EFF6F3] text-[#17604D]'
-                }`}
-              >
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <div className="leading-tight">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs sm:text-[13px] font-bold text-[#173F35]">
-                    {userSession?.name || roleConfig.title}
-                  </span>
-                  <span
-                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                      roleConfig.roleType === 'DSO'
-                        ? 'bg-[#EBF3FB] text-[#1E40AF] border border-[#BFDBFE]'
-                        : roleConfig.roleType === 'NCVET'
-                        ? 'bg-[#F3EFFB] text-[#5B21B6] border border-[#DDD6FE]'
-                        : 'bg-[#EAF3EE] text-[#166534] border border-[#BBF7D0]'
-                    }`}
-                  >
-                    {roleConfig.badgeLabel}
-                  </span>
-                  <span className="font-mono text-[10px] bg-[#F5F0E7] px-1.5 py-0.5 rounded text-[#173F35]">
-                    {userSession?.badge || 'GOV-SEC-01'}
-                  </span>
-                </div>
-                <div className="text-[11px] sm:text-[11.5px] text-[#64716D] mt-1 flex flex-wrap items-center gap-1.5">
-                  <span className="font-medium text-[#173F35]">Jurisdiction:</span>
-                  <span className="font-semibold text-[#17604D]">{roleConfig.jurisdiction}</span>
-                  <span className="text-[#D4C6B4] hidden sm:inline">&bull;</span>
-                  <span className="hidden sm:inline text-[#64716D]">{roleConfig.governanceScope}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Instant Role Simulation Switcher for Evaluators */}
-            <div className="flex items-center gap-1.5 pt-2.5 md:pt-0 border-t md:border-t-0 border-[#F0E8DC] shrink-0">
-              <span className="text-[10.5px] text-[#7E8D88] font-medium mr-1 hidden sm:inline">
-                Simulate Role:
-              </span>
-              <button
-                type="button"
-                onClick={() => setUserSession(DEMO_PROFILES.ADMIN)}
-                className={`px-2.5 py-1.5 rounded-lg text-[10.5px] font-semibold transition-all cursor-pointer ${
-                  roleConfig.roleType === 'ADMIN'
-                    ? 'bg-[#17604D] text-white shadow-xs'
-                    : 'bg-[#F5F0E7] hover:bg-[#EAE1D2] text-[#173F35]'
-                }`}
-                title="Switch to State SSDM Director (Full State Authority & Sanctions)"
-              >
-                Admin (State)
-              </button>
-              <button
-                type="button"
-                onClick={() => setUserSession(DEMO_PROFILES.DSO)}
-                className={`px-2.5 py-1.5 rounded-lg text-[10.5px] font-semibold transition-all cursor-pointer ${
-                  roleConfig.roleType === 'DSO'
-                    ? 'bg-[#2463EB] text-white shadow-xs'
-                    : 'bg-[#F5F0E7] hover:bg-[#EAE1D2] text-[#173F35]'
-                }`}
-                title="Switch to District Skill Officer (Locked to Pune District execution)"
-              >
-                DSO (Pune)
-              </button>
-              <button
-                type="button"
-                onClick={() => setUserSession(DEMO_PROFILES.NCVET)}
-                className={`px-2.5 py-1.5 rounded-lg text-[10.5px] font-semibold transition-all cursor-pointer ${
-                  roleConfig.roleType === 'NCVET'
-                    ? 'bg-[#7C3AED] text-white shadow-xs'
-                    : 'bg-[#F5F0E7] hover:bg-[#EAE1D2] text-[#173F35]'
-                }`}
-                title="Switch to NCVET Admin (Standards, NOS & Curriculum Overhaul)"
-              >
-                NCVET
-              </button>
-            </div>
-          </div>
-
           {children}
         </main>
       </div>
