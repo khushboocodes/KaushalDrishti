@@ -30,8 +30,6 @@ import {
 import {
   HeaderIllustration,
   MiniIllustration,
-  LeafLeft,
-  LeafRight,
   MandalaPattern,
 } from './Assets';
 import {
@@ -488,9 +486,6 @@ export const GeographicViewPage: React.FC<{
 
   return (
     <div className="space-y-4 relative pb-4">
-      {/* Decorative subtle edge illustrations */}
-      <LeafRight className="w-16 h-16 absolute -top-2 right-2 pointer-events-none opacity-80 hidden lg:block" />
-
       {/* Heading */}
       <div>
         <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
@@ -1105,10 +1100,6 @@ export const SkillForecastingPage: React.FC = () => {
 
   return (
     <div className="space-y-4 relative">
-      {/* Subtle botanical leaf accents on bottom edges */}
-      <LeafLeft className="w-16 h-16 absolute bottom-0 left-0 pointer-events-none opacity-65 hidden lg:block" />
-      <LeafRight className="w-16 h-16 absolute bottom-0 right-0 pointer-events-none opacity-65 hidden lg:block" />
-
       {/* Header */}
       <div>
         <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
