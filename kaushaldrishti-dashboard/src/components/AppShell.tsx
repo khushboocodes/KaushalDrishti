@@ -7,6 +7,11 @@ import {
   LayoutGrid,
   Maximize2,
   Palette,
+  ShieldCheck,
+  Lock,
+  MapPin,
+  Building2,
+  User,
 } from 'lucide-react';
 import {
   LogoHorizontal,
@@ -17,6 +22,13 @@ import { NavRouteId } from '../types';
 import { ALERTS_DATA } from '../data/mockData';
 import { AuthModal, UserSession } from './AuthModal';
 import { useLanguage } from '../context/LanguageContext';
+import msdeLogo from '../assets/msde-logo.png';
+import {
+  getUserRoleType,
+  getRoleConfig,
+  DEMO_PROFILES,
+  UserRoleType,
+} from '../utils/rbac';
 
 const NAV_LABELS_HI: Record<string, string> = {
   'dashboard': 'डैशबोर्ड (कमान केंद्र)',
@@ -96,6 +108,11 @@ export const AppShell: React.FC<AppShellProps> = ({
     if (onUserSessionChange) onUserSessionChange(session);
   };
 
+  const roleConfig = getRoleConfig(userSession);
+  const visibleNavItems = SIDEBAR_NAV_ITEMS.filter((item) =>
+    roleConfig.allowedRoutes.includes(item.id)
+  );
+
   const renderSidebarContent = () => (
     <div className="flex flex-col h-full justify-between bg-[#F5F0E7] border-r border-[#E9E0D3] w-[205px] shrink-0 select-none">
       {/* Top Brand Logo & Wordmark */}
@@ -113,9 +130,32 @@ export const AppShell: React.FC<AppShellProps> = ({
           </button>
         </div>
 
-        {/* Vertically Stacked Navigation Items */}
+        {/* Officer Clearance Badge in Sidebar */}
+        <div className="px-3 py-1.5 bg-[#ECE3D4] border-b border-[#E0D4C3] text-[10.5px] text-[#173F35] flex items-center justify-between">
+          <div className="flex items-center gap-1.5 truncate">
+            <ShieldCheck className="w-3 h-3 text-[#17604D] shrink-0" />
+            <span className="font-bold truncate text-[10px]">
+              {roleConfig.roleType === 'ADMIN'
+                ? 'Apex Admin'
+                : roleConfig.roleType === 'DSO'
+                ? 'District DSO'
+                : 'NCVET Admin'}
+            </span>
+          </div>
+          {roleConfig.isDistrictLocked ? (
+            <span className="px-1.5 py-0.2 rounded bg-[#FBE5DE] text-[#C8432B] font-mono text-[8.5px] font-bold">
+              PUNE LOCKED
+            </span>
+          ) : (
+            <span className="px-1.5 py-0.2 rounded bg-[#E2F0E3] text-[#17604D] font-mono text-[8.5px] font-semibold">
+              ACTIVE
+            </span>
+          )}
+        </div>
+
+        {/* Vertically Stacked Navigation Items - Filtered by RBAC */}
         <nav className="px-2.5 py-2.5 space-y-0.5" aria-label="Main Sidebar Navigation">
-          {SIDEBAR_NAV_ITEMS.map((item) => {
+          {visibleNavItems.map((item) => {
             const isActive =
               canvasMode === 'single' && activeRoute === item.id;
             return (
@@ -324,6 +364,15 @@ export const AppShell: React.FC<AppShellProps> = ({
               {language === 'EN' ? 'EN' : 'हिं'}
             </button>
 
+            {/* Official MSDE Emblem in Dashboard Header */}
+            <div className="hidden lg:flex items-center pl-1 pr-2 py-0.5 border-l border-[#E9E0D3]">
+              <img
+                src={msdeLogo}
+                alt="Ministry of Skill Development and Entrepreneurship, Government of India"
+                className="h-[30px] w-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
+              />
+            </div>
+
             {/* Notifications Bell */}
             <div className="relative">
               <button
@@ -455,6 +504,93 @@ export const AppShell: React.FC<AppShellProps> = ({
 
         {/* Main Content Viewport */}
         <main className="flex-1 p-4 lg:p-5 max-w-[1440px] w-full mx-auto">
+          {/* RBAC Government Jurisdiction & Clearance Banner */}
+          <div className="mb-4 p-3 sm:p-3.5 rounded-xl border bg-[#FFFEFB] border-[#E8DDD0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="flex items-start sm:items-center gap-3">
+              <div
+                className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 sm:mt-0 ${
+                  roleConfig.roleType === 'DSO'
+                    ? 'bg-[#EBF3FB] text-[#2463EB]'
+                    : roleConfig.roleType === 'NCVET'
+                    ? 'bg-[#F3EFFB] text-[#7C3AED]'
+                    : 'bg-[#EFF6F3] text-[#17604D]'
+                }`}
+              >
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div className="leading-tight">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs sm:text-[13px] font-bold text-[#173F35]">
+                    {userSession?.name || roleConfig.title}
+                  </span>
+                  <span
+                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                      roleConfig.roleType === 'DSO'
+                        ? 'bg-[#EBF3FB] text-[#1E40AF] border border-[#BFDBFE]'
+                        : roleConfig.roleType === 'NCVET'
+                        ? 'bg-[#F3EFFB] text-[#5B21B6] border border-[#DDD6FE]'
+                        : 'bg-[#EAF3EE] text-[#166534] border border-[#BBF7D0]'
+                    }`}
+                  >
+                    {roleConfig.badgeLabel}
+                  </span>
+                  <span className="font-mono text-[10px] bg-[#F5F0E7] px-1.5 py-0.5 rounded text-[#173F35]">
+                    {userSession?.badge || 'GOV-SEC-01'}
+                  </span>
+                </div>
+                <div className="text-[11px] sm:text-[11.5px] text-[#64716D] mt-1 flex flex-wrap items-center gap-1.5">
+                  <span className="font-medium text-[#173F35]">Jurisdiction:</span>
+                  <span className="font-semibold text-[#17604D]">{roleConfig.jurisdiction}</span>
+                  <span className="text-[#D4C6B4] hidden sm:inline">&bull;</span>
+                  <span className="hidden sm:inline text-[#64716D]">{roleConfig.governanceScope}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Instant Role Simulation Switcher for Evaluators */}
+            <div className="flex items-center gap-1.5 pt-2.5 md:pt-0 border-t md:border-t-0 border-[#F0E8DC] shrink-0">
+              <span className="text-[10.5px] text-[#7E8D88] font-medium mr-1 hidden sm:inline">
+                Simulate Role:
+              </span>
+              <button
+                type="button"
+                onClick={() => setUserSession(DEMO_PROFILES.ADMIN)}
+                className={`px-2.5 py-1.5 rounded-lg text-[10.5px] font-semibold transition-all cursor-pointer ${
+                  roleConfig.roleType === 'ADMIN'
+                    ? 'bg-[#17604D] text-white shadow-xs'
+                    : 'bg-[#F5F0E7] hover:bg-[#EAE1D2] text-[#173F35]'
+                }`}
+                title="Switch to State SSDM Director (Full State Authority & Sanctions)"
+              >
+                Admin (State)
+              </button>
+              <button
+                type="button"
+                onClick={() => setUserSession(DEMO_PROFILES.DSO)}
+                className={`px-2.5 py-1.5 rounded-lg text-[10.5px] font-semibold transition-all cursor-pointer ${
+                  roleConfig.roleType === 'DSO'
+                    ? 'bg-[#2463EB] text-white shadow-xs'
+                    : 'bg-[#F5F0E7] hover:bg-[#EAE1D2] text-[#173F35]'
+                }`}
+                title="Switch to District Skill Officer (Locked to Pune District execution)"
+              >
+                DSO (Pune)
+              </button>
+              <button
+                type="button"
+                onClick={() => setUserSession(DEMO_PROFILES.NCVET)}
+                className={`px-2.5 py-1.5 rounded-lg text-[10.5px] font-semibold transition-all cursor-pointer ${
+                  roleConfig.roleType === 'NCVET'
+                    ? 'bg-[#7C3AED] text-white shadow-xs'
+                    : 'bg-[#F5F0E7] hover:bg-[#EAE1D2] text-[#173F35]'
+                }`}
+                title="Switch to NCVET Admin (Standards, NOS & Curriculum Overhaul)"
+              >
+                NCVET
+              </button>
+            </div>
+          </div>
+
           {children}
         </main>
       </div>

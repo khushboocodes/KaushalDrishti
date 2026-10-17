@@ -76,16 +76,18 @@ export const SelectControl: React.FC<{
   onChange: (value: string) => void;
   className?: string;
   compact?: boolean;
-}> = ({ label, value, options, onChange, className = '', compact = false }) => (
+  disabled?: boolean;
+}> = ({ label, value, options, onChange, className = '', compact = false, disabled = false }) => (
   <div className={`flex flex-col gap-1 ${className}`}>
     {label && <label className="text-[11px] font-medium text-[#64716D]">{label}</label>}
     <div className="relative">
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full appearance-none bg-[#FFFEFB] border border-[#E9E0D3] hover:border-[#D4C6B4] focus:border-[#17604D] focus:outline-none rounded-lg text-[#173F35] font-medium pr-8 transition-colors cursor-pointer ${
-          compact ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-xs'
-        }`}
+        disabled={disabled}
+        className={`w-full appearance-none bg-[#FFFEFB] border border-[#E9E0D3] hover:border-[#D4C6B4] focus:border-[#17604D] focus:outline-none rounded-lg text-[#173F35] font-medium pr-8 transition-colors ${
+          disabled ? 'opacity-75 bg-[#F5F0E7] cursor-not-allowed' : 'cursor-pointer'
+        } ${compact ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-xs'}`}
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>

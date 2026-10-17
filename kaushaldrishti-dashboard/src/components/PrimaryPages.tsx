@@ -25,6 +25,7 @@ import {
   Globe,
   CloudCog,
   Landmark,
+  Lock,
 } from 'lucide-react';
 import {
   HeaderIllustration,
@@ -55,6 +56,8 @@ import {
 import { AlertItem, NavRouteId, RecommendationItem, TradeGrowthItem } from '../types';
 import { ApiService } from '../services/apiService';
 import { useLanguage } from '../context/LanguageContext';
+import { UserSession } from './AuthModal';
+import { getUserRoleType, getRoleConfig } from '../utils/rbac';
 
 /**
  * ============================================================================
@@ -63,8 +66,11 @@ import { useLanguage } from '../context/LanguageContext';
  */
 export const DashboardOverviewPage: React.FC<{
   onNavigate: (route: NavRouteId) => void;
-}> = ({ onNavigate }) => {
+  userSession?: UserSession | null;
+}> = ({ onNavigate, userSession }) => {
   const { t } = useLanguage();
+  const roleType = getUserRoleType(userSession);
+  const roleConfig = getRoleConfig(userSession);
   const [chartPeriod, setChartPeriod] = useState<'Yearly' | 'Quarterly'>('Yearly');
   const barsData = YEARLY_DEMAND_SUPPLY[chartPeriod];
 
@@ -73,14 +79,38 @@ export const DashboardOverviewPage: React.FC<{
       {/* Top Heading Banner with Header Illustration on the Right */}
       <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-1 pb-1 overflow-hidden">
         <div className="z-10 max-w-xl">
+          <div className="flex items-center gap-2 mb-1">
+            <span
+              className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                roleType === 'DSO'
+                  ? 'bg-[#EBF3FB] text-[#1E40AF] border border-[#BFDBFE]'
+                  : roleType === 'NCVET'
+                  ? 'bg-[#F3EFFB] text-[#5B21B6] border border-[#DDD6FE]'
+                  : 'bg-[#EAF3EE] text-[#166534] border border-[#BBF7D0]'
+              }`}
+            >
+              {roleConfig.badgeLabel}
+            </span>
+            <span className="text-[11px] text-[#64716D] font-medium">
+              {roleConfig.jurisdiction}
+            </span>
+          </div>
           <h1 className="font-serif-heading text-2xl sm:text-[26px] font-bold text-[#173F35] tracking-tight">
-            {t("India's Skill Landscape at a Glance", "भारत का कौशल परिदृश्य एक नज़र में")}
+            {roleType === 'DSO'
+              ? t("Pune District Skill Landscape (DSC Command)", "पुणे जिला कौशल परिदृश्य (डीएससी कमान)")
+              : roleType === 'NCVET'
+              ? t("National Qualifications & Standards Overview", "राष्ट्रीय योग्यता एवं मानक अवलोकन")
+              : t("India's Skill Landscape at a Glance", "भारत का कौशल परिदृश्य एक नज़र में")}
           </h1>
           <p className="text-xs sm:text-[13px] text-[#64716D] mt-1">
-            {t(
-              "Real-time insights to align training capacity with industry demand",
-              "उद्योग की मांग के साथ प्रशिक्षण क्षमता को संरेखित करने के लिए वास्तविक समय अंतर्दृष्टि"
-            )}
+            {roleType === 'DSO'
+              ? t("Local ITI seat capacity utilization, district deficit signals, and DSC target fulfillment", "स्थानीय आईटीआई क्षमता उपयोग एवं जिला घाटा संकेत")
+              : roleType === 'NCVET'
+              ? t("Curriculum obsolescence signals, NSQF credit distribution, and industry competency alignment", "पाठ्यक्रम अप्रचलन संकेत एवं एनएसक्यूएफ संरेखण")
+              : t(
+                  "Real-time insights to align training capacity with industry demand",
+                  "उद्योग की मांग के साथ प्रशिक्षण क्षमता को संरेखित करने के लिए वास्तविक समय अंतर्दृष्टि"
+                )}
           </p>
         </div>
         <div className="w-full lg:w-[54%] xl:w-[56%] shrink-0 -my-2">
@@ -417,21 +447,30 @@ export const DashboardOverviewPage: React.FC<{
  * PAGE 2: 02 — Geographic Intelligence ("India – District Level Labour Demand–Supply")
  * ============================================================================
  */
-export const GeographicViewPage: React.FC = () => {
+export const GeographicViewPage: React.FC<{
+  userSession?: UserSession | null;
+}> = ({ userSession }) => {
   const { t } = useLanguage();
+  const roleType = getUserRoleType(userSession);
+  const isDsoLocked = roleType === 'DSO';
+
   const [selectedStateName, setSelectedStateName] = useState<string>('Maharashtra');
   const [selectedDistrictId, setSelectedDistrictId] = useState<string>('pune');
   const [selectedSector, setSelectedSector] = useState<string>('All Sectors');
   const [viewMode, setViewMode] = useState<'Map' | 'Table'>('Map');
   const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
 
+  const effectiveStateName = isDsoLocked ? 'Maharashtra' : selectedStateName;
+  const effectiveDistrictId = isDsoLocked ? 'pune' : selectedDistrictId;
+
   const currentState =
-    STATES_DATA.find((s) => s.state === selectedStateName) || STATES_DATA[0];
+    STATES_DATA.find((s) => s.state === effectiveStateName) || STATES_DATA[0];
   const currentDistrict =
-    currentState.districts.find((d) => d.id === selectedDistrictId) ||
+    currentState.districts.find((d) => d.id === effectiveDistrictId) ||
     currentState.districts[0];
 
   const handleStateChange = (stateName: string) => {
+    if (isDsoLocked) return;
     setSelectedStateName(stateName);
     const nextState = STATES_DATA.find((s) => s.state === stateName);
     if (nextState && nextState.districts.length > 0) {
@@ -455,33 +494,60 @@ export const GeographicViewPage: React.FC = () => {
       {/* Heading */}
       <div>
         <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-          {t("India – District Level Labour Demand–Supply", "भारत – जिला स्तरीय श्रम मांग–आपूर्ति")}
+          {isDsoLocked
+            ? t("Pune District – Local Labour Demand–Supply Radar", "पुणे जिला – स्थानीय श्रम मांग–आपूर्ति रडार")
+            : t("India – District Level Labour Demand–Supply", "भारत – जिला स्तरीय श्रम मांग–आपूर्ति")}
         </h1>
         <p className="text-xs text-[#64716D] mt-1">
-          {t(
-            "Explore demand, supply and gaps across States and Districts",
-            "राज्यों और जिलों में मांग, आपूर्ति और अंतर का अन्वेषण करें"
-          )}
+          {isDsoLocked
+            ? t("Hyper-local ITI absorption, DSC target tracking, and local employer cluster gap analysis", "हाइपर-लोकल आईटीआई अवशोषण एवं स्थानीय क्लस्टर विश्लेषण")
+            : t(
+                "Explore demand, supply and gaps across States and Districts",
+                "राज्यों और जिलों में मांग, आपूर्ति और अंतर का अन्वेषण करें"
+              )}
         </p>
       </div>
 
       {/* Filter Row */}
       <SurfaceCard className="p-3.5">
+        {isDsoLocked && (
+          <div className="mb-3 px-3 py-2 rounded-lg bg-[#FBE5DE]/80 border border-[#F5D7CC] flex items-center justify-between text-xs text-[#C8432B]">
+            <div className="flex items-center gap-2">
+              <Lock className="w-3.5 h-3.5 shrink-0" />
+              <span>
+                <strong>District Officer Jurisdiction Lock:</strong> You are authorized exclusively for <strong>Pune District (MH-492)</strong> under the District Skill Committee. State-wide cross-district alterations require State SSDM Director clearance.
+              </span>
+            </div>
+            <span className="font-mono text-[10px] font-bold bg-white px-2 py-0.5 rounded border border-[#F5D7CC] shrink-0">
+              RBAC LEVEL 2
+            </span>
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-end">
           <div className="lg:col-span-3">
             <SelectControl
               label="State"
-              value={currentState.state}
+              value={effectiveStateName}
               onChange={handleStateChange}
-              options={STATES_DATA.map((s) => ({ label: s.state, value: s.state }))}
+              disabled={isDsoLocked}
+              options={
+                isDsoLocked
+                  ? [{ label: 'Maharashtra (Assigned Jurisdiction)', value: 'Maharashtra' }]
+                  : STATES_DATA.map((s) => ({ label: s.state, value: s.state }))
+              }
             />
           </div>
           <div className="lg:col-span-3">
             <SelectControl
               label="District"
-              value={currentDistrict.id}
+              value={effectiveDistrictId}
               onChange={setSelectedDistrictId}
-              options={currentState.districts.map((d) => ({ label: d.name, value: d.id }))}
+              disabled={isDsoLocked}
+              options={
+                isDsoLocked
+                  ? [{ label: 'Pune (Assigned District MH-492)', value: 'pune' }]
+                  : currentState.districts.map((d) => ({ label: d.name, value: d.id }))
+              }
             />
           </div>
           <div className="lg:col-span-3">
@@ -765,9 +831,14 @@ export const GeographicViewPage: React.FC = () => {
  * PAGE 3: 03 — Sector and Trade Analysis ("Sector-wise Analysis")
  * ============================================================================
  */
-export const SectorsAndTradesPage: React.FC = () => {
+export const SectorsAndTradesPage: React.FC<{
+  userSession?: UserSession | null;
+}> = ({ userSession }) => {
+  const roleType = getUserRoleType(userSession);
+  const isNcvet = roleType === 'NCVET';
   const [selectedSectorFilter, setSelectedSectorFilter] = useState<string>('All Sectors');
   const [exportNotice, setExportNotice] = useState<boolean>(false);
+  const [syllabusNotice, setSyllabusNotice] = useState<string>('');
 
   const filteredSectors =
     selectedSectorFilter === 'All Sectors'
@@ -809,10 +880,12 @@ export const SectorsAndTradesPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-            Sector-wise Analysis
+            {isNcvet ? 'National Sectors & Qualifications Standards' : 'Sector-wise Analysis'}
           </h1>
           <p className="text-xs text-[#64716D] mt-1">
-            Compare demand, supply, growth and skill gaps across sectors
+            {isNcvet
+              ? 'Monitor National Occupational Standards (NOS), curriculum obsolescence, and NSQF credit distribution'
+              : 'Compare demand, supply, growth and skill gaps across sectors'}
           </p>
         </div>
 
@@ -837,6 +910,42 @@ export const SectorsAndTradesPage: React.FC = () => {
           </PrimaryButton>
         </div>
       </div>
+
+      {/* NCVET Specialized Regulatory Action Banner */}
+      {isNcvet && (
+        <div className="p-3.5 rounded-xl bg-[#F5F0FB] border border-[#DDD6FE] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-2xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#EDE4FC] text-[#7C3AED] flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="font-bold text-[#4C1D95]">
+                NCVET Regulatory Standards &amp; Curriculum Governance
+              </div>
+              <div className="text-[11px] text-[#6B21A8] mt-0.5">
+                Trades flagged with &gt;3.0x Oversupply or declining industry demand qualify for immediate Qualification Pack (QP) overhaul.
+              </div>
+            </div>
+          </div>
+          {syllabusNotice ? (
+            <div className="px-3 py-1.5 rounded-lg bg-[#E2F0E3] text-[#17604D] font-semibold text-xs flex items-center gap-1.5 shrink-0">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>{syllabusNotice}</span>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setSyllabusNotice('Expedited Syllabus Revision Dispatched to Sector Skill Councils');
+                setTimeout(() => setSyllabusNotice(''), 4500);
+              }}
+              className="px-3.5 py-1.5 bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-lg font-semibold text-xs transition-colors shrink-0 cursor-pointer shadow-xs"
+            >
+              Mandate Syllabus Overhaul
+            </button>
+          )}
+        </div>
+      )}
 
       {/* 7 Compact Sector Cards Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
@@ -1510,10 +1619,14 @@ export const AlertsAndInsightsPage: React.FC<{
  * PAGE 6: 06 — Planning Recommendations ("Planning Recommendations")
  * ============================================================================
  */
-export const PlanningRecommendationsPage: React.FC = () => {
+export const PlanningRecommendationsPage: React.FC<{
+  userSession?: UserSession | null;
+}> = ({ userSession }) => {
   const { t } = useLanguage();
+  const roleType = getUserRoleType(userSession);
   const [selectedRec, setSelectedRec] = useState<RecommendationItem | null>(null);
   const [downloaded, setDownloaded] = useState<boolean>(false);
+  const [actionStatus, setActionStatus] = useState<string>('');
 
   return (
     <div className="space-y-4">
@@ -1521,13 +1634,21 @@ export const PlanningRecommendationsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-            {t("Planning Recommendations", "योजना सिफारिशें")}
+            {roleType === 'DSO'
+              ? t("Pune District Planning & DSDP Targets", "पुणे जिला योजना एवं डीएसडीपी लक्ष्य")
+              : roleType === 'NCVET'
+              ? t("National Curriculum & Standards Mandates", "राष्ट्रीय पाठ्यक्रम एवं मानक अधिदेश")
+              : t("Planning Recommendations", "योजना सिफारिशें")}
           </h1>
           <p className="text-xs text-[#64716D] mt-1">
-            {t(
-              "Actionable insights for training targets, curriculum and infrastructure",
-              "प्रशिक्षण लक्ष्यों, पाठ्यक्रम और बुनियादी ढांचे के लिए कार्रवाई योग्य अंतर्दृष्टि"
-            )}
+            {roleType === 'DSO'
+              ? t("District Skill Development Plan (DSDP) allocations, local seat expansion & cluster proposals", "जिला कौशल विकास योजना आवंटन एवं स्थानीय विस्तार")
+              : roleType === 'NCVET'
+              ? t("Standards revision roadmaps, obsolescence phase-outs, and emerging skill integrations", "मानक संशोधन रोडमैप एवं अप्रचलन चरणबद्ध समाप्ति")
+              : t(
+                  "Actionable insights for training targets, curriculum and infrastructure",
+                  "प्रशिक्षण लक्ष्यों, पाठ्यक्रम और बुनियादी ढांचे के लिए कार्रवाई योग्य अंतर्दृष्टि"
+                )}
           </p>
         </div>
         <PrimaryButton
@@ -1536,12 +1657,18 @@ export const PlanningRecommendationsPage: React.FC = () => {
             ApiService.triggerDsdpDownload(492);
             setTimeout(() => setDownloaded(false), 3000);
           }}
-          title="Download Official MSDE DSDP Annual Target Allocation CSV"
+          title={
+            roleType === 'DSO'
+              ? "Download Pune District DSDP Allocation CSV"
+              : "Download Official MSDE DSDP Annual Target Allocation CSV"
+          }
         >
           <Download className="w-3.5 h-3.5" />
           <span>
             {downloaded
               ? t("Report Downloaded (CSV)", "रिपोर्ट डाउनलोड हो गई (CSV)")
+              : roleType === 'DSO'
+              ? t("Download Pune DSDP (CSV)", "पुणे डीएसडीपी डाउनलोड करें (CSV)")
               : t("Download DSDP Plan (CSV)", "डीएसडीपी योजना डाउनलोड करें (CSV)")}
           </span>
         </PrimaryButton>
@@ -1696,6 +1823,63 @@ export const PlanningRecommendationsPage: React.FC = () => {
             </div>
             <div className="p-2.5 rounded-lg bg-[#F5F0E7] text-[11px] text-[#64716D]">
               {selectedRec.details.policyNote}
+            </div>
+
+            {/* Official RBAC Action Controls */}
+            <div className="pt-3.5 border-t border-[#E9E0D3] flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="text-[11px] text-[#64716D]">
+                {roleType === 'ADMIN' && (
+                  <span className="text-[#17604D] font-medium flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5" /> Apex Clearance: Direct Seat Sanction Authority
+                  </span>
+                )}
+                {roleType === 'DSO' && (
+                  <span className="text-[#2463EB] font-medium flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5" /> District Endorsement Clearance: Pune DSC Lead
+                  </span>
+                )}
+                {roleType === 'NCVET' && (
+                  <span className="text-[#7C3AED] font-medium flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5" /> Regulatory Clearance: Mandate NOS Syllabus Revision
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <SecondaryButton
+                  tone="outline"
+                  onClick={() => {
+                    setSelectedRec(null);
+                    setActionStatus('');
+                  }}
+                >
+                  Close
+                </SecondaryButton>
+
+                {actionStatus ? (
+                  <div className="px-3 py-1.5 rounded-lg bg-[#E2F0E3] text-[#17604D] font-semibold text-xs flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>{actionStatus}</span>
+                  </div>
+                ) : (
+                  <PrimaryButton
+                    onClick={() => {
+                      if (roleType === 'ADMIN') {
+                        setActionStatus('Sanctioned by State Director (ID: SSDM-2026-APPR-492)');
+                      } else if (roleType === 'DSO') {
+                        setActionStatus('Endorsed for Pune DSDP · Submitted to State Committee');
+                      } else {
+                        setActionStatus('Mandated NOS Revision by NCVET Committee');
+                      }
+                      setTimeout(() => setActionStatus(''), 4500);
+                    }}
+                  >
+                    {roleType === 'ADMIN' && 'Approve & Sanction Allocation'}
+                    {roleType === 'DSO' && 'Endorse Pune Target Draft'}
+                    {roleType === 'NCVET' && 'Mandate NSQF Overhaul'}
+                  </PrimaryButton>
+                )}
+              </div>
             </div>
           </div>
         )}

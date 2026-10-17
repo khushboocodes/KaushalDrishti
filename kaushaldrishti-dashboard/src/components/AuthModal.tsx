@@ -3,12 +3,17 @@ import { X, ShieldCheck, Lock, UserCheck, KeyRound, Building } from 'lucide-reac
 import { PrimaryButton, SecondaryButton } from './DesignSystemUI';
 import { MandalaPattern, LogoSquare } from './Assets';
 
+export type UserRoleType = 'ADMIN' | 'DSO' | 'NCVET';
+
 export interface UserSession {
   name: string;
   role: string;
+  roleType?: UserRoleType;
   designation: string;
   department: string;
   badge: string;
+  jurisdiction?: string;
+  clearanceLevel?: string;
 }
 
 interface AuthModalProps {
@@ -36,25 +41,34 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
         session = {
           name: 'Smt. Anjali Deshmukh',
           role: 'District Skill Officer (DSO)',
+          roleType: 'DSO',
           designation: 'District Skill Committee Lead',
           department: 'Pune District, Maharashtra',
           badge: 'DSO-MH-492',
+          jurisdiction: 'Pune District, Maharashtra (Locked)',
+          clearanceLevel: 'Operational District Command (DSC Lead)',
         };
       } else if (role === 'NCVET') {
         session = {
           name: 'Shri Vikramaditya Sen',
           role: 'NCVET Accreditation Admin',
+          roleType: 'NCVET',
           designation: 'Director of Qualifications & Standards',
           department: 'NCVET National HQ, New Delhi',
           badge: 'NCVET-ADM-01',
+          jurisdiction: 'National Qualifications & NSQF Standards',
+          clearanceLevel: 'Regulatory Qualifications & Standards',
         };
       } else {
         session = {
           name: 'Dr. Rajesh Varma, IES',
           role: 'State SSDM Director',
+          roleType: 'ADMIN',
           designation: 'Director, State Skill Development Mission',
           department: 'MSDE Government of India',
           badge: 'MSDE-SSDM-DIR',
+          jurisdiction: 'All States & Apex Sanctions',
+          clearanceLevel: 'Apex State Directorate (Full Clearance)',
         };
       }
       onLoginSuccess(session);
