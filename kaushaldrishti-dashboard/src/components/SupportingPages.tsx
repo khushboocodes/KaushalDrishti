@@ -36,7 +36,7 @@ import {
 } from './Assets';
 import { PolicySimulationSandbox } from './PolicySimulationSandbox';
 import { BulkUploaderCard } from './BulkUploaderCard';
-import { AuthModal } from './AuthModal';
+import { AuthModal, UserSession } from './AuthModal';
 import { ApiService } from '../services/apiService';
 import {
   STATES_DATA,
@@ -44,16 +44,22 @@ import {
   GENERATED_REPORTS,
   EXPLORER_RECORDS,
 } from '../data/mockData';
+import { getHorizonConfig } from '../data/dashboardMetrics';
 
 /**
  * ============================================================================
  * SUPPORTING ROUTE: Demand & Supply
  * ============================================================================
  */
-export const DemandSupplyPage: React.FC = () => {
+export const DemandSupplyPage: React.FC<{
+  userSession?: UserSession | null;
+  dateRange?: string;
+  searchQuery?: string;
+}> = ({ userSession, dateRange = 'Last 1 Year', searchQuery: initialSearch = '' }) => {
+  const horizon = getHorizonConfig(dateRange);
   const [stateFilter, setStateFilter] = useState<string>('All States');
   const [sectorFilter, setSectorFilter] = useState<string>('All Sectors');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
 
   const filteredRecords = EXPLORER_RECORDS.filter((rec) => {
     const matchesState = stateFilter === 'All States' || rec.state === stateFilter;
@@ -66,45 +72,55 @@ export const DemandSupplyPage: React.FC = () => {
     return matchesState && matchesSector && matchesSearch;
   });
 
+  const balancedCount = Math.max(0, 1245 - horizon.undersupplyTrades - horizon.oversupplyTrades);
+
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-          Demand &amp; Supply Reconciliation
-        </h1>
-        <p className="text-xs text-[#64716D] mt-1">
-          Granular trade-by-district demand vs certified supply gap ledger across NSQF levels
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
+            Demand &amp; Supply Reconciliation
+          </h1>
+          <p className="text-xs text-[#64716D] mt-1">
+            Granular trade-by-district demand vs certified supply gap ledger across NSQF levels
+          </p>
+        </div>
+        <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 self-start sm:self-auto shadow-2xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#D97925] animate-pulse"></span>
+          <span>{dateRange}</span>
+          <span className="text-[#A57849]">·</span>
+          <span className="font-normal text-[#6C5840]">{horizon.label}</span>
+        </span>
       </div>
 
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5">
         <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-1">
-          <div className="text-xs text-[#64716D]">Aggregate Annual Demand</div>
-          <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-1">1.24 Cr</div>
+          <div className="text-xs text-[#64716D]">Aggregate Demand ({dateRange})</div>
+          <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-1">{horizon.demandCr}</div>
           <div className="text-[11px] text-[#17604D] font-semibold mt-1">
             Across 36 States &amp; UTs
           </div>
         </SurfaceCard>
         <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-2">
           <div className="text-xs text-[#64716D]">Certified Supply Pipeline</div>
-          <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-1">1.08 Cr</div>
+          <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-1">{horizon.supplyCr}</div>
           <div className="text-[11px] text-[#64716D] mt-1">
             ITIs, PMKVY 4.0 &amp; Polytechnics
           </div>
         </SurfaceCard>
         <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-3">
           <div className="text-xs text-[#64716D]">Net Undersupply Trades</div>
-          <div className="text-2xl font-bold text-[#D94E34] tabular-nums mt-1">473 Trades</div>
+          <div className="text-2xl font-bold text-[#D94E34] tabular-nums mt-1">{horizon.undersupplyTrades} Trades</div>
           <div className="text-[11px] text-[#64716D] mt-1">
-            38% of 1,245 mapped NCO trades
+            {Math.round((horizon.undersupplyTrades / 1245) * 100)}% of 1,245 mapped NCO trades
           </div>
         </SurfaceCard>
         <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-4">
           <div className="text-xs text-[#64716D]">Balanced Equilibrium Trades</div>
-          <div className="text-2xl font-bold text-[#17604D] tabular-nums mt-1">523 Trades</div>
+          <div className="text-2xl font-bold text-[#17604D] tabular-nums mt-1">{balancedCount} Trades</div>
           <div className="text-[11px] text-[#64716D] mt-1">
-            42% within ±5% variance band
+            {Math.round((balancedCount / 1245) * 100)}% within ±5% variance band
           </div>
         </SurfaceCard>
       </div>
@@ -169,9 +185,14 @@ export const DemandSupplyPage: React.FC = () => {
         />
       ) : (
         <SurfaceCard className="overflow-x-auto">
-          <h2 className="text-sm font-bold text-[#173F35] mb-3">
-            Detailed Demand–Supply Gap Ledger
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-[#173F35]">
+              Detailed Demand–Supply Gap Ledger ({dateRange})
+            </h2>
+            <span className="text-[11px] text-[#8C4E13] font-semibold bg-[#FAF0E1] px-2 py-0.5 rounded">
+              Multiplier: {horizon.demandMultiplier}x Demand · {horizon.supplyMultiplier}x Supply
+            </span>
+          </div>
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-[#E9E0D3] bg-[#FAF7F2] text-[#64716D]">
@@ -186,39 +207,44 @@ export const DemandSupplyPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F2ECE1]">
-              {filteredRecords.map((rec) => (
-                <tr key={rec.id} className="hover:bg-[#F8F5EF]">
-                  <td className="py-2.5 px-3 font-medium text-[#173F35]">
-                    {rec.tradeName}{' '}
-                    <span className="text-[#64716D] font-mono">({rec.ncoCode})</span>
-                  </td>
-                  <td className="py-2.5 px-3 text-[#64716D] tabular-nums">
-                    Level {rec.nsqfLevel}
-                  </td>
-                  <td className="py-2.5 px-3 text-[#64716D]">{rec.sector}</td>
-                  <td className="py-2.5 px-3 text-[#173F35]">
-                    {rec.district}, <span className="text-[#64716D]">{rec.state}</span>
-                  </td>
-                  <td className="py-2.5 px-3 text-right font-semibold tabular-nums">
-                    {rec.annualDemand.toLocaleString('en-IN')}
-                  </td>
-                  <td className="py-2.5 px-3 text-right tabular-nums">
-                    {rec.annualTrained.toLocaleString('en-IN')}
-                  </td>
-                  <td
-                    className={`py-2.5 px-3 text-right font-bold tabular-nums ${
-                      rec.gap > 0 ? 'text-[#D94E34]' : 'text-[#B5721E]'
-                    }`}
-                  >
-                    {rec.gap > 0
-                      ? `+${rec.gap.toLocaleString('en-IN')}`
-                      : rec.gap.toLocaleString('en-IN')}
-                  </td>
-                  <td className="py-2.5 px-3 text-right font-semibold text-[#173F35]">
-                    {rec.status}
-                  </td>
-                </tr>
-              ))}
+              {filteredRecords.map((rec) => {
+                const scaledDemand = Math.round(rec.annualDemand * horizon.demandMultiplier);
+                const scaledTrained = Math.round(rec.annualTrained * horizon.supplyMultiplier);
+                const scaledGap = scaledDemand - scaledTrained;
+                return (
+                  <tr key={rec.id} className="hover:bg-[#F8F5EF]">
+                    <td className="py-2.5 px-3 font-medium text-[#173F35]">
+                      {rec.tradeName}{' '}
+                      <span className="text-[#64716D] font-mono">({rec.ncoCode})</span>
+                    </td>
+                    <td className="py-2.5 px-3 text-[#64716D] tabular-nums">
+                      Level {rec.nsqfLevel}
+                    </td>
+                    <td className="py-2.5 px-3 text-[#64716D]">{rec.sector}</td>
+                    <td className="py-2.5 px-3 text-[#173F35]">
+                      {rec.district}, <span className="text-[#64716D]">{rec.state}</span>
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-semibold tabular-nums">
+                      {scaledDemand.toLocaleString('en-IN')}
+                    </td>
+                    <td className="py-2.5 px-3 text-right tabular-nums">
+                      {scaledTrained.toLocaleString('en-IN')}
+                    </td>
+                    <td
+                      className={`py-2.5 px-3 text-right font-bold tabular-nums ${
+                        scaledGap > 0 ? 'text-[#D94E34]' : 'text-[#B5721E]'
+                      }`}
+                    >
+                      {scaledGap > 0
+                        ? `+${scaledGap.toLocaleString('en-IN')}`
+                        : scaledGap.toLocaleString('en-IN')}
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-semibold text-[#173F35]">
+                      {scaledGap > 2500 ? 'Acute Undersupply' : scaledGap > 0 ? 'Undersupply' : 'Balanced'}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </SurfaceCard>
@@ -232,13 +258,25 @@ export const DemandSupplyPage: React.FC = () => {
  * SUPPORTING ROUTE: Training Capacity
  * ============================================================================
  */
-export const TrainingCapacityPage: React.FC = () => {
+export const TrainingCapacityPage: React.FC<{
+  userSession?: UserSession | null;
+  dateRange?: string;
+  searchQuery?: string;
+}> = ({ userSession, dateRange = 'Last 1 Year', searchQuery = '' }) => {
+  const horizon = getHorizonConfig(dateRange);
   const [selectedState, setSelectedState] = useState<string>('All States');
   const allDistricts = STATES_DATA.flatMap((s) => s.districts);
-  const filteredDistricts =
-    selectedState === 'All States'
-      ? allDistricts
-      : allDistricts.filter((d) => d.state === selectedState);
+  const filteredDistricts = allDistricts.filter((d) => {
+    const matchesState = selectedState === 'All States' || d.state === selectedState;
+    const matchesSearch =
+      !searchQuery.trim() ||
+      d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      d.state.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesState && matchesSearch;
+  });
+
+  const centresCountStr =
+    dateRange === 'Next 3 Years' ? '18,420' : dateRange === 'FY 2026–27' ? '16,200' : '14,952';
 
   return (
     <div className="space-y-4">
@@ -251,15 +289,23 @@ export const TrainingCapacityPage: React.FC = () => {
             Monitor available seats, allocated seats, ITI/PMKVY training centres, and course completion rates
           </p>
         </div>
-        <SelectControl
-          value={selectedState}
-          onChange={setSelectedState}
-          options={[
-            { label: 'All States', value: 'All States' },
-            ...STATES_DATA.map((s) => ({ label: s.state, value: s.state })),
-          ]}
-          className="w-44"
-        />
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D97925] animate-pulse"></span>
+            <span>{dateRange}</span>
+            <span className="text-[#A57849]">·</span>
+            <span className="font-normal text-[#6C5840]">{horizon.label}</span>
+          </span>
+          <SelectControl
+            value={selectedState}
+            onChange={setSelectedState}
+            options={[
+              { label: 'All States', value: 'All States' },
+              ...STATES_DATA.map((s) => ({ label: s.state, value: s.state })),
+            ]}
+            className="w-44"
+          />
+        </div>
       </div>
 
       {/* 4 Capacity KPIs */}
@@ -269,12 +315,12 @@ export const TrainingCapacityPage: React.FC = () => {
             <GraduationCap className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs text-[#64716D]">Available Seats</div>
+            <div className="text-xs text-[#64716D]">Available Seats ({dateRange})</div>
             <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-0.5">
-              14.8 Lakh
+              {horizon.availableSeatsLakh}
             </div>
             <div className="text-[11px] text-[#17604D] font-medium mt-1">
-              +8.4% capacity added FY26
+              +{dateRange === 'Next 3 Years' ? '28.4%' : dateRange === 'FY 2026–27' ? '18.9%' : '8.4%'} capacity added
             </div>
           </div>
         </SurfaceCard>
@@ -284,11 +330,13 @@ export const TrainingCapacityPage: React.FC = () => {
             <Users className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs text-[#64716D]">Allocated Seats</div>
+            <div className="text-xs text-[#64716D]">Allocated Seats ({dateRange})</div>
             <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-0.5">
-              12.9 Lakh
+              {horizon.allocatedSeatsLakh}
             </div>
-            <div className="text-[11px] text-[#64716D] mt-1">87.2% overall utilization</div>
+            <div className="text-[11px] text-[#64716D] mt-1">
+              {dateRange === 'Next 3 Years' ? '88.7%' : dateRange === 'FY 2026–27' ? '89.8%' : '87.2%'} overall utilization
+            </div>
           </div>
         </SurfaceCard>
 
@@ -299,7 +347,7 @@ export const TrainingCapacityPage: React.FC = () => {
           <div>
             <div className="text-xs text-[#64716D]">Training Centres</div>
             <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-0.5">
-              14,952
+              {centresCountStr}
             </div>
             <div className="text-[11px] text-[#64716D] mt-1">
               Govt ITIs, PMKK &amp; NSDC Partners
@@ -314,10 +362,10 @@ export const TrainingCapacityPage: React.FC = () => {
           <div>
             <div className="text-xs text-[#64716D]">Course Completion Rate</div>
             <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-0.5">
-              81.6%
+              {horizon.completionRate}
             </div>
             <div className="text-[11px] text-[#17604D] font-medium mt-1">
-              ↗ +3.2% vs previous cycle
+              ↗ +{dateRange === 'Next 3 Years' ? '4.9%' : dateRange === 'FY 2026–27' ? '2.6%' : '3.2%'} vs baseline
             </div>
           </div>
         </SurfaceCard>
@@ -325,9 +373,14 @@ export const TrainingCapacityPage: React.FC = () => {
 
       {/* District-Level Capacity Table */}
       <SurfaceCard className="overflow-x-auto">
-        <h2 className="text-sm font-bold text-[#173F35] mb-3">
-          District-Level Training Centre Capacity &amp; Seat Utilization
-        </h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-bold text-[#173F35]">
+            District-Level Training Centre Capacity &amp; Seat Utilization ({dateRange})
+          </h2>
+          <span className="text-[11px] text-[#8C4E13] font-semibold bg-[#FAF0E1] px-2 py-0.5 rounded">
+            Supply Scaling: {horizon.supplyMultiplier}x
+          </span>
+        </div>
         <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr className="border-b border-[#E9E0D3] bg-[#FAF7F2] text-[#64716D]">
@@ -340,20 +393,23 @@ export const TrainingCapacityPage: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-[#F2ECE1]">
-            {filteredDistricts.map((dist) => (
-              <tr key={dist.id} className="hover:bg-[#F8F5EF]">
-                <td className="py-2.5 px-3 font-semibold text-[#173F35]">{dist.name}</td>
-                <td className="py-2.5 px-3 text-[#64716D]">{dist.state}</td>
-                <td className="py-2.5 px-3 text-right tabular-nums">{dist.centresCount}</td>
-                <td className="py-2.5 px-3 text-right tabular-nums">
-                  {dist.trained.toLocaleString('en-IN')}
-                </td>
-                <td className="py-2.5 px-3 text-right font-semibold text-[#17604D] tabular-nums">
-                  {dist.seatUtilization}%
-                </td>
-                <td className="py-2.5 px-3 text-right text-[#173F35]">{dist.status}</td>
-              </tr>
-            ))}
+            {filteredDistricts.map((dist) => {
+              const scaledTrained = Math.round(dist.trained * horizon.supplyMultiplier);
+              return (
+                <tr key={dist.id} className="hover:bg-[#F8F5EF]">
+                  <td className="py-2.5 px-3 font-semibold text-[#173F35]">{dist.name}</td>
+                  <td className="py-2.5 px-3 text-[#64716D]">{dist.state}</td>
+                  <td className="py-2.5 px-3 text-right tabular-nums">{dist.centresCount}</td>
+                  <td className="py-2.5 px-3 text-right tabular-nums">
+                    {scaledTrained.toLocaleString('en-IN')}
+                  </td>
+                  <td className="py-2.5 px-3 text-right font-semibold text-[#17604D] tabular-nums">
+                    {dist.seatUtilization}%
+                  </td>
+                  <td className="py-2.5 px-3 text-right text-[#173F35]">{dist.status}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </SurfaceCard>
@@ -369,9 +425,14 @@ export const TrainingCapacityPage: React.FC = () => {
  * SUPPORTING ROUTE: Reports (Official MSDE Reports, Assessments & Data Exports)
  * ============================================================================
  */
-export const ReportsPage: React.FC = () => {
+export const ReportsPage: React.FC<{
+  userSession?: UserSession | null;
+  dateRange?: string;
+  searchQuery?: string;
+}> = ({ userSession, dateRange = 'Last 1 Year', searchQuery: initialSearch = '' }) => {
+  const horizon = getHorizonConfig(dateRange);
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
 
   const filteredReports = GENERATED_REPORTS.filter((r) => {
     const matchCategory = categoryFilter === 'All' || r.category === categoryFilter;
@@ -396,7 +457,13 @@ export const ReportsPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D97925] animate-pulse"></span>
+            <span>{dateRange}</span>
+            <span className="text-[#A57849]">·</span>
+            <span className="font-normal text-[#6C5840]">{horizon.label}</span>
+          </span>
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-[#64716D] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
@@ -517,8 +584,13 @@ export const ReportsAndRecommendationsPage = ReportsPage;
  * SUPPORTING ROUTE: Data Explorer
  * ============================================================================
  */
-export const DataExplorerPage: React.FC = () => {
-  const [query, setQuery] = useState<string>('');
+export const DataExplorerPage: React.FC<{
+  userSession?: UserSession | null;
+  dateRange?: string;
+  searchQuery?: string;
+}> = ({ userSession, dateRange = 'Last 1 Year', searchQuery: initialSearch = '' }) => {
+  const horizon = getHorizonConfig(dateRange);
+  const [query, setQuery] = useState<string>(initialSearch);
   const [sourceFilter, setSourceFilter] = useState<string>('All Sources');
   const [nsqfFilter, setNsqfFilter] = useState<string>('All Levels');
 
@@ -545,9 +617,17 @@ export const DataExplorerPage: React.FC = () => {
             Query harmonized microdata across NSDC Skill India Digital, PLFS, EPFO Payroll, and National Career Service (NCS)
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-[#17604D] font-medium">
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span>Data Freshness: Synced 2 hours ago</span>
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D97925] animate-pulse"></span>
+            <span>{dateRange}</span>
+            <span className="text-[#A57849]">·</span>
+            <span className="font-normal text-[#6C5840]">{horizon.label}</span>
+          </span>
+          <div className="flex items-center gap-2 text-xs text-[#17604D] font-medium">
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Data Freshness: Synced 2 hours ago</span>
+          </div>
         </div>
       </div>
 
@@ -610,6 +690,14 @@ export const DataExplorerPage: React.FC = () => {
         />
       ) : (
         <SurfaceCard className="overflow-x-auto">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-[#173F35]">
+              Microdata Registry ({dateRange})
+            </h2>
+            <span className="text-[11px] text-[#8C4E13] font-semibold bg-[#FAF0E1] px-2 py-0.5 rounded">
+              Scaling Factor: {horizon.demandMultiplier}x Demand / {horizon.supplyMultiplier}x Supply
+            </span>
+          </div>
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-[#E9E0D3] bg-[#FAF7F2] text-[#64716D]">
@@ -624,30 +712,34 @@ export const DataExplorerPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F2ECE1]">
-              {filtered.map((item) => (
-                <tr key={item.id} className="hover:bg-[#F8F5EF]">
-                  <td className="py-2.5 px-3 font-mono font-semibold text-[#17604D]">
-                    {item.ncoCode}
-                  </td>
-                  <td className="py-2.5 px-3 font-medium text-[#173F35]">{item.tradeName}</td>
-                  <td className="py-2.5 px-3 text-[#64716D] tabular-nums">
-                    L{item.nsqfLevel}
-                  </td>
-                  <td className="py-2.5 px-3 text-[#173F35]">
-                    {item.district}, <span className="text-[#64716D]">{item.state}</span>
-                  </td>
-                  <td className="py-2.5 px-3 text-right tabular-nums">
-                    {item.annualDemand.toLocaleString('en-IN')}
-                  </td>
-                  <td className="py-2.5 px-3 text-right tabular-nums">
-                    {item.annualTrained.toLocaleString('en-IN')}
-                  </td>
-                  <td className="py-2.5 px-3 text-[#64716D]">{item.source}</td>
-                  <td className="py-2.5 px-3 text-right text-[#64716D] tabular-nums">
-                    {item.lastUpdated}
-                  </td>
-                </tr>
-              ))}
+              {filtered.map((item) => {
+                const scaledDemand = Math.round(item.annualDemand * horizon.demandMultiplier);
+                const scaledTrained = Math.round(item.annualTrained * horizon.supplyMultiplier);
+                return (
+                  <tr key={item.id} className="hover:bg-[#F8F5EF]">
+                    <td className="py-2.5 px-3 font-mono font-semibold text-[#17604D]">
+                      {item.ncoCode}
+                    </td>
+                    <td className="py-2.5 px-3 font-medium text-[#173F35]">{item.tradeName}</td>
+                    <td className="py-2.5 px-3 text-[#64716D] tabular-nums">
+                      L{item.nsqfLevel}
+                    </td>
+                    <td className="py-2.5 px-3 text-[#173F35]">
+                      {item.district}, <span className="text-[#64716D]">{item.state}</span>
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-semibold tabular-nums">
+                      {scaledDemand.toLocaleString('en-IN')}
+                    </td>
+                    <td className="py-2.5 px-3 text-right tabular-nums">
+                      {scaledTrained.toLocaleString('en-IN')}
+                    </td>
+                    <td className="py-2.5 px-3 text-[#64716D]">{item.source}</td>
+                    <td className="py-2.5 px-3 text-right text-[#64716D] tabular-nums">
+                      {item.lastUpdated}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </SurfaceCard>

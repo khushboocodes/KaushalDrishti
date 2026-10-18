@@ -229,29 +229,98 @@ function AppContent() {
 
     switch (activeRoute) {
       case 'dashboard':
-        return <DashboardOverviewPage onNavigate={setActiveRoute} userSession={userSession} />;
+        return (
+          <DashboardOverviewPage
+            onNavigate={setActiveRoute}
+            userSession={userSession}
+            dateRange={dateRange}
+            searchQuery={globalSearch}
+          />
+        );
       case 'geographic':
-        return <GeographicViewPage userSession={userSession} />;
+        return (
+          <GeographicViewPage
+            userSession={userSession}
+            dateRange={dateRange}
+            searchQuery={globalSearch}
+          />
+        );
       case 'sectors':
-        return <SectorsAndTradesPage userSession={userSession} />;
+        return (
+          <SectorsAndTradesPage
+            userSession={userSession}
+            dateRange={dateRange}
+            searchQuery={globalSearch}
+          />
+        );
       case 'forecasting':
-        return <SkillForecastingPage />;
+        return (
+          <SkillForecastingPage
+            userSession={userSession}
+            dateRange={dateRange}
+            searchQuery={globalSearch}
+          />
+        );
       case 'alerts':
-        return <AlertsAndInsightsPage onNavigate={setActiveRoute} userSession={userSession} />;
+        return (
+          <AlertsAndInsightsPage
+            onNavigate={setActiveRoute}
+            userSession={userSession}
+            dateRange={dateRange}
+            searchQuery={globalSearch}
+          />
+        );
       case 'recommendations':
-        return <PlanningRecommendationsPage userSession={userSession} />;
+        return (
+          <PlanningRecommendationsPage
+            userSession={userSession}
+            dateRange={dateRange}
+            searchQuery={globalSearch}
+          />
+        );
       case 'demand-supply':
-        return <DemandSupplyPage />;
+        return (
+          <DemandSupplyPage
+            userSession={userSession}
+            dateRange={dateRange}
+            searchQuery={globalSearch}
+          />
+        );
       case 'training':
-        return <TrainingCapacityPage />;
+        return (
+          <TrainingCapacityPage
+            userSession={userSession}
+            dateRange={dateRange}
+            searchQuery={globalSearch}
+          />
+        );
       case 'reports':
-        return <ReportsAndRecommendationsPage />;
+        return (
+          <ReportsAndRecommendationsPage
+            userSession={userSession}
+            dateRange={dateRange}
+            searchQuery={globalSearch}
+          />
+        );
       case 'data-explorer':
-        return <DataExplorerPage />;
+        return (
+          <DataExplorerPage
+            userSession={userSession}
+            dateRange={dateRange}
+            searchQuery={globalSearch}
+          />
+        );
       case 'settings':
         return <SettingsPage />;
       default:
-        return <DashboardOverviewPage onNavigate={setActiveRoute} userSession={userSession} />;
+        return (
+          <DashboardOverviewPage
+            onNavigate={setActiveRoute}
+            userSession={userSession}
+            dateRange={dateRange}
+            searchQuery={globalSearch}
+          />
+        );
     }
   };
 

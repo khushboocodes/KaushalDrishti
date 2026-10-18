@@ -55,6 +55,7 @@ import { AlertItem, NavRouteId, RecommendationItem, TradeGrowthItem } from '../t
 import { useLanguage } from '../context/LanguageContext';
 import { UserSession } from './AuthModal';
 import { getUserRoleType, getRoleConfig, isRouteAllowedForSession } from '../utils/rbac';
+import { getDashboardDataset, getHorizonConfig } from '../data/dashboardMetrics';
 
 /**
  * ============================================================================
@@ -64,19 +65,39 @@ import { getUserRoleType, getRoleConfig, isRouteAllowedForSession } from '../uti
 export const DashboardOverviewPage: React.FC<{
   onNavigate: (route: NavRouteId) => void;
   userSession?: UserSession | null;
-}> = ({ onNavigate, userSession }) => {
+  dateRange?: string;
+  searchQuery?: string;
+}> = ({ onNavigate, userSession, dateRange = 'Last 1 Year', searchQuery = '' }) => {
   const { t } = useLanguage();
   const roleType = getUserRoleType(userSession);
   const roleConfig = getRoleConfig(userSession);
+  const dataset = getDashboardDataset(roleType, dateRange);
+
   const [chartPeriod, setChartPeriod] = useState<'Yearly' | 'Quarterly'>('Yearly');
-  const barsData = YEARLY_DEMAND_SUPPLY[chartPeriod];
+  const barsData = dataset.chart.bars[chartPeriod] || dataset.chart.bars.Yearly;
+
+  const circumference = 276.46;
+  const balancedOffset = 0;
+  const undersupplyOffset = -((dataset.donut.balancedPct / 100) * circumference);
+  const oversupplyOffset = -(
+    ((dataset.donut.balancedPct + dataset.donut.undersupplyPct) / 100) *
+    circumference
+  );
+
+  const filteredQuickInsights = searchQuery.trim()
+    ? dataset.quickInsights.filter(
+        (item) =>
+          item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : dataset.quickInsights;
 
   return (
-    <div className="space-y-4 relative">
+    <div key={`${roleType}-${dateRange}`} className="space-y-4 relative">
       {/* Top Heading Banner with Header Illustration on the Right */}
       <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-1 pb-1 overflow-hidden">
         <div className="z-10 max-w-xl">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
             <span
               className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                 roleType === 'DSO'
@@ -90,6 +111,12 @@ export const DashboardOverviewPage: React.FC<{
             </span>
             <span className="text-[11px] text-[#64716D] font-medium">
               {roleConfig.jurisdiction}
+            </span>
+            <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 transition-all shadow-2xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#D97925] animate-pulse"></span>
+              <span>{dateRange}</span>
+              <span className="text-[#A57849]">·</span>
+              <span className="font-normal text-[#6C5840]">{dataset.periodBadge}</span>
             </span>
           </div>
           <h1 className="font-serif-heading text-2xl sm:text-[26px] font-bold text-[#173F35] tracking-tight">
@@ -126,12 +153,14 @@ export const DashboardOverviewPage: React.FC<{
             <div className="text-xs font-medium text-[#64716D]">
               {t("Total Job Demand", "कुल रोजगार मांग")}
             </div>
-            <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-0.5">1.24 Cr</div>
+            <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-0.5">
+              {dataset.kpis.demand.value}
+            </div>
             <div className="flex items-center gap-1 text-[11px] mt-1">
               <span className="font-semibold text-[#17604D] inline-flex items-center">
-                ↗ +18%
+                {dataset.kpis.demand.trend}
               </span>
-              <span className="text-[#64716D]">vs. previous year</span>
+              <span className="text-[#64716D]">{dataset.kpis.demand.trendLabel}</span>
             </div>
           </div>
         </SurfaceCard>
@@ -145,12 +174,14 @@ export const DashboardOverviewPage: React.FC<{
             <div className="text-xs font-medium text-[#64716D]">
               {t("Trained Candidates", "प्रशिक्षित उम्मीदवार")}
             </div>
-            <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-0.5">1.08 Cr</div>
+            <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-0.5">
+              {dataset.kpis.trained.value}
+            </div>
             <div className="flex items-center gap-1 text-[11px] mt-1">
               <span className="font-semibold text-[#17604D] inline-flex items-center">
-                ↗ +12%
+                {dataset.kpis.trained.trend}
               </span>
-              <span className="text-[#64716D]">Across NSQF trades</span>
+              <span className="text-[#64716D]">{dataset.kpis.trained.trendLabel}</span>
             </div>
           </div>
         </SurfaceCard>
@@ -164,8 +195,10 @@ export const DashboardOverviewPage: React.FC<{
             <div className="text-xs font-medium text-[#64716D]">
               {t("Demand-Supply Gap", "मांग-आपूर्ति अंतर")}
             </div>
-            <div className="text-2xl font-bold text-[#D94E34] tabular-nums mt-0.5">+16 Lakh</div>
-            <div className="text-[11px] text-[#64716D] mt-1">Undersupply (overall)</div>
+            <div className="text-2xl font-bold text-[#D94E34] tabular-nums mt-0.5">
+              {dataset.kpis.gap.value}
+            </div>
+            <div className="text-[11px] text-[#64716D] mt-1">{dataset.kpis.gap.status}</div>
           </div>
         </SurfaceCard>
 
@@ -178,8 +211,10 @@ export const DashboardOverviewPage: React.FC<{
             <div className="text-xs font-medium text-[#64716D]">
               {t("High-Growth Trades", "उच्च वृद्धि वाले व्यवसाय")}
             </div>
-            <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-0.5">28</div>
-            <div className="text-[11px] text-[#64716D] mt-1">&gt; 20% expected growth</div>
+            <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-0.5">
+              {dataset.kpis.highGrowth.value}
+            </div>
+            <div className="text-[11px] text-[#64716D] mt-1">{dataset.kpis.highGrowth.note}</div>
           </div>
         </SurfaceCard>
       </div>
@@ -231,12 +266,7 @@ export const DashboardOverviewPage: React.FC<{
               </defs>
 
               {/* Horizontal grid lines */}
-              {[
-                { y: 20, label: '1.5Cr' },
-                { y: 65, label: '1Cr' },
-                { y: 110, label: '50L' },
-                { y: 155, label: '0' },
-              ].map((grid) => (
+              {dataset.chart.gridLabels.map((grid) => (
                 <g key={grid.label}>
                   <text
                     x="32"
@@ -260,8 +290,8 @@ export const DashboardOverviewPage: React.FC<{
               {/* Grouped Bars */}
               {barsData.map((item, idx) => {
                 const groupX = 76 + idx * 88;
-                const demandHeight = (item.demand / 150) * 135;
-                const trainedHeight = (item.trained / 150) * 135;
+                const demandHeight = Math.max(4, (item.demand / dataset.chart.yMax) * 135);
+                const trainedHeight = Math.max(4, (item.trained / dataset.chart.yMax) * 135);
                 return (
                   <g key={`${chartPeriod}-${item.year}`} className="group">
                     {/* Demand bar */}
@@ -325,7 +355,7 @@ export const DashboardOverviewPage: React.FC<{
                   stroke="#F5F0E7"
                   strokeWidth="16"
                 />
-                {/* Balanced: 42% (circumference = 2 * pi * 44 = 276.46 -> 42% = 116.1) */}
+                {/* Balanced slice */}
                 <circle
                   cx="60"
                   cy="60"
@@ -333,13 +363,13 @@ export const DashboardOverviewPage: React.FC<{
                   fill="none"
                   stroke="#5B9E68"
                   strokeWidth="16"
-                  strokeDasharray="116.1 276.46"
-                  strokeDashoffset="0"
+                  strokeDasharray={`${(dataset.donut.balancedPct / 100) * circumference} ${circumference}`}
+                  strokeDashoffset={balancedOffset}
                   className="doughnut-animated doughnut-slice"
                 >
-                  <title>Balanced: 42% of trades</title>
+                  <title>{`Balanced: ${dataset.donut.balancedPct}% of trades`}</title>
                 </circle>
-                {/* Undersupply: 38% (38% = 105.05) */}
+                {/* Undersupply slice */}
                 <circle
                   cx="60"
                   cy="60"
@@ -347,13 +377,13 @@ export const DashboardOverviewPage: React.FC<{
                   fill="none"
                   stroke="#E56B55"
                   strokeWidth="16"
-                  strokeDasharray="105.05 276.46"
-                  strokeDashoffset="-116.1"
+                  strokeDasharray={`${(dataset.donut.undersupplyPct / 100) * circumference} ${circumference}`}
+                  strokeDashoffset={undersupplyOffset}
                   className="doughnut-animated doughnut-slice"
                 >
-                  <title>Undersupply: 38% of trades</title>
+                  <title>{`Undersupply: ${dataset.donut.undersupplyPct}% of trades`}</title>
                 </circle>
-                {/* Oversupply: 20% (20% = 55.3) */}
+                {/* Oversupply slice */}
                 <circle
                   cx="60"
                   cy="60"
@@ -361,16 +391,16 @@ export const DashboardOverviewPage: React.FC<{
                   fill="none"
                   stroke="#F2B968"
                   strokeWidth="16"
-                  strokeDasharray="55.3 276.46"
-                  strokeDashoffset="-221.15"
+                  strokeDasharray={`${(dataset.donut.oversupplyPct / 100) * circumference} ${circumference}`}
+                  strokeDashoffset={oversupplyOffset}
                   className="doughnut-animated doughnut-slice"
                 >
-                  <title>Oversupply: 20% of trades</title>
+                  <title>{`Oversupply: ${dataset.donut.oversupplyPct}% of trades`}</title>
                 </circle>
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center transition-transform duration-300 hover:scale-105 pointer-events-none">
                 <span className="text-2xl font-bold text-[#173F35] tabular-nums leading-none">
-                  1,245
+                  {dataset.donut.totalTrades}
                 </span>
                 <span className="text-[11px] text-[#64716D] mt-1">Total Trades</span>
               </div>
@@ -383,21 +413,27 @@ export const DashboardOverviewPage: React.FC<{
                   <span className="w-2.5 h-2.5 rounded-full bg-[#E56B55]" />
                   Undersupply
                 </span>
-                <span className="font-bold text-[#173F35] tabular-nums">38%</span>
+                <span className="font-bold text-[#173F35] tabular-nums">
+                  {dataset.donut.undersupplyPct}%
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs hover:translate-x-1 transition-transform cursor-default">
                 <span className="inline-flex items-center gap-2 text-[#64716D]">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#5B9E68]" />
                   Balanced
                 </span>
-                <span className="font-bold text-[#173F35] tabular-nums">42%</span>
+                <span className="font-bold text-[#173F35] tabular-nums">
+                  {dataset.donut.balancedPct}%
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs hover:translate-x-1 transition-transform cursor-default">
                 <span className="inline-flex items-center gap-2 text-[#64716D]">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#F2B968]" />
                   Oversupply
                 </span>
-                <span className="font-bold text-[#173F35] tabular-nums">20%</span>
+                <span className="font-bold text-[#173F35] tabular-nums">
+                  {dataset.donut.oversupplyPct}%
+                </span>
               </div>
             </div>
           </div>
@@ -417,11 +453,16 @@ export const DashboardOverviewPage: React.FC<{
 
       {/* Quick Insights Row */}
       <SurfaceCard className="p-3.5">
-        <div className="text-xs font-bold text-[#173F35] mb-2.5">
-          {t("Quick Insights", "त्वरित अंतर्दृष्टि")}
+        <div className="flex items-center justify-between gap-2 mb-2.5">
+          <div className="text-xs font-bold text-[#173F35]">
+            {t("Quick Insights", "त्वरित अंतर्दृष्टि")}
+          </div>
+          <div className="text-[11px] text-[#64716D]">
+            Horizon: <span className="font-semibold text-[#173F35]">{dateRange}</span>
+          </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-          {QUICK_INSIGHTS.map((item, idx) => (
+          {filteredQuickInsights.map((item, idx) => (
             <button
               key={item.id}
               type="button"
@@ -471,10 +512,13 @@ export const DashboardOverviewPage: React.FC<{
  */
 export const GeographicViewPage: React.FC<{
   userSession?: UserSession | null;
-}> = ({ userSession }) => {
+  dateRange?: string;
+  searchQuery?: string;
+}> = ({ userSession, dateRange = 'Last 1 Year', searchQuery = '' }) => {
   const { t } = useLanguage();
   const roleType = getUserRoleType(userSession);
   const isDsoLocked = roleType === 'DSO';
+  const horizon = getHorizonConfig(dateRange);
 
   const [selectedStateName, setSelectedStateName] = useState<string>('Maharashtra');
   const [selectedDistrictId, setSelectedDistrictId] = useState<string>('pune');
@@ -490,6 +534,20 @@ export const GeographicViewPage: React.FC<{
   const currentDistrict =
     currentState.districts.find((d) => d.id === effectiveDistrictId) ||
     currentState.districts[0];
+
+  // Dynamic Horizon Scaled Metrics for Current State
+  const scaledDemandNum = Math.round(currentState.demandNum * horizon.demandMultiplier);
+  const scaledTrainedNum = Math.round(currentState.trainedNum * horizon.supplyMultiplier);
+  const scaledGapNum = scaledDemandNum - scaledTrainedNum;
+
+  const formatLakhOrCr = (num: number) => {
+    if (num >= 10000000) return `${(num / 10000000).toFixed(2)} Cr`;
+    return `${(num / 100000).toFixed(1)} Lakh`;
+  };
+
+  const totalDemandLabel = formatLakhOrCr(scaledDemandNum);
+  const totalTrainedLabel = formatLakhOrCr(scaledTrainedNum);
+  const gapLabel = scaledGapNum >= 0 ? `+${scaledGapNum.toLocaleString('en-IN')}` : scaledGapNum.toLocaleString('en-IN');
 
   const handleStateChange = (stateName: string) => {
     if (isDsoLocked) return;
@@ -521,21 +579,29 @@ export const GeographicViewPage: React.FC<{
 
   return (
     <div className="space-y-4 relative pb-4">
-      {/* Heading */}
-      <div>
-        <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-          {isDsoLocked
-            ? t("Pune District – Local Labour Demand–Supply Radar", "पुणे जिला – स्थानीय श्रम मांग–आपूर्ति रडार")
-            : t("India – District Level Labour Demand–Supply", "भारत – जिला स्तरीय श्रम मांग–आपूर्ति")}
-        </h1>
-        <p className="text-xs text-[#64716D] mt-1">
-          {isDsoLocked
-            ? t("Hyper-local ITI absorption, DSC target tracking, and local employer cluster gap analysis", "हाइपर-लोकल आईटीआई अवशोषण एवं स्थानीय क्लस्टर विश्लेषण")
-            : t(
-                "Explore demand, supply and gaps across States and Districts",
-                "राज्यों और जिलों में मांग, आपूर्ति और अंतर का अन्वेषण करें"
-              )}
-        </p>
+      {/* Heading with Dynamic Horizon Indicator */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
+            {isDsoLocked
+              ? t("Pune District – Local Labour Demand–Supply Radar", "पुणे जिला – स्थानीय श्रम मांग–आपूर्ति रडार")
+              : t("India – District Level Labour Demand–Supply", "भारत – जिला स्तरीय श्रम मांग–आपूर्ति")}
+          </h1>
+          <p className="text-xs text-[#64716D] mt-1">
+            {isDsoLocked
+              ? t("Hyper-local ITI absorption, DSC target tracking, and local employer cluster gap analysis", "हाइपर-लोकल आईटीआई अवशोषण एवं स्थानीय क्लस्टर विश्लेषण")
+              : t(
+                  "Explore demand, supply and gaps across States and Districts",
+                  "राज्यों और जिलों में मांग, आपूर्ति और अंतर का अन्वेषण करें"
+                )}
+          </p>
+        </div>
+        <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 self-start sm:self-auto shadow-2xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#D97925] animate-pulse"></span>
+          <span>{dateRange}</span>
+          <span className="text-[#A57849]">·</span>
+          <span className="font-normal text-[#6C5840]">{horizon.label}</span>
+        </span>
       </div>
 
       {/* Filter Row */}
@@ -640,8 +706,11 @@ export const GeographicViewPage: React.FC<{
             />
           ) : (
             <div className="overflow-x-auto">
-              <div className="text-xs font-bold text-[#173F35] mb-3">
-                District-Level Breakdown across Selected States
+              <div className="text-xs font-bold text-[#173F35] mb-3 flex items-center justify-between">
+                <span>District-Level Breakdown across Selected States</span>
+                <span className="text-[11px] text-[#8C4E13] font-semibold bg-[#FAF0E1] px-2 py-0.5 rounded">
+                  Horizon: {dateRange}
+                </span>
               </div>
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
@@ -655,33 +724,44 @@ export const GeographicViewPage: React.FC<{
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F2ECE1]">
-                  {STATES_DATA.flatMap((s) => s.districts).map((dist) => (
-                    <tr
-                      key={dist.id}
-                      onClick={() => {
-                        setSelectedStateName(dist.state);
-                        setSelectedDistrictId(dist.id);
-                      }}
-                      className={`hover:bg-[#F5F0E7]/60 cursor-pointer ${
-                        dist.id === currentDistrict.id ? 'bg-[#F5F0E7]' : ''
-                      }`}
-                    >
-                      <td className="py-2.5 px-2 font-semibold text-[#173F35]">{dist.name}</td>
-                      <td className="py-2.5 px-2 text-[#64716D]">{dist.state}</td>
-                      <td className="py-2.5 px-2 text-right tabular-nums">
-                        {dist.demand.toLocaleString('en-IN')}
-                      </td>
-                      <td className="py-2.5 px-2 text-right tabular-nums">
-                        {dist.trained.toLocaleString('en-IN')}
-                      </td>
-                      <td className="py-2.5 px-2 text-right font-semibold text-[#D94E34] tabular-nums">
-                        {dist.gap >= 0 ? `+${dist.gap.toLocaleString('en-IN')}` : dist.gap.toLocaleString('en-IN')}
-                      </td>
-                      <td className="py-2.5 px-2 text-right font-medium text-[#173F35]">
-                        {dist.status}
-                      </td>
-                    </tr>
-                  ))}
+                  {STATES_DATA.flatMap((s) => s.districts)
+                    .filter((dist) => {
+                      if (!searchQuery.trim()) return true;
+                      const q = searchQuery.toLowerCase();
+                      return dist.name.toLowerCase().includes(q) || dist.state.toLowerCase().includes(q);
+                    })
+                    .map((dist) => {
+                      const distDemand = Math.round(dist.demand * horizon.demandMultiplier);
+                      const distTrained = Math.round(dist.trained * horizon.supplyMultiplier);
+                      const distGap = distDemand - distTrained;
+                      return (
+                        <tr
+                          key={dist.id}
+                          onClick={() => {
+                            setSelectedStateName(dist.state);
+                            setSelectedDistrictId(dist.id);
+                          }}
+                          className={`hover:bg-[#F5F0E7]/60 cursor-pointer ${
+                            dist.id === currentDistrict.id ? 'bg-[#F5F0E7]' : ''
+                          }`}
+                        >
+                          <td className="py-2.5 px-2 font-semibold text-[#173F35]">{dist.name}</td>
+                          <td className="py-2.5 px-2 text-[#64716D]">{dist.state}</td>
+                          <td className="py-2.5 px-2 text-right tabular-nums">
+                            {distDemand.toLocaleString('en-IN')}
+                          </td>
+                          <td className="py-2.5 px-2 text-right tabular-nums">
+                            {distTrained.toLocaleString('en-IN')}
+                          </td>
+                          <td className="py-2.5 px-2 text-right font-semibold text-[#D94E34] tabular-nums">
+                            {distGap >= 0 ? `+${distGap.toLocaleString('en-IN')}` : distGap.toLocaleString('en-IN')}
+                          </td>
+                          <td className="py-2.5 px-2 text-right font-medium text-[#173F35]">
+                            {dist.status}
+                          </td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
             </div>
@@ -701,7 +781,7 @@ export const GeographicViewPage: React.FC<{
               <div>
                 <h2 className="text-sm font-bold text-[#173F35]">
                   {currentState.state}{' '}
-                  <span className="font-normal text-xs text-[#64716D]">(State Overview)</span>
+                  <span className="font-normal text-xs text-[#64716D]">({dateRange} Outlook)</span>
                 </h2>
               </div>
               {/* Mini state map shape in warm saffron */}
@@ -719,19 +799,19 @@ export const GeographicViewPage: React.FC<{
               <div>
                 <div className="text-[11px] text-[#64716D]">Total Job Demand</div>
                 <div className="text-lg font-bold text-[#173F35] tabular-nums mt-0.5">
-                  {currentState.totalDemandLabel}
+                  {totalDemandLabel}
                 </div>
               </div>
               <div>
                 <div className="text-[11px] text-[#64716D]">Trained Candidates</div>
                 <div className="text-lg font-bold text-[#173F35] tabular-nums mt-0.5">
-                  {currentState.totalTrainedLabel}
+                  {totalTrainedLabel}
                 </div>
               </div>
               <div>
                 <div className="text-[11px] text-[#64716D]">Gap</div>
                 <div className="text-lg font-bold text-[#D94E34] tabular-nums mt-0.5">
-                  {currentState.gapLabel}
+                  {gapLabel}
                 </div>
               </div>
             </div>
@@ -749,25 +829,28 @@ export const GeographicViewPage: React.FC<{
                 </span>
               </div>
               <div className="divide-y divide-[#F2ECE1]">
-                {displayedTrades.map((trade, index) => (
-                  <div
-                    key={trade.name}
-                    className="py-2 flex items-center justify-between text-xs"
-                  >
-                    <div className="flex items-center gap-2 text-[#173F35]">
-                      <span className="text-[#64716D] w-4 tabular-nums">{index + 1}.</span>
-                      <div>
-                        <span className="font-medium">{trade.name}</span>
-                        <span className="ml-1.5 text-[10px] font-mono text-[#64716D] bg-[#F5F0E7] px-1.5 py-0.5 rounded">
-                          NCO {trade.ncoCode}
-                        </span>
+                {displayedTrades.map((trade, index) => {
+                  const scaledTradeDemand = Math.round(trade.demand * horizon.demandMultiplier);
+                  return (
+                    <div
+                      key={trade.name}
+                      className="py-2 flex items-center justify-between text-xs"
+                    >
+                      <div className="flex items-center gap-2 text-[#173F35]">
+                        <span className="text-[#64716D] w-4 tabular-nums">{index + 1}.</span>
+                        <div>
+                          <span className="font-medium">{trade.name}</span>
+                          <span className="ml-1.5 text-[10px] font-mono text-[#64716D] bg-[#F5F0E7] px-1.5 py-0.5 rounded">
+                            NCO {trade.ncoCode}
+                          </span>
+                        </div>
                       </div>
+                      <span className="font-semibold text-[#173F35] tabular-nums">
+                        {scaledTradeDemand.toLocaleString('en-IN')}
+                      </span>
                     </div>
-                    <span className="font-semibold text-[#173F35] tabular-nums">
-                      {trade.demand.toLocaleString('en-IN')}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -790,34 +873,34 @@ export const GeographicViewPage: React.FC<{
       <DetailModal
         open={reportModalOpen}
         onClose={() => setReportModalOpen(false)}
-        title={`${currentDistrict.name} District Skill Intelligence Dossier`}
+        title={`${currentDistrict.name} District Skill Intelligence Dossier (${dateRange})`}
         subtitle={`${currentState.state} · Accredited Training Centres: ${currentDistrict.centresCount} · Seat Utilization: ${currentDistrict.seatUtilization}%`}
       >
         <div className="space-y-4 text-xs">
           <div className="grid grid-cols-3 gap-3 bg-[#F8F5EF] p-3 rounded-lg border border-[#E9E0D3]">
             <div>
-              <div className="text-[#64716D]">Annual Demand</div>
+              <div className="text-[#64716D]">Projected Demand ({dateRange})</div>
               <div className="text-base font-bold text-[#173F35] tabular-nums mt-0.5">
-                {currentDistrict.demand.toLocaleString('en-IN')}
+                {Math.round(currentDistrict.demand * horizon.demandMultiplier).toLocaleString('en-IN')}
               </div>
             </div>
             <div>
               <div className="text-[#64716D]">Trained Output</div>
               <div className="text-base font-bold text-[#173F35] tabular-nums mt-0.5">
-                {currentDistrict.trained.toLocaleString('en-IN')}
+                {Math.round(currentDistrict.trained * horizon.supplyMultiplier).toLocaleString('en-IN')}
               </div>
             </div>
             <div>
               <div className="text-[#64716D]">Net Shortage Gap</div>
               <div className="text-base font-bold text-[#D94E34] tabular-nums mt-0.5">
-                +{currentDistrict.gap.toLocaleString('en-IN')}
+                +{(Math.round(currentDistrict.demand * horizon.demandMultiplier) - Math.round(currentDistrict.trained * horizon.supplyMultiplier)).toLocaleString('en-IN')}
               </div>
             </div>
           </div>
 
           <div>
             <div className="font-semibold text-[#173F35] mb-2">
-              Priority NCO-2015 Occupations Requiring Seat Expansion
+              Priority NCO-2015 Occupations Requiring Seat Expansion ({dateRange})
             </div>
             <div className="border border-[#E9E0D3] rounded-lg overflow-hidden">
               <table className="w-full text-left border-collapse">
@@ -836,7 +919,7 @@ export const GeographicViewPage: React.FC<{
                       <td className="py-2 px-3 font-mono text-[#64716D]">{t.ncoCode}</td>
                       <td className="py-2 px-3 text-[#64716D]">{t.sector}</td>
                       <td className="py-2 px-3 text-right font-semibold tabular-nums">
-                        {t.demand.toLocaleString('en-IN')}
+                        {Math.round(t.demand * horizon.demandMultiplier).toLocaleString('en-IN')}
                       </td>
                     </tr>
                   ))}
@@ -863,9 +946,13 @@ export const GeographicViewPage: React.FC<{
  */
 export const SectorsAndTradesPage: React.FC<{
   userSession?: UserSession | null;
-}> = ({ userSession }) => {
+  dateRange?: string;
+  searchQuery?: string;
+}> = ({ userSession, dateRange = 'Last 1 Year', searchQuery = '' }) => {
   const roleType = getUserRoleType(userSession);
   const isNcvet = roleType === 'NCVET';
+  const horizon = getHorizonConfig(dateRange);
+
   const [selectedSectorFilter, setSelectedSectorFilter] = useState<string>('All Sectors');
   const [exportNotice, setExportNotice] = useState<boolean>(false);
   const [syllabusNotice, setSyllabusNotice] = useState<string>('');
@@ -875,10 +962,16 @@ export const SectorsAndTradesPage: React.FC<{
       ? SECTOR_METRICS
       : SECTOR_METRICS.filter((s) => s.name === selectedSectorFilter);
 
-  const filteredTrades =
-    selectedSectorFilter === 'All Sectors'
-      ? TOP_TRADES_GROWTH
-      : TOP_TRADES_GROWTH.filter((t) => t.sector === selectedSectorFilter);
+  const filteredTrades = TOP_TRADES_GROWTH.filter((t) => {
+    const matchesSector =
+      selectedSectorFilter === 'All Sectors' || t.sector === selectedSectorFilter;
+    const matchesSearch =
+      !searchQuery.trim() ||
+      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.ncoCode.includes(searchQuery) ||
+      t.sector.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSector && matchesSearch;
+  });
 
   const displayedTrades = filteredTrades.length > 0 ? filteredTrades : TOP_TRADES_GROWTH;
 
@@ -901,6 +994,14 @@ export const SectorsAndTradesPage: React.FC<{
     }
   };
 
+  const formatDemandK = (k: number) => {
+    if (k >= 1000) return `${(k / 1000).toFixed(2)} Cr`;
+    if (k >= 100) return `${(k / 100).toFixed(1)} Lakh`;
+    return `${k}K`;
+  };
+
+  const maxScaleK = Math.round(300 * horizon.demandMultiplier);
+
   return (
     <div className="space-y-4 relative">
       {/* Mandala subtle corner watermark */}
@@ -919,7 +1020,13 @@ export const SectorsAndTradesPage: React.FC<{
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D97925] animate-pulse"></span>
+            <span>{dateRange}</span>
+            <span className="text-[#A57849]">·</span>
+            <span className="font-normal text-[#6C5840]">{horizon.label}</span>
+          </span>
           <SelectControl
             value={selectedSectorFilter}
             onChange={setSelectedSectorFilter}
@@ -981,6 +1088,8 @@ export const SectorsAndTradesPage: React.FC<{
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
         {SECTOR_METRICS.map((sec, idx) => {
           const isSelected = selectedSectorFilter === sec.name;
+          const scaledDemandK = Math.round(sec.demandK * horizon.demandMultiplier);
+          const secDemandLabel = formatDemandK(scaledDemandK);
           return (
             <SurfaceCard
               key={sec.id}
@@ -998,7 +1107,7 @@ export const SectorsAndTradesPage: React.FC<{
                 {sec.name}
               </div>
               <div className="text-base font-bold text-[#173F35] tabular-nums mt-0.5">
-                {sec.demandLabel}
+                {secDemandLabel}
               </div>
               <div className="text-[11px] font-semibold text-[#17604D] tabular-nums mt-0.5">
                 ↗ {sec.growth}
@@ -1013,9 +1122,14 @@ export const SectorsAndTradesPage: React.FC<{
         {/* Left Panel (5 cols): Sector-wise Demand-Supply Gap Horizontal Paired Bars */}
         <SurfaceCard className="lg:col-span-5 flex flex-col justify-between">
           <div>
-            <h2 className="text-sm font-bold text-[#173F35]">
-              Sector-wise Demand–Supply Gap
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-[#173F35]">
+                Sector-wise Demand–Supply Gap
+              </h2>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-[#FAF0E1] text-[#8C4E13]">
+                {dateRange}
+              </span>
+            </div>
             <div className="flex items-center justify-center gap-5 text-[11px] text-[#64716D] my-2.5">
               <span className="inline-flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-xs bg-[#6E7FA3]" />
@@ -1029,8 +1143,10 @@ export const SectorsAndTradesPage: React.FC<{
 
             <div className="space-y-3 mt-3">
               {filteredSectors.map((sec) => {
-                const demandPct = Math.min(100, (sec.demandK / 300) * 100);
-                const trainedPct = Math.min(100, (sec.trainedK / 300) * 100);
+                const scaledDemandK = Math.round(sec.demandK * horizon.demandMultiplier);
+                const scaledTrainedK = Math.round(sec.trainedK * horizon.supplyMultiplier);
+                const demandPct = Math.min(100, (scaledDemandK / maxScaleK) * 100);
+                const trainedPct = Math.min(100, (scaledTrainedK / maxScaleK) * 100);
                 return (
                   <div key={sec.id} className="grid grid-cols-12 items-center gap-2 text-xs">
                     <div className="col-span-4 text-right text-[#64716D] font-medium pr-1 truncate">
@@ -1041,14 +1157,14 @@ export const SectorsAndTradesPage: React.FC<{
                         <div
                           className="bg-[#6E7FA3] h-full rounded-r-sm progress-bar-anim transition-all duration-700 ease-out"
                           style={{ width: `${demandPct}%` }}
-                          title={`Job Demand: ${sec.demandLabel}`}
+                          title={`Job Demand: ${formatDemandK(scaledDemandK)}`}
                         />
                       </div>
                       <div className="w-full bg-[#F5F0E7] h-2.5 rounded-r-sm overflow-hidden">
                         <div
                           className="bg-[#E28A86] h-full rounded-r-sm progress-bar-anim transition-all duration-700 ease-out"
                           style={{ width: `${trainedPct}%` }}
-                          title={`Trained: ${(sec.trainedK / 100).toFixed(2)} Lakh`}
+                          title={`Trained: ${formatDemandK(scaledTrainedK)}`}
                         />
                       </div>
                     </div>
@@ -1063,21 +1179,26 @@ export const SectorsAndTradesPage: React.FC<{
             <div className="col-span-4" />
             <div className="col-span-8 flex justify-between">
               <span>0</span>
-              <span>50K</span>
-              <span>100K</span>
-              <span>150K</span>
-              <span>200K</span>
-              <span>250K</span>
-              <span>300K</span>
+              <span>{formatDemandK(Math.round(maxScaleK * 0.17))}</span>
+              <span>{formatDemandK(Math.round(maxScaleK * 0.33))}</span>
+              <span>{formatDemandK(Math.round(maxScaleK * 0.5))}</span>
+              <span>{formatDemandK(Math.round(maxScaleK * 0.67))}</span>
+              <span>{formatDemandK(Math.round(maxScaleK * 0.83))}</span>
+              <span>{formatDemandK(maxScaleK)}</span>
             </div>
           </div>
         </SurfaceCard>
 
-        {/* Right Panel (7 cols): Top 10 Trades by Projected Growth (Next 3 Years) */}
+        {/* Right Panel (7 cols): Top 10 Trades by Projected Growth */}
         <SurfaceCard className="lg:col-span-7 overflow-x-auto">
-          <h2 className="text-sm font-bold text-[#173F35] mb-3">
-            Top 10 Trades by Projected Growth (Next 3 Years)
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-[#173F35]">
+              Top 10 Trades by Projected Growth ({dateRange})
+            </h2>
+            <span className="text-[10px] text-[#64716D]">
+              NCO-2015 Harmonized
+            </span>
+          </div>
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-[#E9E0D3] text-[#64716D] bg-[#FAF7F2]">
@@ -1114,35 +1235,61 @@ export const SectorsAndTradesPage: React.FC<{
  * PAGE 4: 04 — Skill Demand Forecasting ("Skill Demand Forecasting")
  * ============================================================================
  */
-export const SkillForecastingPage: React.FC = () => {
+export const SkillForecastingPage: React.FC<{
+  userSession?: UserSession | null;
+  dateRange?: string;
+  searchQuery?: string;
+}> = ({ userSession, dateRange = 'Last 1 Year', searchQuery = '' }) => {
+  const horizonConfig = getHorizonConfig(dateRange);
+  const initialHorizon = dateRange === 'Next 3 Years' ? '3 Years' : '1 Year';
+
   const [selectedSector, setSelectedSector] = useState<string>('IT/ITeS');
   const [selectedTradeKey, setSelectedTradeKey] = useState<string>('Software Developer');
-  const [horizon, setHorizon] = useState<string>('3 Years');
+  const [horizon, setHorizon] = useState<string>(initialHorizon);
 
   const allForecastTrades: TradeGrowthItem[] = [
     SOFTWARE_DEVELOPER_FORECAST,
     ...TOP_TRADES_GROWTH,
-  ];
+  ].filter((t) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return t.name.toLowerCase().includes(q) || t.ncoCode.includes(q) || t.sector.toLowerCase().includes(q);
+  });
 
   const activeTrade =
     allForecastTrades.find((t) => t.name === selectedTradeKey) ||
+    allForecastTrades[0] ||
     SOFTWARE_DEVELOPER_FORECAST;
 
-  const horizonMultiplier = horizon === '5 Years' ? 1.25 : horizon === '1 Year' ? 0.65 : 1;
+  const horizonMultiplier =
+    (horizon === '5 Years' ? 1.55 : horizon === '3 Years' ? 1.25 : 0.85) *
+    (dateRange === 'Next 3 Years' ? 2.1 : dateRange === 'FY 2026–27' ? 1.18 : 1.0);
+
+  const currentDemandVal = Math.round(
+    activeTrade.currentDemand * (dateRange === 'Next 3 Years' ? 2.4 : dateRange === 'FY 2026–27' ? 1.15 : 1.0)
+  );
   const projectedDemandVal = Math.round(activeTrade.projectedDemand * horizonMultiplier);
-  const recommendedSeatsVal = Math.round(activeTrade.recommendedSeats * horizonMultiplier);
+  const recommendedSeatsVal = Math.round(activeTrade.recommendedSeats * horizonMultiplier * 0.91);
   const expectedGapVal = projectedDemandVal - recommendedSeatsVal;
 
   return (
     <div className="space-y-4 relative">
       {/* Header */}
-      <div>
-        <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-          Skill Demand Forecasting
-        </h1>
-        <p className="text-xs text-[#64716D] mt-1">
-          AI-powered forecasts to plan training capacity and resources
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
+            Skill Demand Forecasting
+          </h1>
+          <p className="text-xs text-[#64716D] mt-1">
+            AI-powered forecasts to plan training capacity and resources
+          </p>
+        </div>
+        <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 self-start sm:self-auto shadow-2xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#D97925] animate-pulse"></span>
+          <span>{dateRange}</span>
+          <span className="text-[#A57849]">·</span>
+          <span className="font-normal text-[#6C5840]">{horizonConfig.label}</span>
+        </span>
       </div>
 
       {/* Filter Row */}
@@ -1294,10 +1441,10 @@ export const SkillForecastingPage: React.FC = () => {
                   stroke="#E9E0D3"
                   strokeWidth="1.2"
                 />
-                <text x="12" y="18" className="text-[10px] fill-[#64716D] font-medium">
-                  2027 ➔
+                <text x="10" y="18" className="text-[10px] fill-[#64716D] font-medium">
+                  {dateRange} ➔
                 </text>
-                <text x="12" y="36" className="text-sm fill-[#173F35] font-bold tabular-nums">
+                <text x="10" y="36" className="text-sm fill-[#173F35] font-bold tabular-nums">
                   {projectedDemandVal.toLocaleString('en-IN')}
                 </text>
               </g>
@@ -1307,7 +1454,7 @@ export const SkillForecastingPage: React.FC = () => {
                 { x: 90, label: '2024' },
                 { x: 210, label: '2025' },
                 { x: 330, label: '2026' },
-                { x: 450, label: '2027' },
+                { x: 450, label: dateRange === 'Next 3 Years' ? '2029 (F)' : '2027 (F)' },
               ].map((yr) => (
                 <text
                   key={yr.label}
@@ -1325,18 +1472,23 @@ export const SkillForecastingPage: React.FC = () => {
 
         {/* Right Panel: Forecast Summary */}
         <SurfaceCard className="lg:col-span-5 flex flex-col justify-between">
-          <h2 className="text-sm font-bold text-[#173F35]">Forecast Summary</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-[#173F35]">Forecast Summary</h2>
+            <span className="text-[11px] text-[#64716D] font-medium">
+              Target: <strong className="text-[#173F35]">{dateRange}</strong>
+            </span>
+          </div>
 
           <div className="grid grid-cols-2 gap-4 my-auto py-3">
             <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#EFE7DA]">
               <div className="text-[11px] text-[#64716D]">Current Demand</div>
               <div className="text-xl font-bold text-[#173F35] tabular-nums mt-1">
-                {activeTrade.currentDemand.toLocaleString('en-IN')}
+                {currentDemandVal.toLocaleString('en-IN')}
               </div>
             </div>
 
             <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#EFE7DA]">
-              <div className="text-[11px] text-[#64716D]">Projected Demand (2027)</div>
+              <div className="text-[11px] text-[#64716D]">Projected Demand ({dateRange})</div>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="text-xl font-bold text-[#173F35] tabular-nums">
                   {projectedDemandVal.toLocaleString('en-IN')}
@@ -1355,7 +1507,7 @@ export const SkillForecastingPage: React.FC = () => {
             </div>
 
             <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#EFE7DA]">
-              <div className="text-[11px] text-[#64716D]">Expected Gap (2027)</div>
+              <div className="text-[11px] text-[#64716D]">Expected Gap ({dateRange})</div>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="text-xl font-bold text-[#D94E34] tabular-nums">
                   +{expectedGapVal.toLocaleString('en-IN')}
@@ -1451,50 +1603,77 @@ export const SkillForecastingPage: React.FC = () => {
 export const AlertsAndInsightsPage: React.FC<{
   onNavigate: (route: NavRouteId) => void;
   userSession?: UserSession | null;
-}> = ({ onNavigate, userSession }) => {
+  dateRange?: string;
+  searchQuery?: string;
+}> = ({ onNavigate, userSession, dateRange = 'Last 1 Year', searchQuery = '' }) => {
   const canViewRecommendations = isRouteAllowedForSession(userSession ?? null, 'recommendations');
+  const horizon = getHorizonConfig(dateRange);
+
   const [activeFilter, setActiveFilter] = useState<
     'All' | 'Undersupply' | 'Oversupply' | 'High Growth'
   >('All');
   const [selectedAlert, setSelectedAlert] = useState<AlertItem | null>(null);
 
-  const filteredAlerts =
+  const filteredAlerts = (
     activeFilter === 'All'
       ? ALERTS_DATA
-      : ALERTS_DATA.filter((a) => a.category === activeFilter);
+      : ALERTS_DATA.filter((a) => a.category === activeFilter)
+  ).filter((a) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      a.tradeName.toLowerCase().includes(q) ||
+      a.ncoCode.includes(q) ||
+      a.sector.toLowerCase().includes(q) ||
+      a.description.toLowerCase().includes(q)
+    );
+  });
+
+  const totalCount = dateRange === 'Next 3 Years' ? 38 : dateRange === 'FY 2026–27' ? 29 : 24;
+  const underCount = dateRange === 'Next 3 Years' ? 18 : dateRange === 'FY 2026–27' ? 13 : 10;
+  const overCount = dateRange === 'Next 3 Years' ? 11 : dateRange === 'FY 2026–27' ? 9 : 8;
+  const growthCount = dateRange === 'Next 3 Years' ? 9 : dateRange === 'FY 2026–27' ? 7 : 6;
 
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div>
-        <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-          Alerts &amp; Insights
-        </h1>
-        <p className="text-xs text-[#64716D] mt-1">
-          Early warnings for emerging shortages and saturation risks
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
+            Alerts &amp; Insights
+          </h1>
+          <p className="text-xs text-[#64716D] mt-1">
+            Early warnings for emerging shortages and saturation risks
+          </p>
+        </div>
+        <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 self-start sm:self-auto shadow-2xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#D97925] animate-pulse"></span>
+          <span>{dateRange}</span>
+          <span className="text-[#A57849]">·</span>
+          <span className="font-normal text-[#6C5840]">{horizon.label}</span>
+        </span>
       </div>
 
       {/* Filter Chips Row matching Reference Image 1 */}
       <div className="flex flex-wrap items-center gap-2">
         <FilterTabButton
           active={activeFilter === 'All'}
-          label="All Alerts (24)"
+          label={`All Alerts (${totalCount})`}
           onClick={() => setActiveFilter('All')}
         />
         <FilterTabButton
           active={activeFilter === 'Undersupply'}
-          label="Undersupply (10)"
+          label={`Undersupply (${underCount})`}
           onClick={() => setActiveFilter('Undersupply')}
         />
         <FilterTabButton
           active={activeFilter === 'Oversupply'}
-          label="Oversupply (8)"
+          label={`Oversupply (${overCount})`}
           onClick={() => setActiveFilter('Oversupply')}
         />
         <FilterTabButton
           active={activeFilter === 'High Growth'}
-          label="High Growth (6)"
+          label={`High Growth (${growthCount})`}
           onClick={() => setActiveFilter('High Growth')}
         />
       </div>
@@ -1657,12 +1836,34 @@ export const AlertsAndInsightsPage: React.FC<{
  */
 export const PlanningRecommendationsPage: React.FC<{
   userSession?: UserSession | null;
-}> = ({ userSession }) => {
+  dateRange?: string;
+  searchQuery?: string;
+}> = ({ userSession, dateRange = 'Last 1 Year', searchQuery = '' }) => {
   const { t } = useLanguage();
   const roleType = getUserRoleType(userSession);
+  const horizon = getHorizonConfig(dateRange);
   const [selectedRec, setSelectedRec] = useState<RecommendationItem | null>(null);
   const [downloaded, setDownloaded] = useState<boolean>(false);
   const [actionStatus, setActionStatus] = useState<string>('');
+
+  const filteredRecommendations = RECOMMENDATIONS_DATA.filter((rec) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      rec.title.toLowerCase().includes(q) ||
+      rec.summary.toLowerCase().includes(q) ||
+      rec.priority.toLowerCase().includes(q)
+    );
+  });
+
+  const additionalTrained =
+    dateRange === 'Next 3 Years' ? '+8.5 Lakh' : dateRange === 'FY 2026–27' ? '+2.8 Lakh' : '+1.2 Lakh';
+  const gapReduction =
+    dateRange === 'Next 3 Years' ? '-68%' : dateRange === 'FY 2026–27' ? '-52%' : '-40%';
+  const employmentPotential =
+    dateRange === 'Next 3 Years' ? '+46%' : dateRange === 'FY 2026–27' ? '+34%' : '+28%';
+  const newCentres =
+    dateRange === 'Next 3 Years' ? '74' : dateRange === 'FY 2026–27' ? '32' : '18';
 
   return (
     <div className="space-y-4">
@@ -1687,27 +1888,35 @@ export const PlanningRecommendationsPage: React.FC<{
                 )}
           </p>
         </div>
-        <PrimaryButton
-          onClick={() => {
-            setDownloaded(true);
-            ApiService.triggerDsdpDownload(492);
-            setTimeout(() => setDownloaded(false), 3000);
-          }}
-          title={
-            roleType === 'DSO'
-              ? "Download Pune District DSDP Allocation CSV"
-              : "Download Official MSDE DSDP Annual Target Allocation CSV"
-          }
-        >
-          <Download className="w-3.5 h-3.5" />
-          <span>
-            {downloaded
-              ? t("Report Downloaded (CSV)", "रिपोर्ट डाउनलोड हो गई (CSV)")
-              : roleType === 'DSO'
-              ? t("Download Pune DSDP (CSV)", "पुणे डीएसडीपी डाउनलोड करें (CSV)")
-              : t("Download DSDP Plan (CSV)", "डीएसडीपी योजना डाउनलोड करें (CSV)")}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D97925] animate-pulse"></span>
+            <span>{dateRange}</span>
+            <span className="text-[#A57849]">·</span>
+            <span className="font-normal text-[#6C5840]">{horizon.label}</span>
           </span>
-        </PrimaryButton>
+          <PrimaryButton
+            onClick={() => {
+              setDownloaded(true);
+              ApiService.triggerDsdpDownload(492);
+              setTimeout(() => setDownloaded(false), 3000);
+            }}
+            title={
+              roleType === 'DSO'
+                ? "Download Pune District DSDP Allocation CSV"
+                : "Download Official MSDE DSDP Annual Target Allocation CSV"
+            }
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>
+              {downloaded
+                ? t("Report Downloaded (CSV)", "रिपोर्ट डाउनलोड हो गई (CSV)")
+                : roleType === 'DSO'
+                ? t("Download Pune DSDP (CSV)", "पुणे डीएसडीपी डाउनलोड करें (CSV)")
+                : t("Download DSDP Plan (CSV)", "डीएसडीपी योजना डाउनलोड करें (CSV)")}
+            </span>
+          </PrimaryButton>
+        </div>
       </div>
 
       {/* Model vs Policy Distinction Banner */}
@@ -1719,7 +1928,7 @@ export const PlanningRecommendationsPage: React.FC<{
 
       {/* Three Primary Recommendation Cards matching Reference Image 1 Page 6 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
-        {RECOMMENDATIONS_DATA.map((rec) => (
+        {filteredRecommendations.map((rec) => (
           <SurfaceCard key={rec.id} className="flex flex-col justify-between p-4">
             <div className="flex items-start gap-3.5">
               {/* Circular Tinted Icon */}
@@ -1769,18 +1978,23 @@ export const PlanningRecommendationsPage: React.FC<{
         ))}
       </div>
 
-      {/* Expected Impact (Next 3 Years) Section */}
+      {/* Expected Impact Section */}
       <SurfaceCard className="p-4">
-        <h2 className="text-xs font-bold text-[#173F35] mb-3">
-          Expected Impact (Next 3 Years)
-        </h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-xs font-bold text-[#173F35]">
+            Expected Impact ({dateRange})
+          </h2>
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-[#FAF0E1] text-[#8C4E13]">
+            {horizon.label}
+          </span>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-[#FAF7F2] border border-[#EFE7DA]">
             <div className="w-9 h-9 rounded-lg bg-[#E2F0E3] text-[#17604D] flex items-center justify-center shrink-0">
               <Users className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-lg font-bold text-[#17604D] tabular-nums">+1.2 Lakh</div>
+              <div className="text-lg font-bold text-[#17604D] tabular-nums">{additionalTrained}</div>
               <div className="text-[11px] text-[#64716D]">Additional trained candidates</div>
             </div>
           </div>
@@ -1790,7 +2004,7 @@ export const PlanningRecommendationsPage: React.FC<{
               <CheckCircle2 className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-lg font-bold text-[#173F35] tabular-nums">-40%</div>
+              <div className="text-lg font-bold text-[#173F35] tabular-nums">{gapReduction}</div>
               <div className="text-[11px] text-[#64716D]">Reduction in demand-supply gap</div>
             </div>
           </div>
@@ -1800,7 +2014,7 @@ export const PlanningRecommendationsPage: React.FC<{
               <TrendingUp className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-lg font-bold text-[#17604D] tabular-nums">+28%</div>
+              <div className="text-lg font-bold text-[#17604D] tabular-nums">{employmentPotential}</div>
               <div className="text-[11px] text-[#64716D]">Employment potential</div>
             </div>
           </div>
@@ -1810,7 +2024,7 @@ export const PlanningRecommendationsPage: React.FC<{
               <Building2 className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-lg font-bold text-[#173F35] tabular-nums">18</div>
+              <div className="text-lg font-bold text-[#173F35] tabular-nums">{newCentres}</div>
               <div className="text-[11px] text-[#64716D]">New centres recommended</div>
             </div>
           </div>
