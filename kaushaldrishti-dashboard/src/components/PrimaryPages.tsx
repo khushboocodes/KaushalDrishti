@@ -52,10 +52,9 @@ import {
   RECOMMENDATIONS_DATA,
 } from '../data/mockData';
 import { AlertItem, NavRouteId, RecommendationItem, TradeGrowthItem } from '../types';
-import { ApiService } from '../services/apiService';
 import { useLanguage } from '../context/LanguageContext';
 import { UserSession } from './AuthModal';
-import { getUserRoleType, getRoleConfig } from '../utils/rbac';
+import { getUserRoleType, getRoleConfig, isRouteAllowedForSession } from '../utils/rbac';
 
 /**
  * ============================================================================
@@ -1451,7 +1450,9 @@ export const SkillForecastingPage: React.FC = () => {
  */
 export const AlertsAndInsightsPage: React.FC<{
   onNavigate: (route: NavRouteId) => void;
-}> = ({ onNavigate }) => {
+  userSession?: UserSession | null;
+}> = ({ onNavigate, userSession }) => {
+  const canViewRecommendations = isRouteAllowedForSession(userSession ?? null, 'recommendations');
   const [activeFilter, setActiveFilter] = useState<
     'All' | 'Undersupply' | 'Oversupply' | 'High Growth'
   >('All');
@@ -1588,14 +1589,16 @@ export const AlertsAndInsightsPage: React.FC<{
                 data entry and basic IT support roles are approaching saturation in urban
                 areas.
               </p>
-              <button
-                type="button"
-                onClick={() => onNavigate('recommendations')}
-                className="w-full mt-4 py-2.5 px-4 rounded-xl bg-[#FAF0E1] hover:bg-[#F5E6D0] border border-[#ECDCC7] text-[#173F35] font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <span>View Full Report</span>
-                <span className="text-xs text-[#D97925] leading-none" aria-hidden="true">→</span>
-              </button>
+              {canViewRecommendations && (
+                <button
+                  type="button"
+                  onClick={() => onNavigate('recommendations')}
+                  className="w-full mt-4 py-2.5 px-4 rounded-xl bg-[#FAF0E1] hover:bg-[#F5E6D0] border border-[#ECDCC7] text-[#173F35] font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <span>View Full Report</span>
+                  <span className="text-xs text-[#D97925] leading-none" aria-hidden="true">→</span>
+                </button>
+              )}
             </div>
 
             {/* Heritage Illustration integrated inside the card, flush at the bottom */}

@@ -237,7 +237,7 @@ function AppContent() {
       case 'forecasting':
         return <SkillForecastingPage />;
       case 'alerts':
-        return <AlertsAndInsightsPage onNavigate={setActiveRoute} />;
+        return <AlertsAndInsightsPage onNavigate={setActiveRoute} userSession={userSession} />;
       case 'recommendations':
         return <PlanningRecommendationsPage userSession={userSession} />;
       case 'demand-supply':
