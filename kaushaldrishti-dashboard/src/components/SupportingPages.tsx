@@ -79,28 +79,28 @@ export const DemandSupplyPage: React.FC = () => {
 
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5">
-        <SurfaceCard>
+        <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-1">
           <div className="text-xs text-[#64716D]">Aggregate Annual Demand</div>
           <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-1">1.24 Cr</div>
           <div className="text-[11px] text-[#17604D] font-semibold mt-1">
             Across 36 States &amp; UTs
           </div>
         </SurfaceCard>
-        <SurfaceCard>
+        <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-2">
           <div className="text-xs text-[#64716D]">Certified Supply Pipeline</div>
           <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-1">1.08 Cr</div>
           <div className="text-[11px] text-[#64716D] mt-1">
             ITIs, PMKVY 4.0 &amp; Polytechnics
           </div>
         </SurfaceCard>
-        <SurfaceCard>
+        <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-3">
           <div className="text-xs text-[#64716D]">Net Undersupply Trades</div>
           <div className="text-2xl font-bold text-[#D94E34] tabular-nums mt-1">473 Trades</div>
           <div className="text-[11px] text-[#64716D] mt-1">
             38% of 1,245 mapped NCO trades
           </div>
         </SurfaceCard>
-        <SurfaceCard>
+        <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-4">
           <div className="text-xs text-[#64716D]">Balanced Equilibrium Trades</div>
           <div className="text-2xl font-bold text-[#17604D] tabular-nums mt-1">523 Trades</div>
           <div className="text-[11px] text-[#64716D] mt-1">

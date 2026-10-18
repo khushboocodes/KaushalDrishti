@@ -119,8 +119,8 @@ export const DashboardOverviewPage: React.FC<{
       {/* KPI Row — 4 Equal-Width Cards matching Reference Image 1 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5">
         {/* Card 1 — Total Job Demand */}
-        <SurfaceCard className="flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#EBF0FA] text-[#3B66B8] flex items-center justify-center shrink-0 mt-0.5">
+        <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-1 flex items-start gap-3.5 group">
+          <div className="w-10 h-10 rounded-xl bg-[#EBF0FA] text-[#3B66B8] flex items-center justify-center shrink-0 mt-0.5 kpi-icon-badge">
             <Briefcase className="w-5 h-5" />
           </div>
           <div>
@@ -138,8 +138,8 @@ export const DashboardOverviewPage: React.FC<{
         </SurfaceCard>
 
         {/* Card 2 — Trained Candidates */}
-        <SurfaceCard className="flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#E5F2E6] text-[#287D4E] flex items-center justify-center shrink-0 mt-0.5">
+        <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-2 flex items-start gap-3.5 group">
+          <div className="w-10 h-10 rounded-xl bg-[#E5F2E6] text-[#287D4E] flex items-center justify-center shrink-0 mt-0.5 kpi-icon-badge">
             <GraduationCap className="w-5 h-5" />
           </div>
           <div>
@@ -157,8 +157,8 @@ export const DashboardOverviewPage: React.FC<{
         </SurfaceCard>
 
         {/* Card 3 — Demand-Supply Gap */}
-        <SurfaceCard className="flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#FBEAE4] text-[#D96843] flex items-center justify-center shrink-0 mt-0.5">
+        <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-3 flex items-start gap-3.5 group">
+          <div className="w-10 h-10 rounded-xl bg-[#FBEAE4] text-[#D96843] flex items-center justify-center shrink-0 mt-0.5 kpi-icon-badge">
             <TrendingUp className="w-5 h-5" />
           </div>
           <div>
@@ -171,8 +171,8 @@ export const DashboardOverviewPage: React.FC<{
         </SurfaceCard>
 
         {/* Card 4 — High-Growth Trades */}
-        <SurfaceCard className="flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#F0EBF8] text-[#7A52B8] flex items-center justify-center shrink-0 mt-0.5">
+        <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-4 flex items-start gap-3.5 group">
+          <div className="w-10 h-10 rounded-xl bg-[#F0EBF8] text-[#7A52B8] flex items-center justify-center shrink-0 mt-0.5 kpi-icon-badge">
             <TrendingUp className="w-5 h-5" />
           </div>
           <div>
@@ -220,6 +220,17 @@ export const DashboardOverviewPage: React.FC<{
           {/* SVG Grouped Bar Chart with Pale Beige Grid Lines */}
           <div className="w-full pt-1">
             <svg viewBox="0 0 520 185" className="w-full h-[185px] overflow-visible">
+              <defs>
+                <linearGradient id="barDemandGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#8796BD" />
+                  <stop offset="100%" stopColor="#647399" />
+                </linearGradient>
+                <linearGradient id="barTrainedGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#EB9A95" />
+                  <stop offset="100%" stopColor="#D57A75" />
+                </linearGradient>
+              </defs>
+
               {/* Horizontal grid lines */}
               {[
                 { y: 20, label: '1.5Cr' },
@@ -253,16 +264,17 @@ export const DashboardOverviewPage: React.FC<{
                 const demandHeight = (item.demand / 150) * 135;
                 const trainedHeight = (item.trained / 150) * 135;
                 return (
-                  <g key={item.year} className="group">
+                  <g key={`${chartPeriod}-${item.year}`} className="group">
                     {/* Demand bar */}
                     <rect
                       x={groupX}
                       y={155 - demandHeight}
                       width="22"
                       height={demandHeight}
-                      rx="2"
-                      fill="#7684A7"
-                      className="transition-opacity group-hover:opacity-90"
+                      rx="3"
+                      fill="url(#barDemandGrad)"
+                      className="chart-bar-anim"
+                      style={{ animationDelay: `${idx * 90}ms` }}
                     >
                       <title>{`${item.year} Job Demand: ${item.demandLabel}`}</title>
                     </rect>
@@ -272,9 +284,10 @@ export const DashboardOverviewPage: React.FC<{
                       y={155 - trainedHeight}
                       width="22"
                       height={trainedHeight}
-                      rx="2"
-                      fill="#E38E89"
-                      className="transition-opacity group-hover:opacity-90"
+                      rx="3"
+                      fill="url(#barTrainedGrad)"
+                      className="chart-bar-anim"
+                      style={{ animationDelay: `${idx * 90 + 50}ms` }}
                     >
                       <title>{`${item.year} Trained Candidates: ${item.trainedLabel}`}</title>
                     </rect>
@@ -323,7 +336,10 @@ export const DashboardOverviewPage: React.FC<{
                   strokeWidth="16"
                   strokeDasharray="116.1 276.46"
                   strokeDashoffset="0"
-                />
+                  className="doughnut-animated doughnut-slice"
+                >
+                  <title>Balanced: 42% of trades</title>
+                </circle>
                 {/* Undersupply: 38% (38% = 105.05) */}
                 <circle
                   cx="60"
@@ -334,7 +350,10 @@ export const DashboardOverviewPage: React.FC<{
                   strokeWidth="16"
                   strokeDasharray="105.05 276.46"
                   strokeDashoffset="-116.1"
-                />
+                  className="doughnut-animated doughnut-slice"
+                >
+                  <title>Undersupply: 38% of trades</title>
+                </circle>
                 {/* Oversupply: 20% (20% = 55.3) */}
                 <circle
                   cx="60"
@@ -345,9 +364,12 @@ export const DashboardOverviewPage: React.FC<{
                   strokeWidth="16"
                   strokeDasharray="55.3 276.46"
                   strokeDashoffset="-221.15"
-                />
+                  className="doughnut-animated doughnut-slice"
+                >
+                  <title>Oversupply: 20% of trades</title>
+                </circle>
               </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center transition-transform duration-300 hover:scale-105 pointer-events-none">
                 <span className="text-2xl font-bold text-[#173F35] tabular-nums leading-none">
                   1,245
                 </span>
@@ -357,21 +379,21 @@ export const DashboardOverviewPage: React.FC<{
 
             {/* Doughnut Legend */}
             <div className="space-y-3 w-full max-w-[180px]">
-              <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center justify-between text-xs hover:translate-x-1 transition-transform cursor-default">
                 <span className="inline-flex items-center gap-2 text-[#64716D]">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#E56B55]" />
                   Undersupply
                 </span>
                 <span className="font-bold text-[#173F35] tabular-nums">38%</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center justify-between text-xs hover:translate-x-1 transition-transform cursor-default">
                 <span className="inline-flex items-center gap-2 text-[#64716D]">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#5B9E68]" />
                   Balanced
                 </span>
                 <span className="font-bold text-[#173F35] tabular-nums">42%</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center justify-between text-xs hover:translate-x-1 transition-transform cursor-default">
                 <span className="inline-flex items-center gap-2 text-[#64716D]">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#F2B968]" />
                   Oversupply
@@ -400,38 +422,41 @@ export const DashboardOverviewPage: React.FC<{
           {t("Quick Insights", "त्वरित अंतर्दृष्टि")}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-          {QUICK_INSIGHTS.map((item) => (
+          {QUICK_INSIGHTS.map((item, idx) => (
             <button
               key={item.id}
               type="button"
               onClick={() => onNavigate(item.route)}
-              className="flex items-center gap-3 p-2.5 rounded-xl bg-[#FAF7F2] hover:bg-[#F3EDE2] border border-[#EFE7DA] text-left transition-colors cursor-pointer"
+              className={`interactive-card group flex items-center justify-between p-2.5 rounded-xl bg-[#FAF7F2] hover:bg-[#F3EDE2] border border-[#EFE7DA] text-left cursor-pointer animate-card-slide-up anim-delay-${idx + 1}`}
             >
-              <div
-                className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
-                  item.tone === 'coral'
-                    ? 'bg-[#FBE5DE] text-[#D95338]'
-                    : item.tone === 'sage'
-                    ? 'bg-[#E2F0E3] text-[#287D4E]'
-                    : item.tone === 'blue'
-                    ? 'bg-[#E8EFFB] text-[#3563B8]'
-                    : 'bg-[#FBF0D9] text-[#D97925]'
-                }`}
-              >
-                {item.icon === 'heart' && <HeartPulse className="w-4 h-4" />}
-                {item.icon === 'leaf' && <Sprout className="w-4 h-4" />}
-                {item.icon === 'monitor' && <Monitor className="w-4 h-4" />}
-                {item.icon === 'crane' && <HardHat className="w-4 h-4" />}
-              </div>
-              <div className="min-w-0">
-                <div className="text-xs font-bold text-[#173F35] truncate">{item.title}</div>
-                <div className="text-[11px] text-[#64716D] truncate mt-0.5">
-                  {item.highlight && (
-                    <span className="font-bold text-[#17604D] mr-1">{item.highlight}</span>
-                  )}
-                  {item.subtitle}
+              <div className="flex items-center gap-3 min-w-0">
+                <div
+                  className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 ${
+                    item.tone === 'coral'
+                      ? 'bg-[#FBE5DE] text-[#D95338]'
+                      : item.tone === 'sage'
+                      ? 'bg-[#E2F0E3] text-[#287D4E]'
+                      : item.tone === 'blue'
+                      ? 'bg-[#E8EFFB] text-[#3563B8]'
+                      : 'bg-[#FBF0D9] text-[#D97925]'
+                  }`}
+                >
+                  {item.icon === 'heart' && <HeartPulse className="w-4 h-4" />}
+                  {item.icon === 'leaf' && <Sprout className="w-4 h-4" />}
+                  {item.icon === 'monitor' && <Monitor className="w-4 h-4" />}
+                  {item.icon === 'crane' && <HardHat className="w-4 h-4" />}
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-[#173F35] truncate">{item.title}</div>
+                  <div className="text-[11px] text-[#64716D] truncate mt-0.5">
+                    {item.highlight && (
+                      <span className="font-bold text-[#17604D] mr-1">{item.highlight}</span>
+                    )}
+                    {item.subtitle}
+                  </div>
                 </div>
               </div>
+              <ArrowRight className="w-3.5 h-3.5 text-[#17604D] opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all shrink-0 ml-1" />
             </button>
           ))}
         </div>
@@ -955,7 +980,7 @@ export const SectorsAndTradesPage: React.FC<{
 
       {/* 7 Compact Sector Cards Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
-        {SECTOR_METRICS.map((sec) => {
+        {SECTOR_METRICS.map((sec, idx) => {
           const isSelected = selectedSectorFilter === sec.name;
           return (
             <SurfaceCard
@@ -963,11 +988,11 @@ export const SectorsAndTradesPage: React.FC<{
               onClick={() =>
                 setSelectedSectorFilter(isSelected ? 'All Sectors' : sec.name)
               }
-              className={`p-3 flex flex-col items-center text-center transition-all ${
-                isSelected ? 'ring-2 ring-[#17604D] bg-[#F5F0E7]' : ''
+              className={`p-3 flex flex-col items-center text-center interactive-card group animate-card-slide-up anim-delay-${(idx % 6) + 1} cursor-pointer transition-all ${
+                isSelected ? 'ring-2 ring-[#17604D] bg-[#F5F0E7] shadow-sm' : ''
               }`}
             >
-              <div className="w-8 h-8 rounded-lg bg-[#F5F0E7] flex items-center justify-center mb-2">
+              <div className="w-8 h-8 rounded-lg bg-[#F5F0E7] flex items-center justify-center mb-2 transition-transform duration-300 group-hover:scale-115 group-hover:rotate-6">
                 {renderSectorIcon(sec.iconKey)}
               </div>
               <div className="text-xs font-semibold text-[#173F35] whitespace-nowrap">
@@ -1015,14 +1040,14 @@ export const SectorsAndTradesPage: React.FC<{
                     <div className="col-span-8 space-y-1">
                       <div className="w-full bg-[#F5F0E7] h-2.5 rounded-r-sm overflow-hidden">
                         <div
-                          className="bg-[#6E7FA3] h-full rounded-r-sm"
+                          className="bg-[#6E7FA3] h-full rounded-r-sm progress-bar-anim transition-all duration-700 ease-out"
                           style={{ width: `${demandPct}%` }}
                           title={`Job Demand: ${sec.demandLabel}`}
                         />
                       </div>
                       <div className="w-full bg-[#F5F0E7] h-2.5 rounded-r-sm overflow-hidden">
                         <div
-                          className="bg-[#E28A86] h-full rounded-r-sm"
+                          className="bg-[#E28A86] h-full rounded-r-sm progress-bar-anim transition-all duration-700 ease-out"
                           style={{ width: `${trainedPct}%` }}
                           title={`Trained: ${(sec.trainedK / 100).toFixed(2)} Lakh`}
                         />
@@ -1240,6 +1265,7 @@ export const SkillForecastingPage: React.FC = () => {
                 y2="93"
                 stroke="#17604D"
                 strokeWidth="2.5"
+                className="chart-line-anim"
               />
               <circle cx="90" cy="116" r="4" fill="#17604D" />
               <circle cx="210" cy="93" r="4" fill="#17604D" />
@@ -1251,12 +1277,14 @@ export const SkillForecastingPage: React.FC = () => {
                 stroke="#D96843"
                 strokeWidth="2.5"
                 strokeDasharray="6 4"
+                className="chart-line-anim"
               />
               <circle cx="330" cy="70" r="4" fill="#D96843" />
+              <circle cx="450" cy="48" r="9" fill="none" stroke="#D96843" strokeWidth="1.2" opacity="0.6" className="chart-pulse-point" />
               <circle cx="450" cy="48" r="5" fill="#D96843" stroke="#FFFEFB" strokeWidth="1.5" />
 
               {/* Floating Callout Box on 2027 Point */}
-              <g transform="translate(362, 58)">
+              <g transform="translate(362, 58)" className="transition-transform duration-300 hover:scale-105">
                 <rect
                   x="0"
                   y="0"
@@ -1395,6 +1423,7 @@ export const SkillForecastingPage: React.FC = () => {
                   strokeWidth="10"
                   strokeLinecap="round"
                   strokeDasharray={`${(activeTrade.confidence / 100) * 238.76} 238.76`}
+                  className="doughnut-animated"
                 />
               </svg>
               <span className="absolute text-lg font-bold text-[#173F35] tabular-nums">

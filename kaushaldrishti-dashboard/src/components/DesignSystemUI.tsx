@@ -25,8 +25,8 @@ export const SurfaceCard: React.FC<{
 }> = ({ children, className = '', onClick }) => (
   <div
     onClick={onClick}
-    className={`bg-[#FFFEFB] border border-[#E9E0D3] rounded-xl p-4 transition-colors ${
-      onClick ? 'cursor-pointer hover:border-[#D5C7B4]' : ''
+    className={`bg-[#FFFEFB] border border-[#E9E0D3] rounded-xl p-4 transition-all duration-200 hover:border-[#D5C7B4] ${
+      onClick ? 'cursor-pointer hover:-translate-y-0.5 hover:shadow-sm' : ''
     } ${className}`}
   >
     {children}
