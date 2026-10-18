@@ -469,10 +469,21 @@ export const GeographicViewPage: React.FC<{
 
   const handleStateChange = (stateName: string) => {
     if (isDsoLocked) return;
-    setSelectedStateName(stateName);
-    const nextState = STATES_DATA.find((s) => s.state === stateName);
-    if (nextState && nextState.districts.length > 0) {
-      setSelectedDistrictId(nextState.districts[0].id);
+    const nextState = STATES_DATA.find(
+      (s) =>
+        s.state === stateName ||
+        s.state.toLowerCase() === stateName.toLowerCase() ||
+        (stateName.includes('Delhi') && s.state.includes('Delhi')) ||
+        (stateName.includes('Andaman') && s.state.includes('Andaman')) ||
+        (stateName.includes('Dadra') && s.state.includes('Dadra'))
+    );
+    if (nextState) {
+      setSelectedStateName(nextState.state);
+      if (nextState.districts.length > 0) {
+        setSelectedDistrictId(nextState.districts[0].id);
+      }
+    } else {
+      setSelectedStateName(stateName);
     }
   };
 
