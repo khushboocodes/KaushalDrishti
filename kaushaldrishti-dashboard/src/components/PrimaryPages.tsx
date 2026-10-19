@@ -243,11 +243,11 @@ export const DashboardOverviewPage: React.FC<{
           <div className="flex items-center justify-center gap-6 text-xs text-[#64716D] mb-2">
             <span className="inline-flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-xs bg-[#6E7FA3]" />
-              Job Demand
+              {t('Job Demand')}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-xs bg-[#E28A86]" />
-              Trained Candidates
+              {t('Trained Candidates')}
             </span>
           </div>
 
@@ -402,7 +402,7 @@ export const DashboardOverviewPage: React.FC<{
                 <span className="text-2xl font-bold text-[#173F35] tabular-nums leading-none">
                   {dataset.donut.totalTrades}
                 </span>
-                <span className="text-[11px] text-[#64716D] mt-1">Total Trades</span>
+                <span className="text-[11px] text-[#64716D] mt-1">{t('Total Trades')}</span>
               </div>
             </div>
 
@@ -411,7 +411,7 @@ export const DashboardOverviewPage: React.FC<{
               <div className="flex items-center justify-between text-xs hover:translate-x-1 transition-transform cursor-default">
                 <span className="inline-flex items-center gap-2 text-[#64716D]">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#E56B55]" />
-                  Undersupply
+                  {t('Undersupply')}
                 </span>
                 <span className="font-bold text-[#173F35] tabular-nums">
                   {dataset.donut.undersupplyPct}%
@@ -420,7 +420,7 @@ export const DashboardOverviewPage: React.FC<{
               <div className="flex items-center justify-between text-xs hover:translate-x-1 transition-transform cursor-default">
                 <span className="inline-flex items-center gap-2 text-[#64716D]">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#5B9E68]" />
-                  Balanced
+                  {t('Balanced')}
                 </span>
                 <span className="font-bold text-[#173F35] tabular-nums">
                   {dataset.donut.balancedPct}%
@@ -429,7 +429,7 @@ export const DashboardOverviewPage: React.FC<{
               <div className="flex items-center justify-between text-xs hover:translate-x-1 transition-transform cursor-default">
                 <span className="inline-flex items-center gap-2 text-[#64716D]">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#F2B968]" />
-                  Oversupply
+                  {t('Oversupply')}
                 </span>
                 <span className="font-bold text-[#173F35] tabular-nums">
                   {dataset.donut.oversupplyPct}%
@@ -439,13 +439,13 @@ export const DashboardOverviewPage: React.FC<{
           </div>
 
           <div className="text-[11px] text-[#64716D] border-t border-[#F2ECE1] pt-2 flex items-center justify-between">
-            <span>Reference NSQF & NCO-2015 trade mapping</span>
+            <span>{t('Reference NSQF & NCO-2015 trade mapping')}</span>
             <button
               type="button"
               onClick={() => onNavigate('sectors')}
               className="text-[#17604D] font-semibold hover:underline cursor-pointer"
             >
-              Explore trades →
+              {t('Explore trades →')}
             </button>
           </div>
         </SurfaceCard>
@@ -949,6 +949,7 @@ export const SectorsAndTradesPage: React.FC<{
   dateRange?: string;
   searchQuery?: string;
 }> = ({ userSession, dateRange = 'Last 1 Year', searchQuery = '' }) => {
+  const { t } = useLanguage();
   const roleType = getUserRoleType(userSession);
   const isNcvet = roleType === 'NCVET';
   const horizon = getHorizonConfig(dateRange);
@@ -1011,12 +1012,12 @@ export const SectorsAndTradesPage: React.FC<{
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-            {isNcvet ? 'National Sectors & Qualifications Standards' : 'Sector-wise Analysis'}
+            {isNcvet ? t('National Sectors & Qualifications Standards') : t('Sector-wise Analysis')}
           </h1>
           <p className="text-xs text-[#64716D] mt-1">
             {isNcvet
-              ? 'Monitor National Occupational Standards (NOS), curriculum obsolescence, and NSQF credit distribution'
-              : 'Compare demand, supply, growth and skill gaps across sectors'}
+              ? t('Monitor National Occupational Standards (NOS), curriculum obsolescence, and NSQF credit distribution')
+              : t('Compare demand, supply, growth and skill gaps across sectors')}
           </p>
         </div>
 
@@ -1031,8 +1032,8 @@ export const SectorsAndTradesPage: React.FC<{
             value={selectedSectorFilter}
             onChange={setSelectedSectorFilter}
             options={[
-              { label: 'All Sectors', value: 'All Sectors' },
-              ...SECTOR_METRICS.map((s) => ({ label: s.name, value: s.name })),
+              { label: t('All Sectors'), value: 'All Sectors' },
+              ...SECTOR_METRICS.map((s) => ({ label: t(s.name), value: s.name })),
             ]}
             className="w-40"
           />
@@ -1240,6 +1241,7 @@ export const SkillForecastingPage: React.FC<{
   dateRange?: string;
   searchQuery?: string;
 }> = ({ userSession, dateRange = 'Last 1 Year', searchQuery = '' }) => {
+  const { t } = useLanguage();
   const horizonConfig = getHorizonConfig(dateRange);
   const initialHorizon = dateRange === 'Next 3 Years' ? '3 Years' : '1 Year';
 
@@ -1278,10 +1280,10 @@ export const SkillForecastingPage: React.FC<{
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-            Skill Demand Forecasting
+            {t('Skill Demand Forecasting')}
           </h1>
           <p className="text-xs text-[#64716D] mt-1">
-            AI-powered forecasts to plan training capacity and resources
+            {t('AI-powered forecasts to plan training capacity and resources')}
           </p>
         </div>
         <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 self-start sm:self-auto shadow-2xs">
@@ -1606,6 +1608,7 @@ export const AlertsAndInsightsPage: React.FC<{
   dateRange?: string;
   searchQuery?: string;
 }> = ({ onNavigate, userSession, dateRange = 'Last 1 Year', searchQuery = '' }) => {
+  const { t } = useLanguage();
   const canViewRecommendations = isRouteAllowedForSession(userSession ?? null, 'recommendations');
   const horizon = getHorizonConfig(dateRange);
 
@@ -1640,10 +1643,10 @@ export const AlertsAndInsightsPage: React.FC<{
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-            Alerts &amp; Insights
+            {t('Alerts & Insights')}
           </h1>
           <p className="text-xs text-[#64716D] mt-1">
-            Early warnings for emerging shortages and saturation risks
+            {t('Early warnings for emerging shortages and saturation risks')}
           </p>
         </div>
         <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 self-start sm:self-auto shadow-2xs">
@@ -1658,22 +1661,22 @@ export const AlertsAndInsightsPage: React.FC<{
       <div className="flex flex-wrap items-center gap-2">
         <FilterTabButton
           active={activeFilter === 'All'}
-          label={`All Alerts (${totalCount})`}
+          label={`${t('All')} (${totalCount})`}
           onClick={() => setActiveFilter('All')}
         />
         <FilterTabButton
           active={activeFilter === 'Undersupply'}
-          label={`Undersupply (${underCount})`}
+          label={`${t('Undersupply')} (${underCount})`}
           onClick={() => setActiveFilter('Undersupply')}
         />
         <FilterTabButton
           active={activeFilter === 'Oversupply'}
-          label={`Oversupply (${overCount})`}
+          label={`${t('Oversupply')} (${overCount})`}
           onClick={() => setActiveFilter('Oversupply')}
         />
         <FilterTabButton
           active={activeFilter === 'High Growth'}
-          label={`High Growth (${growthCount})`}
+          label={`${t('High Growth')} (${growthCount})`}
           onClick={() => setActiveFilter('High Growth')}
         />
       </div>

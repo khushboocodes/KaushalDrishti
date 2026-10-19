@@ -60,7 +60,22 @@ function AppContent() {
   const userSessionRef = useRef<UserSession | null>(userSession);
   useEffect(() => {
     userSessionRef.current = userSession;
+    if (userSession) {
+      try {
+        localStorage.setItem('kd_user_session', JSON.stringify(userSession));
+        sessionStorage.setItem('kd_user_session', JSON.stringify(userSession));
+      } catch {
+        // ignore
+      }
+    }
   }, [userSession]);
+
+  // If switched role is not allowed on current route, smoothly return to dashboard
+  useEffect(() => {
+    if (userSession && !isRouteAllowedForSession(userSession, activeRoute)) {
+      setActiveRoute('dashboard');
+    }
+  }, [userSession, activeRoute]);
 
   const [canvasMode, setCanvasMode] = useState<'single' | 'six-grid'>('single');
   const [globalSearch, setGlobalSearch] = useState<string>('');
@@ -311,7 +326,12 @@ function AppContent() {
           />
         );
       case 'settings':
-        return <SettingsPage />;
+        return (
+          <SettingsPage
+            userSession={userSession}
+            onUserSessionChange={setUserSession}
+          />
+        );
       default:
         return (
           <DashboardOverviewPage

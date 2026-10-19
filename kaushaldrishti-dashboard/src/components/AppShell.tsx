@@ -90,7 +90,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [notifOpen, setNotifOpen] = useState<boolean>(false);
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
-  const { language, toggleLanguage } = useLanguage();
+  const { language, toggleLanguage, t } = useLanguage();
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
   const [localSession, setLocalSession] = useState<UserSession | null>(null);
 
@@ -188,10 +188,10 @@ export const AppShell: React.FC<AppShellProps> = ({
       <div className="mt-2 pt-2 relative overflow-hidden">
         <div className="text-center px-3 mb-1">
           <div className="text-[11px] font-bold text-[#173F35] leading-tight">
-            Skilled India
+            {t('Skilled India', 'कुशल भारत')}
           </div>
           <div className="text-[11px] font-bold text-[#17604D] leading-tight">
-            Stronger India
+            {t('Stronger India', 'सशक्त भारत')}
           </div>
         </div>
         <SidebarBottomIllustration className="w-full h-24 block" />
@@ -259,7 +259,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                 type="search"
                 value={globalSearch}
                 onChange={(e) => onGlobalSearchChange(e.target.value)}
-                placeholder="Search sector, trade, district..."
+                placeholder={t('Search sector, trade, district..', 'क्षेत्र, व्यवसाय, जिला खोजें..')}
                 className="w-full pl-9 pr-3 py-1.5 text-xs bg-[#F8F5EF] border border-[#E9E0D3] rounded-lg text-[#173F35] placeholder:text-[#64716D] focus:outline-none focus:bg-[#FFFEFB] focus:border-[#17604D] transition-colors"
               />
             </form>
@@ -276,9 +276,9 @@ export const AppShell: React.FC<AppShellProps> = ({
                 aria-label="Select date range"
                 className="appearance-none bg-[#FFFEFB] border border-[#E9E0D3] hover:border-[#D4C6B4] rounded-lg pl-3 pr-7 py-1.5 text-xs font-medium text-[#173F35] cursor-pointer focus:outline-none"
               >
-                <option value="Last 1 Year">Last 1 Year</option>
-                <option value="FY 2026–27">FY 2026–27</option>
-                <option value="Next 3 Years">Next 3 Years</option>
+                <option value="Last 1 Year">{t('Last 1 Year')}</option>
+                <option value="FY 2026–27">{t('FY 2026–27')}</option>
+                <option value="Next 3 Years">{t('Next 3 Years')}</option>
               </select>
               <svg
                 className="w-3.5 h-3.5 text-[#64716D] pointer-events-none absolute right-2 top-1/2 -translate-y-1/2"
@@ -327,7 +327,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                 <div className="absolute right-0 mt-2 w-80 bg-[#FFFEFB] border border-[#E9E0D3] rounded-xl shadow-lg p-3 z-50">
                   <div className="flex items-center justify-between pb-2 border-b border-[#E9E0D3]">
                     <span className="text-xs font-bold text-[#173F35]">
-                      Recent Skill Shortage Alerts
+                      {t('Recent Skill Shortage Alerts')}
                     </span>
                     <button
                       type="button"
@@ -338,7 +338,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                       }}
                       className="text-[11px] font-semibold text-[#17604D] hover:underline cursor-pointer"
                     >
-                      View all
+                      {t('View all')}
                     </button>
                   </div>
                   <div className="divide-y divide-[#F2ECE1] mt-1">
@@ -432,7 +432,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                         <div className="flex items-start gap-1.5 text-[11px] text-[#173F35]">
                           <ShieldCheck className="w-3.5 h-3.5 text-[#17604D] shrink-0 mt-0.5" />
                           <div className="leading-tight">
-                            <span className="font-semibold text-[#173F35]">Jurisdiction: </span>
+                            <span className="font-semibold text-[#173F35]">{t('Jurisdiction: ', 'अधिकार क्षेत्र: ')}</span>
                             <span className="font-bold text-[#17604D]">{roleConfig.jurisdiction}</span>
                           </div>
                         </div>
@@ -453,7 +453,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                         }}
                         className="w-full text-left px-2.5 py-1.5 rounded-lg text-[#173F35] hover:bg-[#F5F0E7] transition-colors cursor-pointer font-medium"
                       >
-                        Switch Officer Role / Credentials
+                        {t('Switch Officer Role / Credentials')}
                       </button>
 
                       <button
@@ -468,7 +468,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                         }}
                         className="w-full text-left px-2.5 py-1.5 rounded-lg text-[#D96843] hover:bg-[#FDF2F0] transition-colors cursor-pointer font-medium flex items-center justify-between"
                       >
-                        <span>Sign Out to Login Page</span>
+                        <span>{t('Sign Out to Login Page')}</span>
                         <span>→</span>
                       </button>
                     </div>
@@ -490,6 +490,7 @@ export const AppShell: React.FC<AppShellProps> = ({
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         onLoginSuccess={(session) => setUserSession(session)}
+        currentSession={userSession}
       />
     </div>
   );

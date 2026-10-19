@@ -45,6 +45,7 @@ import {
   EXPLORER_RECORDS,
 } from '../data/mockData';
 import { getHorizonConfig } from '../data/dashboardMetrics';
+import { useLanguage } from '../context/LanguageContext';
 
 /**
  * ============================================================================
@@ -56,6 +57,7 @@ export const DemandSupplyPage: React.FC<{
   dateRange?: string;
   searchQuery?: string;
 }> = ({ userSession, dateRange = 'Last 1 Year', searchQuery: initialSearch = '' }) => {
+  const { t } = useLanguage();
   const horizon = getHorizonConfig(dateRange);
   const [stateFilter, setStateFilter] = useState<string>('All States');
   const [sectorFilter, setSectorFilter] = useState<string>('All Sectors');
@@ -79,10 +81,10 @@ export const DemandSupplyPage: React.FC<{
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-            Demand &amp; Supply Reconciliation
+            {t('Demand & Supply Reconciliation')}
           </h1>
           <p className="text-xs text-[#64716D] mt-1">
-            Granular trade-by-district demand vs certified supply gap ledger across NSQF levels
+            {t('Granular trade-by-district demand vs certified supply gap ledger across NSQF levels')}
           </p>
         </div>
         <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 self-start sm:self-auto shadow-2xs">
@@ -96,31 +98,31 @@ export const DemandSupplyPage: React.FC<{
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5">
         <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-1">
-          <div className="text-xs text-[#64716D]">Aggregate Demand ({dateRange})</div>
+          <div className="text-xs text-[#64716D]">{t('Aggregate Demand')} ({dateRange})</div>
           <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-1">{horizon.demandCr}</div>
           <div className="text-[11px] text-[#17604D] font-semibold mt-1">
-            Across 36 States &amp; UTs
+            {t('Across 36 States & UTs')}
           </div>
         </SurfaceCard>
         <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-2">
-          <div className="text-xs text-[#64716D]">Certified Supply Pipeline</div>
+          <div className="text-xs text-[#64716D]">{t('Certified Supply Pipeline')}</div>
           <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-1">{horizon.supplyCr}</div>
           <div className="text-[11px] text-[#64716D] mt-1">
-            ITIs, PMKVY 4.0 &amp; Polytechnics
+            {t('ITIs, PMKVY 4.0 & Polytechnics')}
           </div>
         </SurfaceCard>
         <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-3">
-          <div className="text-xs text-[#64716D]">Net Undersupply Trades</div>
-          <div className="text-2xl font-bold text-[#D94E34] tabular-nums mt-1">{horizon.undersupplyTrades} Trades</div>
+          <div className="text-xs text-[#64716D]">{t('Net Deficit (Shortfall)', 'शुद्ध कमी (घाटा)')}</div>
+          <div className="text-2xl font-bold text-[#D94E34] tabular-nums mt-1">{horizon.undersupplyTrades} {t('Trades', 'व्यवसाय')}</div>
           <div className="text-[11px] text-[#64716D] mt-1">
-            {Math.round((horizon.undersupplyTrades / 1245) * 100)}% of 1,245 mapped NCO trades
+            {Math.round((horizon.undersupplyTrades / 1245) * 100)}% {t('of 1,245 mapped NCO trades', '1,245 एनसीओ व्यवसायों में')}
           </div>
         </SurfaceCard>
         <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-4">
-          <div className="text-xs text-[#64716D]">Balanced Equilibrium Trades</div>
-          <div className="text-2xl font-bold text-[#17604D] tabular-nums mt-1">{balancedCount} Trades</div>
+          <div className="text-xs text-[#64716D]">{t('Balanced Equilibrium Trades', 'संतुलित व्यवसाय')}</div>
+          <div className="text-2xl font-bold text-[#17604D] tabular-nums mt-1">{balancedCount} {t('Trades', 'व्यवसाय')}</div>
           <div className="text-[11px] text-[#64716D] mt-1">
-            {Math.round((balancedCount / 1245) * 100)}% within ±5% variance band
+            {Math.round((balancedCount / 1245) * 100)}% {t('within ±5% variance band', '±5% भिन्नता के भीतर')}
           </div>
         </SurfaceCard>
       </div>
@@ -187,7 +189,7 @@ export const DemandSupplyPage: React.FC<{
         <SurfaceCard className="overflow-x-auto">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-[#173F35]">
-              Detailed Demand–Supply Gap Ledger ({dateRange})
+              {t('Detailed Demand–Supply Gap Ledger', 'विस्तृत मांग-आपूर्ति अंतर बहीखाता')} ({dateRange})
             </h2>
             <span className="text-[11px] text-[#8C4E13] font-semibold bg-[#FAF0E1] px-2 py-0.5 rounded">
               Multiplier: {horizon.demandMultiplier}x Demand · {horizon.supplyMultiplier}x Supply
@@ -196,14 +198,14 @@ export const DemandSupplyPage: React.FC<{
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-[#E9E0D3] bg-[#FAF7F2] text-[#64716D]">
-                <th className="py-2.5 px-3 font-semibold">Trade (NCO Code)</th>
-                <th className="py-2.5 px-3 font-semibold">NSQF</th>
-                <th className="py-2.5 px-3 font-semibold">Sector</th>
-                <th className="py-2.5 px-3 font-semibold">District, State</th>
-                <th className="py-2.5 px-3 font-semibold text-right">Job Demand</th>
-                <th className="py-2.5 px-3 font-semibold text-right">Trained Supply</th>
-                <th className="py-2.5 px-3 font-semibold text-right">Net Gap</th>
-                <th className="py-2.5 px-3 font-semibold text-right">Status</th>
+                <th className="py-2.5 px-3 font-semibold">{t('Trade (NCO Code)', 'व्यवसाय (एनसीओ कोड)')}</th>
+                <th className="py-2.5 px-3 font-semibold">{t('NSQF')}</th>
+                <th className="py-2.5 px-3 font-semibold">{t('Sector')}</th>
+                <th className="py-2.5 px-3 font-semibold">{t('District, State', 'ज़िला, राज्य')}</th>
+                <th className="py-2.5 px-3 font-semibold text-right">{t('Job Demand')}</th>
+                <th className="py-2.5 px-3 font-semibold text-right">{t('Trained Supply', 'प्रशिक्षित आपूर्ति')}</th>
+                <th className="py-2.5 px-3 font-semibold text-right">{t('Net Gap', 'शुद्ध अंतर')}</th>
+                <th className="py-2.5 px-3 font-semibold text-right">{t('Status')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F2ECE1]">
@@ -263,6 +265,7 @@ export const TrainingCapacityPage: React.FC<{
   dateRange?: string;
   searchQuery?: string;
 }> = ({ userSession, dateRange = 'Last 1 Year', searchQuery = '' }) => {
+  const { t } = useLanguage();
   const horizon = getHorizonConfig(dateRange);
   const [selectedState, setSelectedState] = useState<string>('All States');
   const allDistricts = STATES_DATA.flatMap((s) => s.districts);
@@ -283,10 +286,10 @@ export const TrainingCapacityPage: React.FC<{
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-            Training Capacity &amp; Infrastructure
+            {t('National Training Capacity & Infrastructure')}
           </h1>
           <p className="text-xs text-[#64716D] mt-1">
-            Monitor available seats, allocated seats, ITI/PMKVY training centres, and course completion rates
+            {t('ITI, NSTI, and PMKK training provider seat sanctions, batch utilization and instructor readiness')}
           </p>
         </div>
         <div className="flex items-center gap-2.5 flex-wrap">
@@ -430,6 +433,7 @@ export const ReportsPage: React.FC<{
   dateRange?: string;
   searchQuery?: string;
 }> = ({ userSession, dateRange = 'Last 1 Year', searchQuery: initialSearch = '' }) => {
+  const { t } = useLanguage();
   const horizon = getHorizonConfig(dateRange);
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
@@ -450,10 +454,10 @@ export const ReportsPage: React.FC<{
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E9E0D3]">
         <div>
           <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-            Generated Reports &amp; Exports
+            {t('Executive Reports & Policy Dossiers')}
           </h1>
           <p className="text-xs text-[#64716D] mt-1">
-            Download official state skill gap assessments, NSQF curriculum matrices, and ITI capacity reports
+            {t('Generate DPDP-compliant statutory reports, state briefing notes, and district skill development plans (DSDP)')}
           </p>
         </div>
 
@@ -589,6 +593,7 @@ export const DataExplorerPage: React.FC<{
   dateRange?: string;
   searchQuery?: string;
 }> = ({ userSession, dateRange = 'Last 1 Year', searchQuery: initialSearch = '' }) => {
+  const { t } = useLanguage();
   const horizon = getHorizonConfig(dateRange);
   const [query, setQuery] = useState<string>(initialSearch);
   const [sourceFilter, setSourceFilter] = useState<string>('All Sources');
@@ -611,10 +616,10 @@ export const DataExplorerPage: React.FC<{
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-            Labour Market Data Explorer
+            {t('Labour Market Data Explorer')}
           </h1>
           <p className="text-xs text-[#64716D] mt-1">
-            Query harmonized microdata across NSDC Skill India Digital, PLFS, EPFO Payroll, and National Career Service (NCS)
+            {t('Deep query engine for multi-dimensional analysis of PLFS, Periodic Labour Force Survey, and EPFO hiring trends')}
           </p>
         </div>
         <div className="flex items-center gap-2.5 flex-wrap">
@@ -912,7 +917,16 @@ export const ApiAccessPage: React.FC = () => {
  * SUPPORTING ROUTE: Settings
  * ============================================================================
  */
-export const SettingsPage: React.FC = () => {
+export interface SettingsPageProps {
+  userSession?: UserSession | null;
+  onUserSessionChange?: (session: UserSession) => void;
+}
+
+export const SettingsPage: React.FC<SettingsPageProps> = ({
+  userSession,
+  onUserSessionChange,
+}) => {
+  const { t } = useLanguage();
   const [savedBanner, setSavedBanner] = useState<boolean>(false);
   const [directorateName, setDirectorateName] = useState<string>(
     'Policy Planning & Analytics Division (MSDE)'
@@ -927,16 +941,16 @@ export const SettingsPage: React.FC = () => {
     <div className="space-y-5 w-full">
       <div>
         <h1 className="font-serif-heading text-2xl font-bold text-[#173F35]">
-          Platform &amp; Planner Settings
+          {t('Platform & Planner Settings')}
         </h1>
         <p className="text-xs text-[#64716D] mt-1">
-          Configure MSDE planner profile, regional jurisdiction defaults, and early-warning shortage thresholds
+          {t('Configure MSDE planner profile, regional jurisdiction defaults, and early-warning shortage thresholds')}
         </p>
       </div>
 
       <SurfaceCard className="space-y-5 p-6 w-full">
         <h2 className="text-sm font-bold text-[#173F35] pb-2.5 border-b border-[#E9E0D3]">
-          Planner Profile &amp; Jurisdiction
+          {t('Planner Profile & Jurisdiction')}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
           <div>
@@ -1075,7 +1089,12 @@ export const SettingsPage: React.FC = () => {
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
-        onLoginSuccess={() => {}}
+        onLoginSuccess={(session) => {
+          if (onUserSessionChange) {
+            onUserSessionChange(session);
+          }
+        }}
+        currentSession={userSession}
       />
     </div>
   );
