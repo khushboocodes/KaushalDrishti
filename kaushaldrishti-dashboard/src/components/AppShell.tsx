@@ -38,6 +38,7 @@ const NAV_LABELS_HI: Record<string, string> = {
   'recommendations': 'योजना सिफारिशें',
   'reports': 'रिपोर्ट एवं निर्यात',
   'data-explorer': 'डेटा अन्वेषक',
+  'telemetry-upload': 'टेलीमेट्री अपलोड',
   'settings': 'सिस्टम सेटिंग्स',
 };
 
@@ -72,6 +73,7 @@ export const SIDEBAR_NAV_ITEMS: {
   { id: 'recommendations', label: 'Recommendations', icon: 'recommendations' },
   { id: 'reports', label: 'Reports', icon: 'reports' },
   { id: 'data-explorer', label: 'Data Explorer', icon: 'data' },
+  { id: 'telemetry-upload', label: 'Telemetry Upload', icon: 'upload' },
   { id: 'settings', label: 'Settings', icon: 'settings' },
 ];
 

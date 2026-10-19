@@ -38,6 +38,7 @@ import {
 import { PolicySimulationSandbox } from './PolicySimulationSandbox';
 import { PolicySandboxPage } from './PolicySandboxPage';
 import { BulkUploaderCard } from './BulkUploaderCard';
+import { TelemetryUploadPage } from './TelemetryUploadPage';
 import { AuthModal, UserSession } from './AuthModal';
 import { NavRouteId } from '../types';
 import { ApiService } from '../services/apiService';
@@ -628,7 +629,8 @@ export const DataExplorerPage: React.FC<{
   userSession?: UserSession | null;
   dateRange?: string;
   searchQuery?: string;
-}> = ({ userSession, dateRange = 'Last 1 Year', searchQuery: initialSearch = '' }) => {
+  onNavigate?: (route: NavRouteId) => void;
+}> = ({ userSession, dateRange = 'Last 1 Year', searchQuery: initialSearch = '', onNavigate }) => {
   const { t } = useLanguage();
   const horizon = getHorizonConfig(dateRange);
   const [query, setQuery] = useState<string>(initialSearch);
@@ -786,11 +788,43 @@ export const DataExplorerPage: React.FC<{
         </SurfaceCard>
       )}
 
-      {/* Bulk District Telemetry CSV Uploader (Added on) */}
-      <BulkUploaderCard />
+      {/* Cross-Link Banner to Dedicated Telemetry Ingestion Page */}
+      <SurfaceCard className="p-4 bg-gradient-to-r from-[#FAF6EF] to-[#F3EDE0] border-[#E5DAC8] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#E2F0E3] text-[#17604D] flex items-center justify-center shrink-0">
+            <FileSpreadsheet className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="text-xs font-bold text-[#173F35]">
+              {t('Bulk District Telemetry CSV & Admission Uploader', 'बल्क जिला टेलीमेट्री सीएसवी एवं प्रवेश अपलोडर')}
+            </div>
+            <div className="text-[11px] text-[#64716D] mt-0.5">
+              {t(
+                'Need to ingest local ITI batch admissions or district telemetry files? Upload and validate datasets in the dedicated Telemetry Upload portal.',
+                'क्या स्थानीय आईटीआई बैच प्रवेश अथवा जिला टेलीमेट्री फ़ाइलें अपलोड करनी हैं? समर्पित टेलीमेट्री अपलोड पोर्टल में डेटासेट अपलोड एवं सत्यापित करें।'
+              )}
+            </div>
+          </div>
+        </div>
+        {onNavigate && (
+          <SecondaryButton
+            tone="warm"
+            onClick={() => {
+              onNavigate('telemetry-upload');
+              window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            }}
+            className="self-start sm:self-auto shrink-0 shadow-2xs"
+          >
+            <span>{t('Go to Telemetry Upload', 'टेलीमेट्री अपलोड पर जाएं')}</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </SecondaryButton>
+        )}
+      </SurfaceCard>
     </div>
   );
 };
+
+export { TelemetryUploadPage };
 
 /**
  * ============================================================================

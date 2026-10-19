@@ -11,6 +11,7 @@ export type NavRouteId =
   | 'recommendations'
   | 'reports'
   | 'data-explorer'
+  | 'telemetry-upload'
   | 'settings';
 
 export type SupplyStatus = 'Undersupply' | 'Balanced' | 'Oversupply' | 'Moderate';

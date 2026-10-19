@@ -656,6 +656,15 @@ export const AssetOutlineIcon: React.FC<{
           <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
         </svg>
       );
+    case 'telemetry-upload':
+    case 'upload':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={className} stroke={strokeColor} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 8 12 3 7 8" />
+          <line x1="12" y1="3" x2="12" y2="15" />
+        </svg>
+      );
     case 'api-access':
     case 'api':
       return (

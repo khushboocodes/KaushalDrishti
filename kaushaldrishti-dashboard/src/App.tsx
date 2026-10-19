@@ -16,6 +16,7 @@ import {
   PolicySandboxPage,
   ReportsAndRecommendationsPage,
   DataExplorerPage,
+  TelemetryUploadPage,
   SettingsPage,
 } from './components/SupportingPages';
 import { NavRouteId } from './types';
@@ -331,6 +332,16 @@ function AppContent() {
       case 'data-explorer':
         return (
           <DataExplorerPage
+            onNavigate={setActiveRoute}
+            userSession={userSession}
+            dateRange={dateRange}
+            searchQuery={globalSearch}
+          />
+        );
+      case 'telemetry-upload':
+        return (
+          <TelemetryUploadPage
+            onNavigate={setActiveRoute}
             userSession={userSession}
             dateRange={dateRange}
             searchQuery={globalSearch}
