@@ -13,6 +13,7 @@ import {
 import {
   DemandSupplyPage,
   TrainingCapacityPage,
+  PolicySandboxPage,
   ReportsAndRecommendationsPage,
   DataExplorerPage,
   SettingsPage,
@@ -304,6 +305,16 @@ function AppContent() {
       case 'training':
         return (
           <TrainingCapacityPage
+            onNavigate={setActiveRoute}
+            userSession={userSession}
+            dateRange={dateRange}
+            searchQuery={globalSearch}
+          />
+        );
+      case 'policy-sandbox':
+        return (
+          <PolicySandboxPage
+            onNavigate={setActiveRoute}
             userSession={userSession}
             dateRange={dateRange}
             searchQuery={globalSearch}

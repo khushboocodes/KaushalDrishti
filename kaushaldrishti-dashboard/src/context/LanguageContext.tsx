@@ -15,6 +15,8 @@ export const DICTIONARY_HI: Record<string, string> = {
   'Reports': 'रिपोर्ट एवं निर्यात',
   'Data Explorer': 'डेटा अन्वेषक',
   'Settings': 'सिस्टम सेटिंग्स',
+  'Policy Sandbox': 'पॉलिसी सैंडबॉक्स',
+  'What-If Policy Simulation Sandbox & Capacity Engine': 'व्हॉट-इफ़ नीति सिमुलेशन सैंडबॉक्स एवं क्षमता इंजन',
   'Search sector, trade, district..': 'क्षेत्र, व्यवसाय, जिला खोजें..',
   'Recent Skill Shortage Alerts': 'हाल के कौशल कमी सचेतक',
   'View all': 'सभी देखें',

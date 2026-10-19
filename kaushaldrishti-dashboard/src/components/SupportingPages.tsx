@@ -12,6 +12,7 @@ import {
   FileSpreadsheet,
   SlidersHorizontal,
   ShieldCheck,
+  ArrowRight,
 } from 'lucide-react';
 import {
   SurfaceCard,
@@ -35,8 +36,10 @@ import {
   AssetOutlineIcon,
 } from './Assets';
 import { PolicySimulationSandbox } from './PolicySimulationSandbox';
+import { PolicySandboxPage } from './PolicySandboxPage';
 import { BulkUploaderCard } from './BulkUploaderCard';
 import { AuthModal, UserSession } from './AuthModal';
+import { NavRouteId } from '../types';
 import { ApiService } from '../services/apiService';
 import {
   STATES_DATA,
@@ -264,7 +267,8 @@ export const TrainingCapacityPage: React.FC<{
   userSession?: UserSession | null;
   dateRange?: string;
   searchQuery?: string;
-}> = ({ userSession, dateRange = 'Last 1 Year', searchQuery = '' }) => {
+  onNavigate?: (route: NavRouteId) => void;
+}> = ({ userSession, dateRange = 'Last 1 Year', searchQuery = '', onNavigate }) => {
   const { t } = useLanguage();
   const horizon = getHorizonConfig(dateRange);
   const [selectedState, setSelectedState] = useState<string>('All States');
@@ -417,11 +421,43 @@ export const TrainingCapacityPage: React.FC<{
         </table>
       </SurfaceCard>
 
-      {/* Interactive Policy Decision Support Sandbox (Added on) */}
-      <PolicySimulationSandbox />
+      {/* Cross-Link Banner to Dedicated Policy Simulation Sandbox */}
+      <SurfaceCard className="p-4 bg-gradient-to-r from-[#FAF6EF] to-[#F3EDE0] border-[#E5DAC8] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#E2F0E3] text-[#17604D] flex items-center justify-center shrink-0">
+            <SlidersHorizontal className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="text-xs font-bold text-[#173F35]">
+              {t('"What-If" Training Capacity Sandbox & Gap Simulator', '"व्हॉट-इफ़" प्रशिक्षण क्षमता सैंडबॉक्स एवं अंतर सिम्युलेटर')}
+            </div>
+            <div className="text-[11px] text-[#64716D] mt-0.5">
+              {t(
+                'Simulate adding or reallocating training seats, test dropout sensitivity, and evaluate real-time gap reduction before committing targets.',
+                'प्रशिक्षण सीटों को जोड़ने या पुनर्वितरित करने का सिमुलेशन करें, ड्रॉपआउट संवेदनशीलता का परीक्षण करें और वास्तविक समय में कमी में कमी का मूल्यांकन करें।'
+              )}
+            </div>
+          </div>
+        </div>
+        {onNavigate && (
+          <SecondaryButton
+            tone="warm"
+            onClick={() => {
+              onNavigate('policy-sandbox');
+              window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            }}
+            className="self-start sm:self-auto shrink-0 shadow-2xs"
+          >
+            <span>{t('Launch Policy Sandbox', 'सैंडबॉक्स खोलें')}</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </SecondaryButton>
+        )}
+      </SurfaceCard>
     </div>
   );
 };
+
+export { PolicySandboxPage };
 
 /**
  * ============================================================================

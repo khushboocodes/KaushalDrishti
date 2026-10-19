@@ -6,6 +6,7 @@ export type NavRouteId =
   | 'sectors'
   | 'geographic'
   | 'training'
+  | 'policy-sandbox'
   | 'alerts'
   | 'recommendations'
   | 'reports'
