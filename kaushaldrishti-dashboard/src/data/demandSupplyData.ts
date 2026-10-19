@@ -12,6 +12,7 @@ export const ALL_SECTORS_LIST: string[] = [
   'Retail',
   'Automotive',
   'Electronics',
+  'Textiles & Apparel',
 ];
 
 interface StateProfile {
@@ -137,6 +138,12 @@ const SECTOR_TRADE_TEMPLATES: Record<string, SectorTradeTemplate[]> = {
     { tradeName: 'PCB Surface Mount Tech Operator', ncoCode: '8212.02', nsqfLevel: 4, baseDemand: 3900, baseSupplyRatio: 0.65, source: 'NCS Portal' },
     { tradeName: 'Smart Consumer Device Repair Tech', ncoCode: '7422.01', nsqfLevel: 4, baseDemand: 3700, baseSupplyRatio: 0.78, source: 'NSDC Skill India' },
     { tradeName: 'IoT Device & Sensor Specialist', ncoCode: '3114.01', nsqfLevel: 5, baseDemand: 2800, baseSupplyRatio: 0.58, source: 'PLFS Microdata' },
+  ],
+  'Textiles & Apparel': [
+    { tradeName: 'Industrial Sewing Machine Operator', ncoCode: '7533.01', nsqfLevel: 3, baseDemand: 4200, baseSupplyRatio: 0.88, source: 'NSDC Skill India' },
+    { tradeName: 'Apparel CAD Pattern & Fit Specialist', ncoCode: '7532.01', nsqfLevel: 5, baseDemand: 2800, baseSupplyRatio: 0.70, source: 'EPFO Payroll' },
+    { tradeName: 'Textile Quality Control Inspector', ncoCode: '7543.01', nsqfLevel: 4, baseDemand: 3100, baseSupplyRatio: 0.80, source: 'PLFS Microdata' },
+    { tradeName: 'Handloom & Heritage Weaving Master', ncoCode: '7318.01', nsqfLevel: 4, baseDemand: 2200, baseSupplyRatio: 0.90, source: 'NCS Portal' },
   ],
 };
 

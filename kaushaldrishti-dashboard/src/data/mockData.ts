@@ -187,6 +187,17 @@ export const SECTOR_METRICS: SectorMetric[] = [
     status: 'Undersupply',
     iconKey: 'cpu',
   },
+  {
+    id: 'Textiles & Apparel',
+    name: 'Textiles & Apparel',
+    demandLabel: '1.3 Lakh',
+    demandK: 130,
+    trainedK: 114,
+    growth: '+14%',
+    growthNum: 14,
+    status: 'Balanced',
+    iconKey: 'shirt',
+  },
 ];
 
 export const TOP_TRADES_GROWTH: TradeGrowthItem[] = [
@@ -553,6 +564,32 @@ export const TOP_TRADES_GROWTH: TradeGrowthItem[] = [
       'Quality assurance for chiplet testing, thermal dissipation and wire bonding',
     ],
     confidence: 92,
+  },
+  {
+    rank: 15,
+    name: 'Apparel CAD Pattern Maker',
+    ncoCode: '7532.01',
+    sector: 'Textiles & Apparel',
+    growth: '22%',
+    growthNum: 22,
+    currentDemand: 42000,
+    projectedDemand: 62000,
+    recommendedSeats: 54000,
+    expectedGap: 8000,
+    status: 'Balanced',
+    yearlySeries: [
+      { year: '2024', historical: 33000 },
+      { year: '2025', historical: 42000, forecast: 42000 },
+      { year: '2026', forecast: 51000 },
+      { year: '2027', forecast: 62000 },
+    ],
+    factors: [
+      'PM MITRA Mega Integrated Textile Region and Apparel Parks rollout',
+      'Apparel export cluster modernization in Tiruppur, Surat, and Noida',
+      'Automated 3D garment fit modeling and computerized fabric cutting',
+      'Technical textiles and sustainable recycled yarn processing growth',
+    ],
+    confidence: 87,
   },
 ];
 

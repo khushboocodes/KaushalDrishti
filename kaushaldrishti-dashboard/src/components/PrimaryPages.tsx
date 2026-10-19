@@ -29,6 +29,7 @@ import {
   Leaf,
   Truck,
   Car,
+  Shirt,
 } from 'lucide-react';
 import {
   HeaderIllustration,
@@ -1033,6 +1034,8 @@ export const SectorsAndTradesPage: React.FC<{
         return <Car className="w-4 h-4 text-[#EA580C]" />;
       case 'cpu':
         return <Cpu className="w-4 h-4 text-[#9333EA]" />;
+      case 'shirt':
+        return <Shirt className="w-4 h-4 text-[#C05621]" />;
       default:
         return <Utensils className="w-4 h-4 text-[#B5721E]" />;
     }
@@ -1128,8 +1131,8 @@ export const SectorsAndTradesPage: React.FC<{
         </div>
       )}
 
-      {/* 7 Compact Sector Cards Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+      {/* 12 Compact Sector Cards: Exactly 6 per row on desktop (no right-side gap) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
         {SECTOR_METRICS.map((sec, idx) => {
           const isSelected = selectedSectorFilter === sec.name;
           const scaledDemandK = Math.round(sec.demandK * horizon.demandMultiplier);
