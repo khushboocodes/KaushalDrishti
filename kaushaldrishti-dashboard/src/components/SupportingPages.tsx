@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Download,
   Search,
@@ -52,6 +52,7 @@ import {
   COMPREHENSIVE_DEMAND_SUPPLY_RECORDS,
   ALL_SECTORS_LIST,
 } from '../data/demandSupplyData';
+import { globalTelemetryStore } from '../data/telemetryIngestionStore';
 import { getHorizonConfig } from '../data/dashboardMetrics';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -67,11 +68,18 @@ export const DemandSupplyPage: React.FC<{
 }> = ({ userSession, dateRange = 'Last 1 Year', searchQuery: initialSearch = '' }) => {
   const { t } = useLanguage();
   const horizon = getHorizonConfig(dateRange);
+  const [allRecords, setAllRecords] = useState(() => globalTelemetryStore.getRecords());
   const [stateFilter, setStateFilter] = useState<string>('All States');
   const [sectorFilter, setSectorFilter] = useState<string>('All Sectors');
   const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
 
-  const filteredRecords = COMPREHENSIVE_DEMAND_SUPPLY_RECORDS.filter((rec) => {
+  useEffect(() => {
+    return globalTelemetryStore.subscribe(() => {
+      setAllRecords([...globalTelemetryStore.getRecords()]);
+    });
+  }, []);
+
+  const filteredRecords = allRecords.filter((rec) => {
     const matchesState = stateFilter === 'All States' || rec.state === stateFilter;
     const matchesSector = sectorFilter === 'All Sectors' || rec.sector === sectorFilter;
     const matchesSearch =
@@ -139,12 +147,20 @@ export const DemandSupplyPage: React.FC<{
             {t('Granular trade-by-district demand vs certified supply gap ledger across NSQF levels')}
           </p>
         </div>
-        <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 self-start sm:self-auto shadow-2xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#D97925] animate-pulse"></span>
-          <span>{dateRange}</span>
-          <span className="text-[#A57849]">·</span>
-          <span className="font-normal text-[#6C5840]">{horizon.label}</span>
-        </span>
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {globalTelemetryStore.getBatches().length > 0 && (
+            <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#E8F5E9] text-[#2E7D32] border border-[#C8E6C9] flex items-center gap-1.5 shadow-2xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32] animate-pulse"></span>
+              <span>{globalTelemetryStore.getBatches().length} Telemetry Batches Synced</span>
+            </span>
+          )}
+          <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 self-start sm:self-auto shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D97925] animate-pulse"></span>
+            <span>{dateRange}</span>
+            <span className="text-[#A57849]">·</span>
+            <span className="font-normal text-[#6C5840]">{horizon.label}</span>
+          </span>
+        </div>
       </div>
 
       {/* Summary KPI Cards */}
@@ -262,8 +278,15 @@ export const DemandSupplyPage: React.FC<{
                 return (
                   <tr key={rec.id} className="hover:bg-[#F8F5EF]">
                     <td className="py-2.5 px-3 font-medium text-[#173F35]">
-                      {rec.tradeName}{' '}
-                      <span className="text-[#64716D] font-mono">({rec.ncoCode})</span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span>{rec.tradeName}</span>
+                        <span className="text-[#64716D] font-mono">({rec.ncoCode})</span>
+                        {rec.source?.includes('Telemetry') && (
+                          <span className="px-1.5 py-0.5 rounded text-[9.5px] font-semibold bg-[#E8F5E9] text-[#2E7D32] border border-[#C8E6C9]">
+                            Live Telemetry
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-2.5 px-3 text-[#64716D] tabular-nums">
                       Level {rec.nsqfLevel}
@@ -675,13 +698,20 @@ export const DataExplorerPage: React.FC<{
 }> = ({ userSession, dateRange = 'Last 1 Year', searchQuery: initialSearch = '', onNavigate }) => {
   const { t } = useLanguage();
   const horizon = getHorizonConfig(dateRange);
+  const [allRecords, setAllRecords] = useState(() => globalTelemetryStore.getRecords());
   const [query, setQuery] = useState<string>(initialSearch);
   const [stateFilter, setStateFilter] = useState<string>('All States');
   const [sectorFilter, setSectorFilter] = useState<string>('All Sectors');
   const [sourceFilter, setSourceFilter] = useState<string>('All Sources');
   const [nsqfFilter, setNsqfFilter] = useState<string>('All Levels');
 
-  const filtered = COMPREHENSIVE_DEMAND_SUPPLY_RECORDS.filter((r) => {
+  useEffect(() => {
+    return globalTelemetryStore.subscribe(() => {
+      setAllRecords([...globalTelemetryStore.getRecords()]);
+    });
+  }, []);
+
+  const filtered = allRecords.filter((r) => {
     const matchQ =
       !query.trim() ||
       r.tradeName.toLowerCase().includes(query.toLowerCase()) ||
@@ -764,6 +794,7 @@ export const DataExplorerPage: React.FC<{
             onChange={setSourceFilter}
             options={[
               { label: 'All Sources', value: 'All Sources' },
+              { label: 'Live District Telemetry (MSDE v2.4)', value: 'Live District Telemetry (MSDE v2.4)' },
               { label: 'NSDC Skill India', value: 'NSDC Skill India' },
               { label: 'PLFS Microdata', value: 'PLFS Microdata' },
               { label: 'EPFO Payroll', value: 'EPFO Payroll' },
@@ -844,7 +875,16 @@ export const DataExplorerPage: React.FC<{
                     <td className="py-2.5 px-3 text-right tabular-nums">
                       {scaledTrained.toLocaleString('en-IN')}
                     </td>
-                    <td className="py-2.5 px-3 text-[#64716D]">{item.source}</td>
+                    <td className="py-2.5 px-3 text-[#64716D]">
+                      {item.source === 'Live District Telemetry (MSDE v2.4)' ? (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#E8F5E9] text-[#2E7D32] border border-[#C8E6C9]">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32] animate-pulse"></span>
+                          Live Telemetry
+                        </span>
+                      ) : (
+                        item.source
+                      )}
+                    </td>
                     <td className="py-2.5 px-3 text-right text-[#64716D] tabular-nums">
                       {item.lastUpdated}
                     </td>

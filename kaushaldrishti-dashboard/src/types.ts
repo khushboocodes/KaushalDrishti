@@ -137,6 +137,6 @@ export interface ExplorerRecord {
   annualTrained: number;
   gap: number;
   status: SupplyStatus;
-  source: 'NSDC Skill India' | 'PLFS Microdata' | 'EPFO Payroll' | 'NCS Portal';
+  source: 'NSDC Skill India' | 'PLFS Microdata' | 'EPFO Payroll' | 'NCS Portal' | 'Live District Telemetry (MSDE v2.4)';
   lastUpdated: string;
 }

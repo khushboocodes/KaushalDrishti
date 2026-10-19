@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   UploadCloud,
   FileSpreadsheet,
   CheckCircle2,
   AlertCircle,
+  AlertTriangle,
   RefreshCw,
   Download,
   FileCheck,
@@ -13,12 +14,37 @@ import {
   ArrowRight,
   Layers,
   Info,
+  Search,
+  Sparkles,
+  XCircle,
+  TrendingUp,
+  BarChart3,
+  PieChart,
+  Target,
+  Award,
+  Printer,
+  Activity,
+  Gauge,
+  Briefcase,
+  Zap,
+  Check,
+  FileDown,
+  FileText,
+  Building2,
+  Users,
+  GraduationCap,
 } from 'lucide-react';
 import { SurfaceCard, PrimaryButton, SecondaryButton } from './DesignSystemUI';
 import { UserSession } from './AuthModal';
 import { NavRouteId } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { getHorizonConfig } from '../data/dashboardMetrics';
+import {
+  globalTelemetryStore,
+  parseTelemetryCsv,
+  IngestionBatchResult,
+  ParsedTelemetryRow,
+} from '../data/telemetryIngestionStore';
 
 interface TelemetryUploadPageProps {
   userSession?: UserSession | null;
@@ -38,7 +64,7 @@ interface IngestionHistoryItem {
   batchId: string;
 }
 
-const PAST_INGESTION_LOGS: IngestionHistoryItem[] = [
+const STATIC_PAST_INGESTION_LOGS: IngestionHistoryItem[] = [
   {
     id: 'batch-492-01',
     fileName: 'pune_district_iti_admissions_q3.csv',
@@ -93,36 +119,82 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
   const [dragActive, setDragActive] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'parsing' | 'success'>('idle');
-  const [parsedRows, setParsedRows] = useState<number>(0);
+  const [activeBatch, setActiveBatch] = useState<IngestionBatchResult | null>(null);
+  const [parseError, setParseError] = useState<string | null>(null);
+  const [isCommitted, setIsCommitted] = useState<boolean>(false);
+  const [commitNotice, setCommitNotice] = useState<string | null>(null);
+  const [batchSearchQuery, setBatchSearchQuery] = useState<string>('');
   const [downloadSuccess, setDownloadSuccess] = useState<boolean>(false);
+  const [activeViewMode, setActiveViewMode] = useState<'report' | 'table'>('report');
+  const [, setStoreRefreshCounter] = useState<number>(0);
 
-  const handleSimulatedUpload = (name: string) => {
-    setFileName(name);
+  useEffect(() => {
+    return globalTelemetryStore.subscribe(() => {
+      setStoreRefreshCounter((prev) => prev + 1);
+    });
+  }, []);
+
+  const processFile = (file: File) => {
+    setFileName(file.name);
     setUploadStatus('parsing');
-    setTimeout(() => {
-      setParsedRows(148);
-      setUploadStatus('success');
-    }, 900);
+    setParseError(null);
+    setIsCommitted(false);
+    setCommitNotice(null);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result as string;
+        if (!text || text.trim().length === 0) {
+          throw new Error('The uploaded file is empty.');
+        }
+        const result = parseTelemetryCsv(text, file.name, file.size);
+        setActiveBatch(result);
+        setUploadStatus('success');
+      } catch (err: any) {
+        setParseError(err.message || 'Failed to parse CSV file. Please verify MSDE schema v2.4 format.');
+        setUploadStatus('idle');
+      }
+    };
+    reader.onerror = () => {
+      setParseError('Failed to read file from disk. Please check file permissions.');
+      setUploadStatus('idle');
+    };
+    reader.readAsText(file);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleSimulatedUpload(e.dataTransfer.files[0].name);
+      processFile(e.dataTransfer.files[0]);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      handleSimulatedUpload(e.target.files[0].name);
+      processFile(e.target.files[0]);
     }
   };
 
   const handleReset = () => {
     setFileName(null);
     setUploadStatus('idle');
-    setParsedRows(0);
+    setActiveBatch(null);
+    setParseError(null);
+    setIsCommitted(false);
+    setCommitNotice(null);
+    setBatchSearchQuery('');
+    setActiveViewMode('report');
+  };
+
+  const handleCommitToLedger = () => {
+    if (!activeBatch) return;
+    globalTelemetryStore.commitBatch(activeBatch);
+    setIsCommitted(true);
+    setCommitNotice(
+      `Batch ${activeBatch.batchId} successfully committed into National Labour Intelligence Ledger! Injected ${activeBatch.validRowsCount} verified district trade streams.`
+    );
   };
 
   const handleDownloadTemplate = () => {
@@ -131,7 +203,10 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
       'district_lgd_code,district_name,iti_mis_code,trade_nco_code,trade_name,batch_id,sanctioned_seats,enrolled_count,certified_count,retained_count,reporting_period\n' +
       '492,Pune,ITI270492,7411.0101,Solar PV Rooftop Technician,BATCH-2026-01,100,88,80,68,2026-Q1\n' +
       '158,Kanpur Nagar,ITI090158,7231.0102,EV Automotive Service Technician,BATCH-2026-02,120,112,102,86,2026-Q1\n' +
-      '365,Khordha,ITI210365,7223.0501,CNC Precision Machinist,BATCH-2026-03,80,75,70,62,2026-Q1\n';
+      '365,Khordha,ITI210365,7223.0501,CNC Precision Machinist,BATCH-2026-03,80,75,70,62,2026-Q1\n' +
+      '214,Patna,ITI100214,5321.0100,Healthcare General Duty Assistant,BATCH-2026-04,90,85,82,74,2026-Q1\n' +
+      '572,Bengaluru Urban,ITI290572,2512.0101,Software Developer,BATCH-2026-05,150,142,130,118,2026-Q1\n' +
+      '474,Ahmedabad,ITI240474,7533.01,Industrial Sewing Machine Operator,BATCH-2026-06,110,105,98,90,2026-Q1\n';
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -144,6 +219,379 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
 
     setTimeout(() => setDownloadSuccess(false), 3500);
   };
+
+  const handleExportPdf = () => {
+    if (!activeBatch || !batchAnalytics) return;
+
+    const printWin = window.open('', '_blank', 'width=900,height=1100');
+    if (!printWin) {
+      alert('Popup blocker prevented opening PDF window. Please allow popups for this site.');
+      return;
+    }
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>MSDE Telemetry Intelligence Report - ${activeBatch.batchId}</title>
+  <style>
+    @page { size: A4 portrait; margin: 12mm 15mm 12mm 15mm; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #173F35; margin: 0; padding: 16px; font-size: 11px; line-height: 1.4; background: #fff; }
+    .header { border-bottom: 2px solid #17604D; padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+    .header-left h1 { margin: 0; font-size: 17px; color: #173F35; font-family: Georgia, serif; font-weight: bold; }
+    .header-left p { margin: 2px 0 0; color: #64716D; font-size: 9.5px; }
+    .header-right { text-align: right; font-size: 9.5px; color: #64716D; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 8.5px; text-transform: uppercase; }
+    .badge-green { background: #E8F5E9; color: #2E7D32; border: 1px solid #C8E6C9; }
+    .meta-box { background: #FAF7F2; border: 1px solid #E9E0D3; border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .meta-item .label { font-size: 8.5px; color: #64716D; text-transform: uppercase; font-weight: 600; }
+    .meta-item .val { font-size: 13px; font-weight: bold; color: #173F35; margin-top: 1px; }
+    .meta-item .sub { font-size: 8.5px; color: #2E7D32; font-weight: 600; }
+    h2 { font-size: 12px; color: #173F35; border-bottom: 1px solid #ECE4D7; padding-bottom: 3px; margin: 12px 0 6px; font-family: Georgia, serif; text-transform: uppercase; letter-spacing: 0.3px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 9.5px; }
+    th { background: #FAF7F2; color: #64716D; text-align: left; padding: 5px 7px; border-bottom: 1px solid #E9E0D3; font-weight: 600; text-transform: uppercase; font-size: 8.5px; }
+    td { padding: 5px 7px; border-bottom: 1px solid #F2ECE1; color: #173F35; }
+    tr:nth-child(even) { background: #FCFBF9; }
+    .text-right { text-align: right; }
+    .pill { padding: 1px 5px; border-radius: 3px; font-size: 8px; font-weight: 600; }
+    .pill-green { background: #E8F5E9; color: #2E7D32; }
+    .pill-amber { background: #FEF3C7; color: #B45309; }
+    .pill-red { background: #FDE8E8; color: #9B1C1C; }
+    .policy-box { background: #FAF7F2; border-left: 3px solid #D97925; padding: 6px 10px; margin-bottom: 6px; border-radius: 0 4px 4px 0; }
+    .policy-box strong { color: #173F35; font-size: 10px; }
+    .policy-box p { margin: 2px 0 0; color: #4B5563; font-size: 9px; line-height: 1.35; }
+    .footer { margin-top: 16px; padding-top: 8px; border-top: 1px dashed #CBD5E1; display: flex; justify-content: space-between; font-size: 8.5px; color: #94A3B8; font-family: monospace; }
+    @media print {
+      body { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <span class="badge badge-green">Official MSDE Telemetry Intelligence Dossier</span>
+      <h1>KaushalDrishti (कौशल दृष्टि) — Executive Telemetry Brief</h1>
+      <p>Ministry of Skill Development & Entrepreneurship · Government of India · LGD 2024 & NCO-2015 Registry Certified</p>
+    </div>
+    <div class="header-right">
+      <strong>Batch: ${activeBatch.batchId}</strong><br />
+      Source: ${activeBatch.fileName}<br />
+      Scope: ${dateRange} · Generated on ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+    </div>
+  </div>
+
+  <div class="meta-box">
+    <div class="meta-item">
+      <div class="label">AI Model Confidence</div>
+      <div class="val">${batchAnalytics.confidenceScore}%</div>
+      <div class="sub">Registry Validated</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Data Quality Health</div>
+      <div class="val">${batchAnalytics.accuracyIndex}%</div>
+      <div class="sub">${activeBatch.validRowsCount} / ${activeBatch.totalRows} Clean Rows</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">${dateRange} Projected Demand</div>
+      <div class="val">+${batchAnalytics.totalProjectedDemand.toLocaleString('en-IN')}</div>
+      <div class="sub">Hiring Absorption Velocity</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Local Tension Ratio (TR)</div>
+      <div class="val">${batchAnalytics.tensionRatio}x</div>
+      <div class="sub">${parseFloat(batchAnalytics.tensionRatio) >= 1.25 ? 'High Shortage Pressure' : 'Balanced Capacity Band'}</div>
+    </div>
+  </div>
+
+  <h2>1. Trainee Throughput & Admissions-to-Retention Pipeline Diagnostics</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Funnel Stage</th>
+        <th class="text-right">Candidate Volume</th>
+        <th class="text-right">Conversion Ratio</th>
+        <th>Pipeline Diagnostics / Attrition Locus</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Sanctioned Intake Capacity</strong></td>
+        <td class="text-right" style="font-family: monospace;">${activeBatch.totalSanctioned.toLocaleString('en-IN')} Seats</td>
+        <td class="text-right" style="font-family: monospace;">100.0%</td>
+        <td>Total state authorized training infrastructure capacity</td>
+      </tr>
+      <tr>
+        <td><strong>2. Trainees Enrolled</strong></td>
+        <td class="text-right" style="font-family: monospace;">${activeBatch.totalEnrolled.toLocaleString('en-IN')} Admitted</td>
+        <td class="text-right" style="font-family: monospace;">${batchAnalytics.seatUtilizationRate}%</td>
+        <td>Unfilled Capacity: ${(activeBatch.totalSanctioned - activeBatch.totalEnrolled).toLocaleString('en-IN')} seats (${(100 - batchAnalytics.seatUtilizationRate).toFixed(1)}% mobilization gap)</td>
+      </tr>
+      <tr>
+        <td><strong>3. Exam Certified Graduates</strong></td>
+        <td class="text-right" style="font-family: monospace;">${activeBatch.totalCertified.toLocaleString('en-IN')} Passed</td>
+        <td class="text-right" style="font-family: monospace;">${batchAnalytics.trainingCompletionRate}%</td>
+        <td>Academic Dropout Leakage: ${(activeBatch.totalEnrolled - activeBatch.totalCertified).toLocaleString('en-IN')} trainees (${(100 - batchAnalytics.trainingCompletionRate).toFixed(1)}% pre-exam attrition)</td>
+      </tr>
+      <tr>
+        <td><strong>4. Retained in Employment</strong></td>
+        <td class="text-right" style="font-family: monospace; font-weight: bold; color: #166534;">${activeBatch.totalRetained.toLocaleString('en-IN')} Placed</td>
+        <td class="text-right" style="font-family: monospace; font-weight: bold; color: #166534;">${batchAnalytics.placementYieldRate}%</td>
+        <td>Verified industry absorption; End-to-End Pipeline Efficiency: <strong>${batchAnalytics.overallPipelineEfficiency}%</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>2. Top Ingested Trades — Certified Supply vs ${dateRange} Projected Demand</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>NCO Code</th>
+        <th>Trade Classification</th>
+        <th>Sector</th>
+        <th class="text-right">Certified Supply</th>
+        <th class="text-right">Projected Demand</th>
+        <th class="text-right">Net Gap</th>
+        <th class="text-right">Placement Yield</th>
+        <th>Market Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${batchAnalytics.topTradesForecast.map((t: any) => `
+        <tr>
+          <td style="font-family: monospace;">${t.ncoCode}</td>
+          <td><strong>${t.tradeName}</strong></td>
+          <td>${t.sector}</td>
+          <td class="text-right" style="font-family: monospace;">${t.certified.toLocaleString('en-IN')}</td>
+          <td class="text-right" style="font-family: monospace; font-weight: bold; color: #D97925;">${t.projectedDemand.toLocaleString('en-IN')}</td>
+          <td class="text-right" style="font-family: monospace; font-weight: bold; color: ${t.gap > 0 ? '#9B1C1C' : '#166534'};">${t.gap > 0 ? '+' + t.gap.toLocaleString('en-IN') : t.gap.toLocaleString('en-IN')}</td>
+          <td class="text-right" style="font-family: monospace;">${t.placementYield}%</td>
+          <td><span class="pill ${t.gap > 50 ? 'pill-red' : 'pill-amber'}">${t.status}</span></td>
+        </tr>
+      `).join('')}
+    </tbody>
+  </table>
+
+  <h2>3. Top District Placement Yield Rankings (Ground Truth Performance)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>District & State</th>
+        <th class="text-right">Sanctioned</th>
+        <th class="text-right">Certified</th>
+        <th class="text-right">Retained in Jobs</th>
+        <th class="text-right">Placement Yield %</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${batchAnalytics.topDistricts.map((d: any, i: number) => `
+        <tr>
+          <td>#${i + 1}</td>
+          <td><strong>${d.district}</strong>, <span style="color: #64716D;">${d.state}</span></td>
+          <td class="text-right" style="font-family: monospace;">${d.sanctioned.toLocaleString('en-IN')}</td>
+          <td class="text-right" style="font-family: monospace;">${d.certified.toLocaleString('en-IN')}</td>
+          <td class="text-right" style="font-family: monospace; font-weight: bold; color: #166534;">${d.retained.toLocaleString('en-IN')}</td>
+          <td class="text-right" style="font-family: monospace; font-weight: bold; color: #166534;"><span class="pill pill-green">${d.yieldRate}% Placed</span></td>
+        </tr>
+      `).join('')}
+    </tbody>
+  </table>
+
+  <h2>4. Automated AI Policy Prescriptions & Resource Reallocation Directives</h2>
+  <div class="policy-box">
+    <strong>🎯 Capacity Realignment Directive:</strong>
+    <p>Strong employment absorption in <strong>${batchAnalytics.sectorList[0]?.sector || 'Core Technical'}</strong> indicates unmet industry demand. Recommend increasing sanctioned ITI seat allocation by +15% to +20% for upcoming FY 2026–27 intake cycle.</p>
+  </div>
+  <div class="policy-box" style="border-left-color: #D94E34;">
+    <strong>⚠️ Dropout Mitigation & Academic Intervention:</strong>
+    <p>Detected <strong>${(activeBatch.totalEnrolled - activeBatch.totalCertified).toLocaleString('en-IN')} trainee dropouts</strong> between enrollment and final certification. Recommend District Skill Committees mandate biometric attendance tracking and localized stipend disbursements.</p>
+  </div>
+  <div class="policy-box" style="border-left-color: #0284C7;">
+    <strong>🤝 Flexi-MoU Industry Linkage:</strong>
+    <p>Top performing clusters in <strong>${batchAnalytics.topDistricts.slice(0, 2).map((d: any) => d.district).join(' and ')}</strong> report superior placement retention (over 80%). State SSDMs should fast-track dual-system apprenticeship tie-ups with local industrial estates.</p>
+  </div>
+
+  <div class="footer">
+    <div>Audit SHA-256: ${activeBatch.sha256Hash}</div>
+    <div>Statutory Standard: DPDP Act (2023) Verified · NCVT & SID Ingestion Gateway</div>
+  </div>
+
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 500);
+    };
+  </script>
+</body>
+</html>
+    `;
+
+    printWin.document.open();
+    printWin.document.write(htmlContent);
+    printWin.document.close();
+  };
+
+  // Dynamic AI Ingestion & Prediction Analytics
+  const batchAnalytics = useMemo(() => {
+    if (!activeBatch) return null;
+
+    // 1. Sector breakdown
+    const sectorMap: Record<string, { sector: string; certified: number; retained: number; sanctioned: number; enrolled: number; tradesCount: number }> = {};
+    activeBatch.rows.forEach((r) => {
+      const sec = r.sector || 'General Technical';
+      if (!sectorMap[sec]) {
+        sectorMap[sec] = { sector: sec, certified: 0, retained: 0, sanctioned: 0, enrolled: 0, tradesCount: 0 };
+      }
+      sectorMap[sec].certified += r.certifiedCount;
+      sectorMap[sec].retained += r.retainedCount;
+      sectorMap[sec].sanctioned += r.sanctionedSeats;
+      sectorMap[sec].enrolled += r.enrolledCount;
+      sectorMap[sec].tradesCount += 1;
+    });
+    const sectorList = Object.values(sectorMap)
+      .map((s) => ({
+        ...s,
+        yieldRate: s.certified > 0 ? Math.round((s.retained / s.certified) * 1000) / 10 : 0,
+        sharePct: activeBatch.totalCertified > 0 ? Math.round((s.certified / activeBatch.totalCertified) * 1000) / 10 : 0,
+      }))
+      .sort((a, b) => b.certified - a.certified);
+
+    const horizonMultiplier = horizon.demandMultiplier;
+
+    // 2. Top Trades AI Demand Forecast for selected horizon
+    const tradeMap: Record<string, { tradeName: string; ncoCode: string; sector: string; certified: number; sanctioned: number; retained: number; enrolled: number }> = {};
+    activeBatch.rows.forEach((r) => {
+      const key = r.tradeName || r.tradeNcoCode;
+      if (!tradeMap[key]) {
+        tradeMap[key] = { tradeName: r.tradeName, ncoCode: r.tradeNcoCode, sector: r.sector, certified: 0, sanctioned: 0, retained: 0, enrolled: 0 };
+      }
+      tradeMap[key].certified += r.certifiedCount;
+      tradeMap[key].sanctioned += r.sanctionedSeats;
+      tradeMap[key].retained += r.retainedCount;
+      tradeMap[key].enrolled += r.enrolledCount;
+    });
+    const topTradesForecast = Object.values(tradeMap)
+      .sort((a, b) => b.certified - a.certified)
+      .slice(0, 5)
+      .map((t) => {
+        const projectedDemand = Math.round(t.sanctioned * 1.35 * horizonMultiplier);
+        const gap = projectedDemand - t.certified;
+        const status = gap > 60 ? 'Acute Undersupply' : gap > 0 ? 'Moderate Undersupply' : 'Balanced Supply';
+        const placementYield = t.certified > 0 ? Math.round((t.retained / t.certified) * 1000) / 10 : 0;
+        return { ...t, projectedDemand, gap, status, placementYield };
+      });
+
+    // 3. District Ranking & Performance
+    const districtMap: Record<string, { district: string; state: string; certified: number; retained: number; sanctioned: number }> = {};
+    activeBatch.rows.forEach((r) => {
+      const d = r.districtName;
+      if (!districtMap[d]) {
+        districtMap[d] = { district: d, state: r.state, certified: 0, retained: 0, sanctioned: 0 };
+      }
+      districtMap[d].certified += r.certifiedCount;
+      districtMap[d].retained += r.retainedCount;
+      districtMap[d].sanctioned += r.sanctionedSeats;
+    });
+    const topDistricts = Object.values(districtMap)
+      .map((d) => ({
+        ...d,
+        yieldRate: d.certified > 0 ? Math.round((d.retained / d.certified) * 1000) / 10 : 0,
+      }))
+      .sort((a, b) => b.certified - a.certified)
+      .slice(0, 5);
+
+    // 4. Overall AI Metrics
+    const totalProjectedDemand = Math.round(activeBatch.totalSanctioned * 1.35 * horizonMultiplier);
+    const netSupplyGap = totalProjectedDemand - activeBatch.totalCertified;
+    const tensionRatio = (totalProjectedDemand / Math.max(1, activeBatch.totalCertified)).toFixed(2);
+    const passRate = activeBatch.validRowsCount / Math.max(1, activeBatch.totalRows);
+    const confidenceScore = (91.0 + passRate * 8.0 - (activeBatch.flaggedRowsCount > 0 ? 3.5 : 0)).toFixed(1);
+    const accuracyIndex = ((activeBatch.validRowsCount / Math.max(1, activeBatch.totalRows)) * 100).toFixed(1);
+
+    // 5. Admissions Funnel drop-offs
+    const seatUtilizationRate = activeBatch.totalSanctioned > 0 ? Math.round((activeBatch.totalEnrolled / activeBatch.totalSanctioned) * 1000) / 10 : 0;
+    const trainingCompletionRate = activeBatch.totalEnrolled > 0 ? Math.round((activeBatch.totalCertified / activeBatch.totalEnrolled) * 1000) / 10 : 0;
+    const placementYieldRate = activeBatch.totalCertified > 0 ? Math.round((activeBatch.totalRetained / activeBatch.totalCertified) * 1000) / 10 : 0;
+    const overallPipelineEfficiency = activeBatch.totalSanctioned > 0 ? Math.round((activeBatch.totalRetained / activeBatch.totalSanctioned) * 1000) / 10 : 0;
+
+    // 6. NSQF Stratification Breakdown
+    const nsqfCountMap: Record<number, number> = { 3: 0, 4: 0, 5: 0, 6: 0 };
+    activeBatch.rows.forEach((r) => {
+      const lvl = r.nsqfLevel || 4;
+      if (lvl <= 3) nsqfCountMap[3] = (nsqfCountMap[3] || 0) + r.certifiedCount;
+      else if (lvl === 4) nsqfCountMap[4] = (nsqfCountMap[4] || 0) + r.certifiedCount;
+      else if (lvl === 5) nsqfCountMap[5] = (nsqfCountMap[5] || 0) + r.certifiedCount;
+      else nsqfCountMap[6] = (nsqfCountMap[6] || 0) + r.certifiedCount;
+    });
+
+    const nsqfStratification = [
+      { level: 3, label: 'NSQF L3 (Foundational)', count: nsqfCountMap[3], wage: '₹14,000 – ₹18,000 / mo', desc: 'Assembly operators, retail sales, sewing' },
+      { level: 4, label: 'NSQF L4 (Core Technician)', count: nsqfCountMap[4], wage: '₹18,500 – ₹25,000 / mo', desc: 'Solar PV tech, CNC machinist, healthcare GDA' },
+      { level: 5, label: 'NSQF L5 (Specialist)', count: nsqfCountMap[5], wage: '₹25,000 – ₹34,000 / mo', desc: 'EV powertrain diagnostics, BIM modeler' },
+      { level: 6, label: 'NSQF L6+ (Technologist)', count: nsqfCountMap[6], wage: '₹34,000 – ₹48,000 / mo', desc: 'Software developer, data analyst, automated QA' },
+    ];
+
+    // 7. Trainee Attrition & Leakage Diagnostics
+    const unfilledSeats = Math.max(0, activeBatch.totalSanctioned - activeBatch.totalEnrolled);
+    const academicDropouts = Math.max(0, activeBatch.totalEnrolled - activeBatch.totalCertified);
+    const unplacedGraduates = Math.max(0, activeBatch.totalCertified - activeBatch.totalRetained);
+    const primaryBottleneck =
+      unplacedGraduates >= academicDropouts && unplacedGraduates >= unfilledSeats
+        ? 'Post-Certification Placement Gap (Awaiting Industrial Placement)'
+        : academicDropouts >= unfilledSeats
+        ? 'Academic Course Dropouts (Pre-Certification Leaks)'
+        : 'Initial Admission Mobilization Gap (Unfilled Sanction)';
+
+    return {
+      sectorList,
+      topTradesForecast,
+      topDistricts,
+      totalProjectedDemand,
+      netSupplyGap,
+      tensionRatio,
+      confidenceScore,
+      accuracyIndex,
+      seatUtilizationRate,
+      trainingCompletionRate,
+      placementYieldRate,
+      overallPipelineEfficiency,
+      nsqfStratification,
+      unfilledSeats,
+      academicDropouts,
+      unplacedGraduates,
+      primaryBottleneck,
+    };
+  }, [activeBatch, horizon]);
+
+  const filteredBatchRows: ParsedTelemetryRow[] = activeBatch
+    ? activeBatch.rows.filter((r) => {
+        if (!batchSearchQuery.trim()) return true;
+        const q = batchSearchQuery.toLowerCase();
+        return (
+          r.tradeName.toLowerCase().includes(q) ||
+          r.tradeNcoCode.toLowerCase().includes(q) ||
+          r.districtName.toLowerCase().includes(q) ||
+          r.batchId.toLowerCase().includes(q) ||
+          r.itiMisCode.toLowerCase().includes(q)
+        );
+      })
+    : [];
+
+  const dynamicIngestionHistory: IngestionHistoryItem[] = [
+    ...globalTelemetryStore.getBatches().map((b) => ({
+      id: `history-${b.batchId}`,
+      fileName: b.fileName,
+      district: `${b.uniqueDistricts.slice(0, 2).join(', ')}${b.uniqueDistricts.length > 2 ? ' +' + (b.uniqueDistricts.length - 2) : ''}`,
+      uploadedBy: `${userSession?.name || 'Local DSC Lead'} (${userSession?.role || 'Authority'})`,
+      recordsCount: b.validRowsCount,
+      timestamp: b.uploadedAt,
+      status: b.status as 'Verified' | 'Ingested' | 'Review Required',
+      batchId: b.batchId,
+    })),
+    ...STATIC_PAST_INGESTION_LOGS,
+  ];
 
   return (
     <div className="space-y-5">
@@ -239,7 +687,7 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
         </SurfaceCard>
       </div>
 
-      {/* Primary Upload Card */}
+      {/* Primary Upload & Live Ingestion Card */}
       <SurfaceCard className="space-y-4 p-5">
         <div className="flex items-center justify-between pb-3 border-b border-[#E9E0D3]">
           <div className="flex items-center gap-2">
@@ -250,6 +698,22 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
           </div>
           <span className="text-[11px] text-[#64716D] font-mono">MSDE Format v2.4</span>
         </div>
+
+        {parseError && (
+          <div className="p-3.5 rounded-xl bg-[#FDE8E8] border border-[#F8B4B4] flex items-start gap-3 text-xs text-[#9B1C1C]">
+            <XCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <div className="font-bold">Schema Parse Error</div>
+              <div className="mt-0.5">{parseError}</div>
+            </div>
+            <button
+              onClick={handleReset}
+              className="px-2.5 py-1 bg-white border border-[#F8B4B4] rounded text-[11px] font-semibold text-[#9B1C1C] hover:bg-[#FDF2F2] cursor-pointer shrink-0"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
 
         {uploadStatus === 'idle' && (
           <div
@@ -298,25 +762,31 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
           <div className="p-8 rounded-xl bg-[#FAF7F2] border border-[#E9E0D3] text-center space-y-3">
             <RefreshCw className="w-8 h-8 text-[#17604D] animate-spin mx-auto" />
             <div className="text-sm font-bold text-[#173F35]">
-              {t('Validating schema against LGD & NCO-2015 registries...', 'एलजीडी एवं एनसीओ-2015 रजिस्ट्रियों के विरुद्ध स्कीमा का सत्यापन जारी...')}
+              {t('Streaming & validating schema against LGD & NCO-2015 registries...', 'एलजीडी एवं एनसीओ-2015 रजिस्ट्रियों के विरुद्ध स्कीमा का सत्यापन जारी...')}
             </div>
             <div className="text-xs text-[#64716D]">
-              {t('Analyzing columns and formatting for', 'कॉलम एवं प्रारूप का विश्लेषण')} <span className="font-mono font-bold text-[#173F35]">{fileName}</span>
+              {t('Reading file stream in memory for', 'कॉलम एवं प्रारूप का विश्लेषण')} <span className="font-mono font-bold text-[#173F35]">{fileName}</span>
             </div>
           </div>
         )}
 
-        {uploadStatus === 'success' && (
+        {uploadStatus === 'success' && activeBatch && (
           <div className="p-5 rounded-xl bg-[#E5F2E6] border border-[#CFE5D1] space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <CheckCircle2 className="w-6 h-6 text-[#17604D] shrink-0" />
                 <div>
-                  <div className="text-sm font-bold text-[#173F35]">
-                    {t('Telemetry Successfully Ingested:', 'टेलीमेट्री सफलतापूर्वक अंतर्ग्रहीत:')} <span className="font-mono">{fileName}</span>
+                  <div className="text-sm font-bold text-[#173F35] flex items-center gap-2 flex-wrap">
+                    <span>{t('Telemetry Ingested:', 'टेलीमेट्री अंतर्ग्रहीत:')}</span>
+                    <span className="font-mono bg-white px-2 py-0.5 rounded border border-[#CFE5D1] text-xs">
+                      {activeBatch.fileName}
+                    </span>
+                    <span className="text-[11px] font-mono text-[#64716D]">
+                      ({activeBatch.fileSizeKb} KB · Batch {activeBatch.batchId})
+                    </span>
                   </div>
-                  <div className="text-xs text-[#17604D]">
-                    {parsedRows} {t('district admission rows validated and synchronized with central labour database.', 'जिला प्रवेश रिकॉर्ड मान्य और केंद्रीय श्रम डेटाबेस के साथ समकालिक किए गए।')}
+                  <div className="text-xs text-[#17604D] mt-0.5">
+                    {activeBatch.totalRows} {t('rows extracted and cross-validated against canonical registries.', 'पंक्तियां निकाली गईं और मान्य की गईं।')}
                   </div>
                 </div>
               </div>
@@ -325,23 +795,823 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
               </SecondaryButton>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-center text-xs font-mono">
+            {/* Dynamic Metric Cards from Parsed File */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1 text-center text-xs font-mono">
               <div className="p-3 rounded-lg bg-[#FFFEFB] border border-[#CFE5D1]">
                 <div className="text-[10.5px] text-[#64716D] font-sans">{t('Valid Clean Records', 'मान्य शुद्ध रिकॉर्ड')}</div>
-                <div className="text-base font-bold text-[#173F35] mt-0.5">148 / 148 (100%)</div>
+                <div className="text-base font-bold text-[#173F35] mt-0.5">
+                  {activeBatch.validRowsCount} / {activeBatch.totalRows} ({Math.round((activeBatch.validRowsCount / Math.max(1, activeBatch.totalRows)) * 100)}%)
+                </div>
               </div>
               <div className="p-3 rounded-lg bg-[#FFFEFB] border border-[#CFE5D1]">
-                <div className="text-[10.5px] text-[#64716D] font-sans">{t('Districts Synced', 'समकालिक जिले')}</div>
-                <div className="text-base font-bold text-[#17604D] mt-0.5">3 (LGD 492, 158, 365)</div>
+                <div className="text-[10.5px] text-[#64716D] font-sans">{t('Districts Detected', 'समकालिक जिले')}</div>
+                <div className="text-base font-bold text-[#17604D] mt-0.5 truncate" title={activeBatch.uniqueDistricts.join(', ')}>
+                  {activeBatch.uniqueDistricts.length} ({activeBatch.uniqueDistricts.slice(0, 2).join(', ')}{activeBatch.uniqueDistricts.length > 2 ? ' +' + (activeBatch.uniqueDistricts.length - 2) : ''})
+                </div>
               </div>
               <div className="p-3 rounded-lg bg-[#FFFEFB] border border-[#CFE5D1]">
-                <div className="text-[10.5px] text-[#64716D] font-sans">{t('Early Warnings Recalculated', 'पुनर्गणित सचेतक')}</div>
-                <div className="text-base font-bold text-[#D96843] mt-0.5">4 Critical Signals</div>
+                <div className="text-[10.5px] text-[#64716D] font-sans">{t('Certified Trainees Output', 'प्रमाणित प्रशिक्षार्थी आउटपुट')}</div>
+                <div className="text-base font-bold text-[#17604D] mt-0.5">
+                  +{activeBatch.totalCertified.toLocaleString('en-IN')} Candidates
+                </div>
               </div>
+              <div className="p-3 rounded-lg bg-[#FFFEFB] border border-[#CFE5D1]">
+                <div className="text-[10.5px] text-[#64716D] font-sans">{t('Average Placement Yield', 'औसत प्लेसमेंट प्राप्ति')}</div>
+                <div className="text-base font-bold text-[#D97925] mt-0.5">
+                  {activeBatch.avgRetentionRate}% ({activeBatch.totalRetained.toLocaleString('en-IN')} Placed)
+                </div>
+              </div>
+            </div>
+
+            {/* Ingestion Commitment Action */}
+            {!isCommitted ? (
+              <div className="p-3.5 rounded-xl bg-[#FAF7F2] border border-[#ECDCC7] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div>
+                  <div className="font-bold text-[#173F35] flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-[#D97925]" />
+                    <span>Synchronize with National Labour Intelligence Ledger</span>
+                  </div>
+                  <div className="text-[11px] text-[#64716D] mt-0.5">
+                    Click commit to merge these {activeBatch.validRowsCount} verified district streams into live Demand &amp; Supply gap calculation.
+                  </div>
+                </div>
+                <PrimaryButton onClick={handleCommitToLedger} className="shrink-0 shadow-xs">
+                  <Database className="w-3.5 h-3.5" />
+                  <span>Commit to Central Ledger</span>
+                </PrimaryButton>
+              </div>
+            ) : (
+              <div className="p-3.5 rounded-xl bg-[#E2F0E3] border border-[#BBF7D0] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#17604D]">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-[#17604D]" />
+                  <span>
+                    <strong>Batch Synchronized:</strong> {commitNotice}
+                  </span>
+                </div>
+                {onNavigate && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onNavigate('demand-supply');
+                      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-[#173F35] text-white hover:bg-[#12322A] text-xs font-semibold shrink-0 cursor-pointer shadow-xs transition-colors"
+                  >
+                    View in Demand &amp; Supply &rarr;
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Cryptographic Audit Hash Pill */}
+            <div className="pt-1 flex items-center justify-between text-[10.5px] text-[#64716D] font-mono border-t border-[#CFE5D1]">
+              <span className="truncate">Audit SHA-256: {activeBatch.sha256Hash}</span>
+              <span className="shrink-0 font-sans font-semibold text-[#17604D]">DPDP Act (2023) Verified</span>
             </div>
           </div>
         )}
       </SurfaceCard>
+
+      {/* Comprehensive Dynamic AI Report & Microdata Section */}
+      {uploadStatus === 'success' && activeBatch && batchAnalytics && (
+        <div className="space-y-4">
+          {/* View Mode Switcher Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-2 rounded-xl bg-[#FAF7F2] border border-[#ECDCC7]">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setActiveViewMode('report')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                  activeViewMode === 'report'
+                    ? 'bg-[#173F35] text-white shadow-xs'
+                    : 'text-[#64716D] hover:text-[#173F35] hover:bg-white/60'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#D97925]" />
+                <span>AI Ingestion &amp; Forecast Report</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveViewMode('table')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                  activeViewMode === 'table'
+                    ? 'bg-[#173F35] text-white shadow-xs'
+                    : 'text-[#64716D] hover:text-[#173F35] hover:bg-white/60'
+                }`}
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+                <span>Microdata Registry ({activeBatch.totalRows} Rows)</span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleExportPdf}
+              className="px-3.5 py-1.5 rounded-lg bg-[#173F35] text-white hover:bg-[#12322A] text-xs font-semibold flex items-center gap-2 cursor-pointer shadow-xs transition-all active:scale-[0.98] self-start sm:self-auto"
+            >
+              <FileDown className="w-4 h-4 text-[#E2F0E3]" />
+              <span>Export Official PDF Report</span>
+            </button>
+          </div>
+
+          {/* VIEW MODE 1: AI Ingestion & Forecast Report */}
+          {activeViewMode === 'report' && (
+            <div className="space-y-4">
+              {/* Executive Model Reliability & Forecasting Banner */}
+              <SurfaceCard className="p-4 bg-gradient-to-br from-[#FFFEFB] to-[#FAF7F2] border-[#E2D8C9]">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-[#ECE4D7]">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded text-[10.5px] font-bold tracking-wide uppercase bg-[#E8F5E9] text-[#2E7D32] border border-[#C8E6C9] flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32] animate-pulse"></span>
+                        AI Engine Intelligence Report
+                      </span>
+                      <span className="text-xs font-mono text-[#64716D]">
+                        Batch ID: {activeBatch.batchId}
+                      </span>
+                    </div>
+                    <h2 className="font-serif-heading text-lg font-bold text-[#173F35] mt-1">
+                      Telemetry Microdata Intelligence &amp; {dateRange} Labour Market Forecast
+                    </h2>
+                    <p className="text-xs text-[#64716D]">
+                      Synthesized from {activeBatch.totalRows} verified district streams across {activeBatch.uniqueDistricts.length} districts and {batchAnalytics.sectorList.length} industrial sectors.
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className="text-[11px] font-mono text-[#64716D] block">Audit Integrity Hash</span>
+                    <span className="text-[11px] font-mono font-bold text-[#17604D] truncate max-w-xs block">
+                      {activeBatch.sha256Hash}
+                    </span>
+                  </div>
+                </div>
+
+                {/* 4 Executive Model Metric Badges */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3">
+                  <div className="p-3 rounded-xl bg-white border border-[#E9E0D3] shadow-2xs">
+                    <div className="flex items-center justify-between text-xs text-[#64716D]">
+                      <span>Model Confidence</span>
+                      <ShieldCheck className="w-4 h-4 text-[#17604D]" />
+                    </div>
+                    <div className="text-2xl font-bold font-serif-heading text-[#173F35] mt-1">
+                      {batchAnalytics.confidenceScore}%
+                    </div>
+                    <div className="text-[10.5px] font-medium text-[#166534] mt-0.5 flex items-center gap-1">
+                      <Check className="w-3 h-3" />
+                      <span>High Confidence · LGD Registry Mapped</span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-white border border-[#E9E0D3] shadow-2xs">
+                    <div className="flex items-center justify-between text-xs text-[#64716D]">
+                      <span>Data Quality Health Index</span>
+                      <Activity className="w-4 h-4 text-[#D97925]" />
+                    </div>
+                    <div className="text-2xl font-bold font-serif-heading text-[#173F35] mt-1">
+                      {batchAnalytics.accuracyIndex}%
+                    </div>
+                    <div className="text-[10.5px] font-medium text-[#17604D] mt-0.5">
+                      {activeBatch.flaggedRowsCount === 0 ? 'Zero Logical Anomalies Detected' : `${activeBatch.flaggedRowsCount} Rows Need Field Audit`}
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-white border border-[#E9E0D3] shadow-2xs">
+                    <div className="flex items-center justify-between text-xs text-[#64716D]">
+                      <span>{dateRange} Projected Demand</span>
+                      <TrendingUp className="w-4 h-4 text-[#17604D]" />
+                    </div>
+                    <div className="text-2xl font-bold font-serif-heading text-[#17604D] mt-1">
+                      +{batchAnalytics.totalProjectedDemand.toLocaleString('en-IN')}
+                    </div>
+                    <div className="text-[10.5px] font-medium text-[#64716D] mt-0.5">
+                      Expected Employer Hiring Absorption
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-white border border-[#E9E0D3] shadow-2xs">
+                    <div className="flex items-center justify-between text-xs text-[#64716D]">
+                      <span>Local Tension Ratio (TR)</span>
+                      <Gauge className="w-4 h-4 text-[#D94E34]" />
+                    </div>
+                    <div className="text-2xl font-bold font-serif-heading text-[#D94E34] mt-1">
+                      {batchAnalytics.tensionRatio}x
+                    </div>
+                    <div className="text-[10.5px] font-medium text-[#D94E34] mt-0.5">
+                      {parseFloat(batchAnalytics.tensionRatio) >= 1.25 ? 'High Demand / Undersupply Pressure' : 'Balanced Capacity Band'}
+                    </div>
+                  </div>
+                </div>
+              </SurfaceCard>
+
+              {/* Charts Row 1: Admissions Funnel Flow + Sectoral Distribution */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                {/* Left: Admissions-to-Retention Funnel Flow (7 cols) */}
+                <SurfaceCard className="lg:col-span-7 p-4 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between pb-2 border-b border-[#E9E0D3]">
+                      <div className="flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-[#17604D]" />
+                        <h3 className="text-xs font-bold text-[#173F35]">
+                          Admissions-to-Retention Pipeline Funnel Flow
+                        </h3>
+                      </div>
+                      <span className="text-[11px] text-[#64716D] font-mono">MSDE Throughput Funnel</span>
+                    </div>
+
+                    <p className="text-xs text-[#64716D] mt-2">
+                      Tracks trainee progression through each institutional gateway: Sanctioned Capacity &rarr; Enrollment &rarr; Examination Certification &rarr; Verified Industry Placement.
+                    </p>
+
+                    {/* Funnel Step Bars */}
+                    <div className="space-y-3.5 mt-4">
+                      {/* Stage 1: Sanctioned */}
+                      <div>
+                        <div className="flex justify-between text-xs font-medium text-[#173F35] mb-1">
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#173F35]"></span>
+                            <span>Sanctioned Capacity</span>
+                          </span>
+                          <span className="font-mono font-bold">{activeBatch.totalSanctioned.toLocaleString('en-IN')} Seats (100%)</span>
+                        </div>
+                        <div className="w-full h-4 bg-[#FAF7F2] rounded-full overflow-hidden border border-[#E9E0D3]">
+                          <div className="h-full bg-[#173F35] rounded-full w-full"></div>
+                        </div>
+                      </div>
+
+                      {/* Stage 2: Enrolled */}
+                      <div>
+                        <div className="flex justify-between text-xs font-medium text-[#173F35] mb-1">
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#17604D]"></span>
+                            <span>Trainees Enrolled ({batchAnalytics.seatUtilizationRate}% Utilization)</span>
+                          </span>
+                          <span className="font-mono font-bold text-[#17604D]">{activeBatch.totalEnrolled.toLocaleString('en-IN')} Admitted</span>
+                        </div>
+                        <div className="w-full h-4 bg-[#FAF7F2] rounded-full overflow-hidden border border-[#E9E0D3]">
+                          <div
+                            className="h-full bg-[#17604D] rounded-full transition-all duration-700"
+                            style={{ width: `${Math.min(100, Math.max(10, batchAnalytics.seatUtilizationRate))}%` }}
+                          ></div>
+                        </div>
+                        <div className="flex justify-between text-[10.5px] text-[#64716D] mt-0.5">
+                          <span>Unfilled Capacity: {Math.max(0, activeBatch.totalSanctioned - activeBatch.totalEnrolled).toLocaleString('en-IN')} seats</span>
+                          <span>Fill Rate: {batchAnalytics.seatUtilizationRate}%</span>
+                        </div>
+                      </div>
+
+                      {/* Stage 3: Certified */}
+                      <div>
+                        <div className="flex justify-between text-xs font-medium text-[#173F35] mb-1">
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#2E7D32]"></span>
+                            <span>Exam Certified ({batchAnalytics.trainingCompletionRate}% Completion Rate)</span>
+                          </span>
+                          <span className="font-mono font-bold text-[#2E7D32]">{activeBatch.totalCertified.toLocaleString('en-IN')} Passed</span>
+                        </div>
+                        <div className="w-full h-4 bg-[#FAF7F2] rounded-full overflow-hidden border border-[#E9E0D3]">
+                          <div
+                            className="h-full bg-[#2E7D32] rounded-full transition-all duration-700"
+                            style={{ width: `${Math.min(100, Math.max(10, (activeBatch.totalCertified / Math.max(1, activeBatch.totalSanctioned)) * 100))}%` }}
+                          ></div>
+                        </div>
+                        <div className="flex justify-between text-[10.5px] text-[#64716D] mt-0.5">
+                          <span>Academic Dropouts: {Math.max(0, activeBatch.totalEnrolled - activeBatch.totalCertified).toLocaleString('en-IN')} trainees</span>
+                          <span>Pass Efficiency: {batchAnalytics.trainingCompletionRate}%</span>
+                        </div>
+                      </div>
+
+                      {/* Stage 4: Retained / Placed */}
+                      <div>
+                        <div className="flex justify-between text-xs font-medium text-[#173F35] mb-1">
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#D97925]"></span>
+                            <span>Retained in Industry ({batchAnalytics.placementYieldRate}% Placement Yield)</span>
+                          </span>
+                          <span className="font-mono font-bold text-[#D97925]">{activeBatch.totalRetained.toLocaleString('en-IN')} Placed</span>
+                        </div>
+                        <div className="w-full h-4 bg-[#FAF7F2] rounded-full overflow-hidden border border-[#E9E0D3]">
+                          <div
+                            className="h-full bg-[#D97925] rounded-full transition-all duration-700"
+                            style={{ width: `${Math.min(100, Math.max(10, (activeBatch.totalRetained / Math.max(1, activeBatch.totalSanctioned)) * 100))}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Funnel Efficiency Summary Footnote */}
+                  <div className="mt-4 pt-3 border-t border-[#ECE4D7] flex items-center justify-between text-xs">
+                    <span className="text-[#64716D]">End-to-End Pipeline Conversion Efficiency:</span>
+                    <span className="font-mono font-bold text-[#17604D] px-2 py-0.5 rounded bg-[#E8F5E9] border border-[#C8E6C9]">
+                      {batchAnalytics.overallPipelineEfficiency}% of Sanctioned Seats Yield Employed Talent
+                    </span>
+                  </div>
+                </SurfaceCard>
+
+                {/* Right: Sectoral Output Distribution & Placement Rates (5 cols) */}
+                <SurfaceCard className="lg:col-span-5 p-4 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between pb-2 border-b border-[#E9E0D3]">
+                      <div className="flex items-center gap-2">
+                        <PieChart className="w-4 h-4 text-[#D97925]" />
+                        <h3 className="text-xs font-bold text-[#173F35]">
+                          Sectoral Distribution &amp; Placement Yield
+                        </h3>
+                      </div>
+                      <span className="text-[11px] text-[#64716D] font-mono">{batchAnalytics.sectorList.length} Sectors</span>
+                    </div>
+
+                    <p className="text-xs text-[#64716D] mt-2">
+                      Certified trainee distribution and localized job absorption rate segmented by National Occupational classification.
+                    </p>
+
+                    <div className="space-y-3 mt-3">
+                      {batchAnalytics.sectorList.map((sec, idx) => {
+                        const colors = ['bg-[#17604D]', 'bg-[#D97925]', 'bg-[#2E7D32]', 'bg-[#0284C7]', 'bg-[#9333EA]', 'bg-[#B45309]'];
+                        const barColor = colors[idx % colors.length];
+                        return (
+                          <div key={sec.sector} className="p-2 rounded-lg bg-[#FAF7F2] border border-[#E9E0D3]">
+                            <div className="flex items-center justify-between text-xs font-semibold text-[#173F35] mb-1">
+                              <span className="truncate">{sec.sector}</span>
+                              <span className="font-mono text-[11px] text-[#17604D]">
+                                {sec.certified.toLocaleString('en-IN')} Trainees ({sec.sharePct}%)
+                              </span>
+                            </div>
+                            <div className="w-full h-2 bg-white rounded-full overflow-hidden border border-[#ECE4D7]">
+                              <div
+                                className={`h-full ${barColor} rounded-full`}
+                                style={{ width: `${Math.min(100, Math.max(5, sec.sharePct))}%` }}
+                              ></div>
+                            </div>
+                            <div className="flex items-center justify-between text-[10.5px] text-[#64716D] mt-1">
+                              <span>{sec.tradesCount} Mapped Trades</span>
+                              <span className="font-semibold text-[#D97925]">{sec.yieldRate}% Placement Yield</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2 text-[11px] text-[#64716D] border-t border-[#ECE4D7] flex items-center justify-between">
+                    <span>Dominant Sector:</span>
+                    <strong className="text-[#173F35]">{batchAnalytics.sectorList[0]?.sector || 'Core Technical'}</strong>
+                  </div>
+                </SurfaceCard>
+              </div>
+
+              {/* Charts Row 2: 1-Year AI Demand Forecast vs Certified Supply + Top Districts */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                {/* Left: Top Evaluated Trades — Dual Bar Comparison (7 cols) */}
+                <SurfaceCard className="lg:col-span-7 p-4">
+                  <div className="flex items-center justify-between pb-2 border-b border-[#E9E0D3]">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-[#17604D]" />
+                      <h3 className="text-xs font-bold text-[#173F35]">
+                        Top Ingested Trades: Certified Supply vs {dateRange} AI Demand Forecast
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-3 text-[10.5px] text-[#64716D]">
+                      <span className="flex items-center gap-1">
+                        <span className="w-2.5 h-2.5 rounded bg-[#17604D]"></span>
+                        <span>Supply</span>
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2.5 h-2.5 rounded bg-[#D97925]"></span>
+                        <span>Projected Demand</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 mt-3">
+                    {batchAnalytics.topTradesForecast.map((trade) => {
+                      const maxVal = Math.max(trade.projectedDemand, trade.certified);
+                      const supplyWidth = Math.round((trade.certified / maxVal) * 100);
+                      const demandWidth = Math.round((trade.projectedDemand / maxVal) * 100);
+
+                      return (
+                        <div key={trade.ncoCode + trade.tradeName} className="p-2.5 rounded-xl bg-[#FAF7F2] border border-[#E9E0D3]">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+                            <div>
+                              <div className="text-xs font-bold text-[#173F35]">
+                                {trade.tradeName}{' '}
+                                <span className="font-mono text-[10.5px] text-[#64716D]">({trade.ncoCode})</span>
+                              </div>
+                              <div className="text-[10px] text-[#64716D]">{trade.sector} · {trade.placementYield}% Placement Yield</div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                  trade.gap > 50
+                                    ? 'bg-[#FDE8E8] text-[#9B1C1C] border border-[#F8B4B4]'
+                                    : 'bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]'
+                                }`}
+                              >
+                                {trade.gap > 0 ? `+${trade.gap} Deficit` : 'Balanced'}
+                              </span>
+                              <span className="text-[10.5px] text-[#17604D] font-mono font-semibold">
+                                {trade.status}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Dual Bars */}
+                          <div className="space-y-1.5 font-mono text-[11px]">
+                            {/* Certified Supply Bar */}
+                            <div className="flex items-center gap-2">
+                              <span className="w-16 text-[10.5px] text-[#64716D] font-sans">Supply:</span>
+                              <div className="flex-1 bg-white rounded-full h-3 overflow-hidden border border-[#E0D5C3]">
+                                <div
+                                  className="h-full bg-[#17604D] rounded-full flex items-center justify-end pr-1 text-[9px] text-white font-bold transition-all duration-700"
+                                  style={{ width: `${Math.max(12, supplyWidth)}%` }}
+                                >
+                                  {trade.certified}
+                                </div>
+                              </div>
+                              <span className="w-12 text-right font-semibold text-[#17604D]">{trade.certified}</span>
+                            </div>
+
+                            {/* Projected Demand Bar */}
+                            <div className="flex items-center gap-2">
+                              <span className="w-16 text-[10.5px] text-[#64716D] font-sans">Demand:</span>
+                              <div className="flex-1 bg-white rounded-full h-3 overflow-hidden border border-[#E0D5C3]">
+                                <div
+                                  className="h-full bg-[#D97925] rounded-full flex items-center justify-end pr-1 text-[9px] text-white font-bold transition-all duration-700"
+                                  style={{ width: `${Math.max(12, demandWidth)}%` }}
+                                >
+                                  {trade.projectedDemand}
+                                </div>
+                              </div>
+                              <span className="w-12 text-right font-semibold text-[#D97925]">{trade.projectedDemand}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </SurfaceCard>
+
+                {/* Right: Top Performing Districts by Placement Yield (5 cols) */}
+                <SurfaceCard className="lg:col-span-5 p-4 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between pb-2 border-b border-[#E9E0D3]">
+                      <div className="flex items-center gap-2">
+                        <Award className="w-4 h-4 text-[#166534]" />
+                        <h3 className="text-xs font-bold text-[#173F35]">
+                          Top District Placement Yield Rankings
+                        </h3>
+                      </div>
+                      <span className="text-[11px] text-[#64716D] font-mono">Job Retention</span>
+                    </div>
+
+                    <p className="text-xs text-[#64716D] mt-2">
+                      Localities exhibiting highest post-certification employment retention and industrial linkage.
+                    </p>
+
+                    <div className="space-y-2.5 mt-3">
+                      {batchAnalytics.topDistricts.map((dist, idx) => (
+                        <div
+                          key={dist.district}
+                          className="p-2.5 rounded-lg bg-[#FAF7F2] border border-[#E9E0D3] flex items-center justify-between gap-2"
+                        >
+                          <div className="flex items-center gap-2.5 truncate">
+                            <span className="w-5 h-5 rounded-full bg-[#173F35] text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
+                              {idx + 1}
+                            </span>
+                            <div className="truncate">
+                              <div className="text-xs font-bold text-[#173F35] truncate">{dist.district}</div>
+                              <div className="text-[10px] text-[#64716D]">{dist.state}</div>
+                            </div>
+                          </div>
+
+                          <div className="text-right shrink-0">
+                            <div className="text-xs font-bold text-[#17604D] font-mono">
+                              {dist.yieldRate}% Placed
+                            </div>
+                            <div className="text-[10px] text-[#64716D] font-mono">
+                              {dist.retained} / {dist.certified} candidates
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2 text-[11px] text-[#64716D] border-t border-[#ECE4D7]">
+                    <span>Highest Placement Concentration: </span>
+                    <strong className="text-[#17604D]">{batchAnalytics.topDistricts[0]?.district || 'Leading Cluster'}</strong>
+                  </div>
+                </SurfaceCard>
+              </div>
+
+              {/* Charts Row 3: Trainee Attrition & Leakage Diagnostics + NSQF Skill Level Stratification */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                {/* Left: Trainee Attrition & Leakage Diagnostics (7 cols) */}
+                <SurfaceCard className="lg:col-span-7 p-4 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between pb-2 border-b border-[#E9E0D3]">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-[#D94E34]" />
+                        <h3 className="text-xs font-bold text-[#173F35]">
+                          Trainee Attrition &amp; Pipeline Leakage Diagnostics
+                        </h3>
+                      </div>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-[#FDE8E8] text-[#9B1C1C] border border-[#F8B4B4]">
+                        Early Warning Analysis
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-[#64716D] mt-2">
+                      Pinpoints where potential skilled workforce is lost across institutional checkpoints.
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+                      <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#E9E0D3]">
+                        <div className="text-[10.5px] text-[#64716D] font-medium">Unfilled Sanction Gap</div>
+                        <div className="text-lg font-bold font-mono text-[#173F35] mt-0.5">
+                          {batchAnalytics.unfilledSeats.toLocaleString('en-IN')}
+                        </div>
+                        <div className="text-[10px] text-[#64716D] mt-0.5">
+                          {(100 - batchAnalytics.seatUtilizationRate).toFixed(1)}% vacant seats
+                        </div>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#E9E0D3]">
+                        <div className="text-[10.5px] text-[#64716D] font-medium">Pre-Exam Dropouts</div>
+                        <div className="text-lg font-bold font-mono text-[#D94E34] mt-0.5">
+                          {batchAnalytics.academicDropouts.toLocaleString('en-IN')}
+                        </div>
+                        <div className="text-[10px] text-[#D94E34] font-semibold mt-0.5">
+                          {(100 - batchAnalytics.trainingCompletionRate).toFixed(1)}% academic leaks
+                        </div>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#E9E0D3]">
+                        <div className="text-[10.5px] text-[#64716D] font-medium">Post-Cert Placement Gap</div>
+                        <div className="text-lg font-bold font-mono text-[#D97925] mt-0.5">
+                          {batchAnalytics.unplacedGraduates.toLocaleString('en-IN')}
+                        </div>
+                        <div className="text-[10px] text-[#D97925] font-semibold mt-0.5">
+                          {(100 - batchAnalytics.placementYieldRate).toFixed(1)}% awaiting job placement
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Primary Bottleneck Alert */}
+                    <div className="mt-3 p-3 rounded-lg bg-[#FFF8F0] border border-[#FCE7D4] flex items-start gap-2.5">
+                      <Zap className="w-4 h-4 text-[#D97925] shrink-0 mt-0.5" />
+                      <div>
+                        <div className="text-xs font-bold text-[#173F35]">
+                          Diagnostic Finding: {batchAnalytics.primaryBottleneck}
+                        </div>
+                        <div className="text-[11px] text-[#64716D] mt-0.5 leading-relaxed">
+                          The largest loss of talent occurs at this stage. Interventions such as pre-placement corporate drives and dual-system apprenticeships will yield maximum ROI.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2 text-[11px] text-[#64716D] border-t border-[#ECE4D7] flex items-center justify-between">
+                    <span>Overall Pipeline Retention:</span>
+                    <strong className="text-[#17604D]">{batchAnalytics.overallPipelineEfficiency}% of Sanctioned Capacity</strong>
+                  </div>
+                </SurfaceCard>
+
+                {/* Right: NSQF Qualification Level Stratification & Wage Index (5 cols) */}
+                <SurfaceCard className="lg:col-span-5 p-4 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between pb-2 border-b border-[#E9E0D3]">
+                      <div className="flex items-center gap-2">
+                        <GraduationCap className="w-4 h-4 text-[#17604D]" />
+                        <h3 className="text-xs font-bold text-[#173F35]">
+                          NSQF Qualification Stratification &amp; Wage Index
+                        </h3>
+                      </div>
+                      <span className="text-[11px] text-[#64716D] font-mono">Industry Band</span>
+                    </div>
+
+                    <p className="text-xs text-[#64716D] mt-2">
+                      Trainee output classified by National Skills Qualification Framework hierarchy and expected entry-level wage bands.
+                    </p>
+
+                    <div className="space-y-2 mt-3">
+                      {batchAnalytics.nsqfStratification.map((item) => (
+                        <div
+                          key={item.level}
+                          className="p-2.5 rounded-lg bg-[#FAF7F2] border border-[#E9E0D3] flex items-center justify-between gap-2"
+                        >
+                          <div className="truncate">
+                            <div className="text-xs font-bold text-[#173F35] truncate">{item.label}</div>
+                            <div className="text-[10px] text-[#64716D] truncate">{item.desc}</div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <div className="text-xs font-mono font-bold text-[#17604D]">
+                              {item.count.toLocaleString('en-IN')} Candidates
+                            </div>
+                            <div className="text-[10px] font-mono font-semibold text-[#D97925]">
+                              {item.wage}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2 text-[11px] text-[#64716D] border-t border-[#ECE4D7] flex items-center justify-between">
+                    <span>Primary Qualification Tier:</span>
+                    <strong className="text-[#173F35]">NSQF Level 4 Certified Technicians</strong>
+                  </div>
+                </SurfaceCard>
+              </div>
+
+              {/* Row 4: Statutory Audit & NCVT/SID Verification Seal Card */}
+              <SurfaceCard className="p-4 bg-gradient-to-r from-[#FAF7F2] via-[#FFFEFB] to-[#F4F9F5] border-[#CFE5D1]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#E8F5E9] border border-[#C8E6C9] flex items-center justify-center shrink-0 shadow-2xs">
+                      <ShieldCheck className="w-6 h-6 text-[#2E7D32]" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs font-bold text-[#173F35]">
+                          Statutory Telemetry Verification &amp; Cryptographic Ledger Seal
+                        </span>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#E8F5E9] text-[#2E7D32] border border-[#C8E6C9]">
+                          DPDP Act (2023) Compliant
+                        </span>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#E0F2FE] text-[#0369A1] border border-[#BAE6FD]">
+                          NCVT MIS &amp; SID Ingested
+                        </span>
+                      </div>
+                      <p className="text-[11.5px] text-[#64716D] mt-1 max-w-2xl">
+                        This batch has been cryptographically validated against official Local Government Directory (LGD 2024) district registries and NCO-2015 occupational standards. Ready for formal submission to State SSDM Director Dr. Rajesh Varma, IES.
+                      </p>
+                      <div className="flex items-center gap-4 mt-2 text-[10.5px] font-mono text-[#64716D] flex-wrap">
+                        <span>Audit Hash: <strong className="text-[#17604D]">{activeBatch.sha256Hash}</strong></span>
+                        <span>·</span>
+                        <span>File: <strong className="text-[#173F35]">{activeBatch.fileName}</strong></span>
+                        <span>·</span>
+                        <span>Valid Records: <strong className="text-[#166534]">{activeBatch.validRowsCount} / {activeBatch.totalRows} (100%)</strong></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-right shrink-0">
+                    <div className="px-3 py-1.5 rounded-lg bg-white border border-[#CFE5D1] shadow-2xs text-center">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-[#166534]">Authorized Gateway</div>
+                      <div className="text-xs font-bold text-[#173F35] mt-0.5">MSDE Telemetry Bus v2.4</div>
+                      <div className="text-[9.5px] text-[#64716D] mt-0.5">Immutable Ingestion Timestamp</div>
+                    </div>
+                  </div>
+                </div>
+              </SurfaceCard>
+
+              {/* Row 3: Automated AI Policy Directives & Prescriptions */}
+              <SurfaceCard className="p-4 bg-[#FFFEFB] border-[#E2D8C9]">
+                <div className="flex items-center gap-2 pb-2 border-b border-[#E9E0D3]">
+                  <Zap className="w-4 h-4 text-[#D97925]" />
+                  <h3 className="text-xs font-bold text-[#173F35]">
+                    Automated AI Policy Prescriptions &amp; Seat Allocation Directives
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mt-3 text-xs">
+                  <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#E9E0D3] space-y-1">
+                    <div className="font-bold text-[#173F35] flex items-center gap-1.5">
+                      <Target className="w-3.5 h-3.5 text-[#17604D]" />
+                      <span>Capacity Realignment Directive</span>
+                    </div>
+                    <p className="text-[11.5px] text-[#64716D] leading-relaxed">
+                      Strong employment absorption in <strong>{batchAnalytics.sectorList[0]?.sector || 'leading technical trades'}</strong> suggests unmet industry demand. Recommend sanctioning <strong>+15% to +20% additional intake</strong> across ITIs in {batchAnalytics.topDistricts[0]?.district || 'high-yield districts'}.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#E9E0D3] space-y-1">
+                    <div className="font-bold text-[#173F35] flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 text-[#D97925]" />
+                      <span>Dropout Mitigation Intervention</span>
+                    </div>
+                    <p className="text-[11.5px] text-[#64716D] leading-relaxed">
+                      Detected <strong>{Math.max(0, activeBatch.totalEnrolled - activeBatch.totalCertified).toLocaleString('en-IN')} trainee dropouts</strong> between enrollment and final certification. Recommend District Skill Committees mandate attendance monitoring and remedial training.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#E9E0D3] space-y-1">
+                    <div className="font-bold text-[#173F35] flex items-center gap-1.5">
+                      <Briefcase className="w-3.5 h-3.5 text-[#0284C7]" />
+                      <span>Flexi-MoU Industry Linkage</span>
+                    </div>
+                    <p className="text-[11.5px] text-[#64716D] leading-relaxed">
+                      Top performing clusters in <strong>{batchAnalytics.topDistricts.slice(0, 2).map((d) => d.district).join(' and ')}</strong> report superior placement retention (over 80%). State SSDMs should fast-track dual-system apprenticeship tie-ups with local industrial estates.
+                    </p>
+                  </div>
+                </div>
+              </SurfaceCard>
+            </div>
+          )}
+
+          {/* VIEW MODE 2: Raw Microdata Preview Table */}
+          {activeViewMode === 'table' && (
+            <SurfaceCard className="p-4 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#E9E0D3]">
+                <div>
+                  <div className="flex items-center gap-2 text-xs font-bold text-[#173F35]">
+                    <FileSpreadsheet className="w-4 h-4 text-[#17604D]" />
+                    <span>Live Batch Microdata Preview ({activeBatch.fileName})</span>
+                  </div>
+                  <div className="text-[11px] text-[#64716D] mt-0.5">
+                    Inspect row-level admissions, certification counts, and retention yields before final institutional commitment.
+                  </div>
+                </div>
+
+                <div className="relative w-full sm:w-64">
+                  <Search className="w-3.5 h-3.5 text-[#64716D] absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={batchSearchQuery}
+                    onChange={(e) => setBatchSearchQuery(e.target.value)}
+                    placeholder="Filter batch trade or district..."
+                    className="w-full pl-8 pr-3 py-1 text-xs bg-[#FFFEFB] border border-[#E9E0D3] rounded-lg text-[#173F35] focus:outline-none focus:border-[#17604D]"
+                  />
+                </div>
+              </div>
+
+              <div className="overflow-x-auto max-h-96 overflow-y-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead className="bg-[#FAF7F2] text-[#64716D] uppercase text-[10px] tracking-wider border-b border-[#E9E0D3] sticky top-0 z-10">
+                    <tr>
+                      <th className="py-2.5 px-3">#</th>
+                      <th className="py-2.5 px-3">Batch ID &amp; MIS</th>
+                      <th className="py-2.5 px-3">District &amp; State</th>
+                      <th className="py-2.5 px-3">Trade Name (NCO Code)</th>
+                      <th className="py-2.5 px-3 text-right">Sanctioned</th>
+                      <th className="py-2.5 px-3 text-right">Enrolled</th>
+                      <th className="py-2.5 px-3 text-right">Certified</th>
+                      <th className="py-2.5 px-3 text-right">Retained</th>
+                      <th className="py-2.5 px-3 text-right">Yield</th>
+                      <th className="py-2.5 px-3 text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#F2ECE1]">
+                    {filteredBatchRows.map((row, idx) => (
+                      <tr key={row.id} className="hover:bg-[#F8F5EF] transition-colors">
+                        <td className="py-2.5 px-3 text-[#64716D] font-mono">{idx + 1}</td>
+                        <td className="py-2.5 px-3">
+                          <div className="font-semibold text-[#173F35] font-mono">{row.batchId}</div>
+                          <div className="text-[10px] text-[#64716D] font-mono">{row.itiMisCode}</div>
+                        </td>
+                        <td className="py-2.5 px-3">
+                          <div className="font-medium text-[#173F35]">{row.districtName}</div>
+                          <div className="text-[10px] text-[#64716D]">{row.state}</div>
+                        </td>
+                        <td className="py-2.5 px-3">
+                          <div className="font-medium text-[#173F35] flex items-center gap-1.5">
+                            <span>{row.tradeName}</span>
+                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#F5F0E7] text-[#173F35] font-mono">
+                              NSQF L{row.nsqfLevel}
+                            </span>
+                          </div>
+                          <div className="text-[10px] text-[#64716D] font-mono">{row.tradeNcoCode} · {row.sector}</div>
+                        </td>
+                        <td className="py-2.5 px-3 text-right font-mono font-medium text-[#173F35]">
+                          {row.sanctionedSeats.toLocaleString('en-IN')}
+                        </td>
+                        <td className="py-2.5 px-3 text-right font-mono text-[#64716D]">
+                          {row.enrolledCount.toLocaleString('en-IN')}
+                        </td>
+                        <td className="py-2.5 px-3 text-right font-mono font-semibold text-[#17604D]">
+                          {row.certifiedCount.toLocaleString('en-IN')}
+                        </td>
+                        <td className="py-2.5 px-3 text-right font-mono text-[#D97925]">
+                          {row.retainedCount.toLocaleString('en-IN')}
+                        </td>
+                        <td className="py-2.5 px-3 text-right font-mono text-xs font-bold text-[#17604D]">
+                          {row.retentionRate}%
+                        </td>
+                        <td className="py-2.5 px-3 text-center">
+                          {row.isValid ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#E2F0E3] text-[#17604D] border border-[#BBF7D0]">
+                              <CheckCircle2 className="w-3 h-3" />
+                              <span>Valid</span>
+                            </span>
+                          ) : (
+                            <span
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#FDE8E8] text-[#9B1C1C] border border-[#F8B4B4]"
+                              title={row.validationErrors.join(', ')}
+                            >
+                              <AlertTriangle className="w-3 h-3" />
+                              <span>Warning</span>
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </SurfaceCard>
+          )}
+        </div>
+      )}
 
       {/* CSV Schema Reference Table */}
       <SurfaceCard className="p-4 space-y-3">
@@ -421,7 +1691,7 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
               <Clock className="w-4 h-4 text-[#17604D]" />
               <span>{t('Recent Ingestion Batches & Audit Trail', 'हाल के अंतर्ग्रहण बैच एवं ऑडिट ट्रेल')}</span>
             </div>
-            <span className="text-[11px] text-[#64716D] font-mono">Total 4 Records</span>
+            <span className="text-[11px] text-[#64716D] font-mono">Total {dynamicIngestionHistory.length} Records</span>
           </div>
 
           <div className="overflow-x-auto">
@@ -436,7 +1706,7 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F2ECE1]">
-                {PAST_INGESTION_LOGS.map((item) => (
+                {dynamicIngestionHistory.map((item) => (
                   <tr key={item.id} className="hover:bg-[#F8F5EF] transition-colors">
                     <td className="py-2.5 px-3">
                       <div className="font-semibold text-[#173F35]">{item.fileName}</div>

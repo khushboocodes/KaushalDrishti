@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Briefcase,
   GraduationCap,
@@ -59,6 +59,7 @@ import {
   COMPREHENSIVE_DEMAND_SUPPLY_RECORDS,
   ALL_SECTORS_LIST,
 } from '../data/demandSupplyData';
+import { globalTelemetryStore } from '../data/telemetryIngestionStore';
 import { AlertItem, NavRouteId, RecommendationItem, TradeGrowthItem } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { UserSession } from './AuthModal';
@@ -534,6 +535,13 @@ export const GeographicViewPage: React.FC<{
   const [selectedSector, setSelectedSector] = useState<string>('All Sectors');
   const [viewMode, setViewMode] = useState<'Map' | 'Table'>('Map');
   const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
+  const [allRecords, setAllRecords] = useState(() => globalTelemetryStore.getRecords());
+
+  useEffect(() => {
+    return globalTelemetryStore.subscribe(() => {
+      setAllRecords([...globalTelemetryStore.getRecords()]);
+    });
+  }, []);
 
   const effectiveStateName = isDsoLocked ? 'Maharashtra' : selectedStateName;
   const effectiveDistrictId = isDsoLocked ? 'pune' : selectedDistrictId;
@@ -578,7 +586,7 @@ export const GeographicViewPage: React.FC<{
     }
   };
 
-  const districtCatalogTrades = COMPREHENSIVE_DEMAND_SUPPLY_RECORDS
+  const districtCatalogTrades = allRecords
     .filter(
       (r) =>
         r.state.toLowerCase() === currentState.state.toLowerCase() &&
@@ -604,7 +612,7 @@ export const GeographicViewPage: React.FC<{
   const displayedTrades =
     filteredTopTrades.length > 0
       ? filteredTopTrades
-      : COMPREHENSIVE_DEMAND_SUPPLY_RECORDS
+      : allRecords
           .filter(
             (r) =>
               r.state.toLowerCase() === currentState.state.toLowerCase() &&
