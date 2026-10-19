@@ -547,7 +547,7 @@ export const IndiaChoroplethMap: React.FC<IndiaChoroplethMapProps> = ({
                 aria-label="Survey of India Vector Choropleth Map"
               >
                 <g>
-                  {vectorPaths.map((item) => {
+                  {vectorPaths.map((item: any) => {
                     const isSelected = item.stateName === selectedState.state;
                     const isHovered = item.stateName === hoveredState;
                     const color = getStatusColor(item.status);

@@ -39,9 +39,11 @@ export const PrimaryButton: React.FC<{
   className?: string;
   disabled?: boolean;
   type?: 'button' | 'submit';
-}> = ({ children, onClick, className = '', disabled = false, type = 'button' }) => (
+  title?: string;
+}> = ({ children, onClick, className = '', disabled = false, type = 'button', title }) => (
   <button
     type={type}
+    title={title}
     disabled={disabled}
     onClick={onClick}
     className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-[#1B2B44] hover:bg-[#173F35] active:scale-[0.99] transition-all whitespace-nowrap shrink-0 disabled:opacity-50 cursor-pointer ${className}`}
@@ -55,11 +57,16 @@ export const SecondaryButton: React.FC<{
   onClick?: () => void;
   className?: string;
   tone?: 'warm' | 'outline';
-}> = ({ children, onClick, className = '', tone = 'warm' }) => (
+  type?: 'button' | 'submit';
+  title?: string;
+  disabled?: boolean;
+}> = ({ children, onClick, className = '', tone = 'warm', type = 'button', title, disabled = false }) => (
   <button
-    type="button"
+    type={type}
+    title={title}
+    disabled={disabled}
     onClick={onClick}
-    className={`inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+    className={`inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shrink-0 disabled:opacity-50 cursor-pointer ${
       tone === 'warm'
         ? 'bg-[#F7E8D8] text-[#B8532E] hover:bg-[#F2DAC2]'
         : 'bg-[#FFFEFB] border border-[#E9E0D3] text-[#173F35] hover:bg-[#F5F0E7]'

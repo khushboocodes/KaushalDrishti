@@ -89,11 +89,12 @@ export const LogoHorizontal: React.FC<{ className?: string; compact?: boolean }>
   </div>
 );
 
-export const LogoSquare: React.FC<{ className?: string }> = ({ className = '' }) => (
+export const LogoSquare: React.FC<{ className?: string; size?: number }> = ({ className = '', size }) => (
   <div
-    className={`w-14 h-14 rounded-xl bg-[#F5F0E7] border border-[#E9E0D3] flex items-center justify-center shadow-2xs ${className}`}
+    style={size ? { width: size, height: size } : undefined}
+    className={`${size ? '' : 'w-14 h-14'} rounded-xl bg-[#F5F0E7] border border-[#E9E0D3] flex items-center justify-center shadow-2xs ${className}`}
   >
-    <LogoIcon size={42} />
+    <LogoIcon size={size ? Math.round(size * 0.75) : 42} />
   </div>
 );
 

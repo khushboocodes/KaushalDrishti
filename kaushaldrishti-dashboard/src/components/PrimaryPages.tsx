@@ -56,6 +56,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { UserSession } from './AuthModal';
 import { getUserRoleType, getRoleConfig, isRouteAllowedForSession } from '../utils/rbac';
 import { getDashboardDataset, getHorizonConfig } from '../data/dashboardMetrics';
+import { ApiService } from '../services/apiService';
 
 /**
  * ============================================================================
