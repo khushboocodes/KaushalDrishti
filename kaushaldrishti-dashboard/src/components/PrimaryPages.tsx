@@ -26,6 +26,9 @@ import {
   CloudCog,
   Landmark,
   Lock,
+  Leaf,
+  Truck,
+  Car,
 } from 'lucide-react';
 import {
   HeaderIllustration,
@@ -51,6 +54,10 @@ import {
   ALERTS_DATA,
   RECOMMENDATIONS_DATA,
 } from '../data/mockData';
+import {
+  COMPREHENSIVE_DEMAND_SUPPLY_RECORDS,
+  ALL_SECTORS_LIST,
+} from '../data/demandSupplyData';
 import { AlertItem, NavRouteId, RecommendationItem, TradeGrowthItem } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { UserSession } from './AuthModal';
@@ -570,13 +577,45 @@ export const GeographicViewPage: React.FC<{
     }
   };
 
+  const districtCatalogTrades = COMPREHENSIVE_DEMAND_SUPPLY_RECORDS
+    .filter(
+      (r) =>
+        r.state.toLowerCase() === currentState.state.toLowerCase() &&
+        (r.district.toLowerCase() === currentDistrict.name.toLowerCase() ||
+         r.district.toLowerCase().includes(currentDistrict.name.toLowerCase()) ||
+         currentDistrict.name.toLowerCase().includes(r.district.toLowerCase()))
+    )
+    .map((r) => ({
+      name: r.tradeName,
+      ncoCode: r.ncoCode,
+      demand: Math.round(r.annualDemand * horizon.demandMultiplier),
+      sector: r.sector,
+    }));
+
+  const combinedTrades =
+    districtCatalogTrades.length > 0 ? districtCatalogTrades : currentDistrict.topTrades;
+
   const filteredTopTrades =
     selectedSector === 'All Sectors'
-      ? currentDistrict.topTrades
-      : currentDistrict.topTrades.filter((t) => t.sector === selectedSector);
+      ? combinedTrades
+      : combinedTrades.filter((t) => t.sector === selectedSector);
 
   const displayedTrades =
-    filteredTopTrades.length > 0 ? filteredTopTrades : currentDistrict.topTrades;
+    filteredTopTrades.length > 0
+      ? filteredTopTrades
+      : COMPREHENSIVE_DEMAND_SUPPLY_RECORDS
+          .filter(
+            (r) =>
+              r.state.toLowerCase() === currentState.state.toLowerCase() &&
+              (selectedSector === 'All Sectors' || r.sector === selectedSector)
+          )
+          .slice(0, 5)
+          .map((r) => ({
+            name: r.tradeName,
+            ncoCode: r.ncoCode,
+            demand: Math.round(r.annualDemand * horizon.demandMultiplier),
+            sector: r.sector,
+          }));
 
   return (
     <div className="space-y-4 relative pb-4">
@@ -654,12 +693,7 @@ export const GeographicViewPage: React.FC<{
               onChange={setSelectedSector}
               options={[
                 { label: 'All Sectors', value: 'All Sectors' },
-                { label: 'IT/ITeS', value: 'IT/ITeS' },
-                { label: 'Manufacturing', value: 'Manufacturing' },
-                { label: 'Construction', value: 'Construction' },
-                { label: 'Green Jobs', value: 'Green Jobs' },
-                { label: 'Healthcare', value: 'Healthcare' },
-                { label: 'Retail', value: 'Retail' },
+                ...ALL_SECTORS_LIST.map((sec) => ({ label: sec, value: sec })),
               ]}
             />
           </div>
@@ -991,6 +1025,14 @@ export const SectorsAndTradesPage: React.FC<{
         return <ShoppingBag className="w-4 h-4 text-[#C84B59]" />;
       case 'sprout':
         return <Sprout className="w-4 h-4 text-[#287D4E]" />;
+      case 'leaf':
+        return <Leaf className="w-4 h-4 text-[#16A34A]" />;
+      case 'truck':
+        return <Truck className="w-4 h-4 text-[#D97925]" />;
+      case 'car':
+        return <Car className="w-4 h-4 text-[#EA580C]" />;
+      case 'cpu':
+        return <Cpu className="w-4 h-4 text-[#9333EA]" />;
       default:
         return <Utensils className="w-4 h-4 text-[#B5721E]" />;
     }
@@ -1260,6 +1302,8 @@ export const SkillForecastingPage: React.FC<{
   });
 
   const activeTrade =
+    allForecastTrades.find((t) => t.name === selectedTradeKey && t.sector === selectedSector) ||
+    allForecastTrades.find((t) => t.sector === selectedSector) ||
     allForecastTrades.find((t) => t.name === selectedTradeKey) ||
     allForecastTrades[0] ||
     SOFTWARE_DEVELOPER_FORECAST;
@@ -1308,12 +1352,7 @@ export const SkillForecastingPage: React.FC<{
                 if (match) setSelectedTradeKey(match.name);
               }}
               options={[
-                { label: 'IT/ITeS', value: 'IT/ITeS' },
-                { label: 'Green Jobs', value: 'Green Jobs' },
-                { label: 'Healthcare', value: 'Healthcare' },
-                { label: 'Manufacturing', value: 'Manufacturing' },
-                { label: 'Agriculture', value: 'Agriculture' },
-                { label: 'Logistics', value: 'Logistics' },
+                ...ALL_SECTORS_LIST.map((sec) => ({ label: sec, value: sec })),
               ]}
             />
           </div>
@@ -1322,7 +1361,10 @@ export const SkillForecastingPage: React.FC<{
               label="Trade"
               value={activeTrade.name}
               onChange={setSelectedTradeKey}
-              options={allForecastTrades.map((t) => ({
+              options={(allForecastTrades.some((t) => t.sector === selectedSector)
+                ? allForecastTrades.filter((t) => t.sector === selectedSector)
+                : allForecastTrades
+              ).map((t) => ({
                 label: `${t.name} (${t.ncoCode})`,
                 value: t.name,
               }))}

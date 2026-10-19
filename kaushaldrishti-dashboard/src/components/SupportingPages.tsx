@@ -48,6 +48,10 @@ import {
   GENERATED_REPORTS,
   EXPLORER_RECORDS,
 } from '../data/mockData';
+import {
+  COMPREHENSIVE_DEMAND_SUPPLY_RECORDS,
+  ALL_SECTORS_LIST,
+} from '../data/demandSupplyData';
 import { getHorizonConfig } from '../data/dashboardMetrics';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -67,18 +71,62 @@ export const DemandSupplyPage: React.FC<{
   const [sectorFilter, setSectorFilter] = useState<string>('All Sectors');
   const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
 
-  const filteredRecords = EXPLORER_RECORDS.filter((rec) => {
+  const filteredRecords = COMPREHENSIVE_DEMAND_SUPPLY_RECORDS.filter((rec) => {
     const matchesState = stateFilter === 'All States' || rec.state === stateFilter;
     const matchesSector = sectorFilter === 'All Sectors' || rec.sector === sectorFilter;
     const matchesSearch =
       !searchQuery.trim() ||
       rec.tradeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       rec.district.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      rec.state.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      rec.sector.toLowerCase().includes(searchQuery.toLowerCase()) ||
       rec.ncoCode.includes(searchQuery);
     return matchesState && matchesSector && matchesSearch;
   });
 
+  const isFiltered = stateFilter !== 'All States' || sectorFilter !== 'All Sectors' || searchQuery.trim().length > 0;
+
+  const totalFilteredDemand = filteredRecords.reduce(
+    (acc, r) => acc + Math.round(r.annualDemand * horizon.demandMultiplier),
+    0
+  );
+  const totalFilteredSupply = filteredRecords.reduce(
+    (acc, r) => acc + Math.round(r.annualTrained * horizon.supplyMultiplier),
+    0
+  );
+  const filteredUndersupplyTrades = filteredRecords.filter(
+    (r) => r.status === 'Undersupply'
+  ).length;
+  const filteredBalancedTrades = filteredRecords.filter((r) => r.status === 'Balanced').length;
+
+  const formatLakhOrCr = (num: number) => {
+    if (num >= 10000000) return `${(num / 10000000).toFixed(2)} Cr`;
+    if (num >= 100000) return `${(num / 100000).toFixed(1)} Lakh`;
+    return num.toLocaleString('en-IN');
+  };
+
   const balancedCount = Math.max(0, 1245 - horizon.undersupplyTrades - horizon.oversupplyTrades);
+
+  const displayDemand = isFiltered ? formatLakhOrCr(totalFilteredDemand) : horizon.demandCr;
+  const displaySupply = isFiltered ? formatLakhOrCr(totalFilteredSupply) : horizon.supplyCr;
+  const displayDeficitTrades = isFiltered ? `${filteredUndersupplyTrades} Trades` : `${horizon.undersupplyTrades} Trades`;
+  const displayBalancedTrades = isFiltered ? `${filteredBalancedTrades} Trades` : `${balancedCount} Trades`;
+
+  const demandSubtext = isFiltered
+    ? `${stateFilter !== 'All States' ? stateFilter : 'All States'} · ${sectorFilter !== 'All Sectors' ? sectorFilter : 'All Sectors'}`
+    : t('Across 36 States & UTs');
+
+  const supplySubtext = isFiltered
+    ? `${filteredRecords.length} District Batches Evaluated`
+    : t('ITIs, PMKVY 4.0 & Polytechnics');
+
+  const deficitSubtext = isFiltered
+    ? `${Math.round((filteredUndersupplyTrades / Math.max(1, filteredRecords.length)) * 100)}% of filtered trades`
+    : `${Math.round((horizon.undersupplyTrades / 1245) * 100)}% ${t('of 1,245 mapped NCO trades', '1,245 एनसीओ व्यवसायों में')}`;
+
+  const balancedSubtext = isFiltered
+    ? `${Math.round((filteredBalancedTrades / Math.max(1, filteredRecords.length)) * 100)}% of filtered trades`
+    : `${Math.round((balancedCount / 1245) * 100)}% ${t('within ±5% variance band', '±5% भिन्नता के भीतर')}`;
 
   return (
     <div className="space-y-4">
@@ -103,30 +151,30 @@ export const DemandSupplyPage: React.FC<{
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5">
         <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-1">
           <div className="text-xs text-[#64716D]">{t('Aggregate Demand')} ({dateRange})</div>
-          <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-1">{horizon.demandCr}</div>
+          <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-1">{displayDemand}</div>
           <div className="text-[11px] text-[#17604D] font-semibold mt-1">
-            {t('Across 36 States & UTs')}
+            {demandSubtext}
           </div>
         </SurfaceCard>
         <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-2">
           <div className="text-xs text-[#64716D]">{t('Certified Supply Pipeline')}</div>
-          <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-1">{horizon.supplyCr}</div>
+          <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-1">{displaySupply}</div>
           <div className="text-[11px] text-[#64716D] mt-1">
-            {t('ITIs, PMKVY 4.0 & Polytechnics')}
+            {supplySubtext}
           </div>
         </SurfaceCard>
         <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-3">
           <div className="text-xs text-[#64716D]">{t('Net Deficit (Shortfall)', 'शुद्ध कमी (घाटा)')}</div>
-          <div className="text-2xl font-bold text-[#D94E34] tabular-nums mt-1">{horizon.undersupplyTrades} {t('Trades', 'व्यवसाय')}</div>
+          <div className="text-2xl font-bold text-[#D94E34] tabular-nums mt-1">{displayDeficitTrades}</div>
           <div className="text-[11px] text-[#64716D] mt-1">
-            {Math.round((horizon.undersupplyTrades / 1245) * 100)}% {t('of 1,245 mapped NCO trades', '1,245 एनसीओ व्यवसायों में')}
+            {deficitSubtext}
           </div>
         </SurfaceCard>
         <SurfaceCard className="kpi-card animate-card-slide-up anim-delay-4">
           <div className="text-xs text-[#64716D]">{t('Balanced Equilibrium Trades', 'संतुलित व्यवसाय')}</div>
-          <div className="text-2xl font-bold text-[#17604D] tabular-nums mt-1">{balancedCount} {t('Trades', 'व्यवसाय')}</div>
+          <div className="text-2xl font-bold text-[#17604D] tabular-nums mt-1">{displayBalancedTrades}</div>
           <div className="text-[11px] text-[#64716D] mt-1">
-            {Math.round((balancedCount / 1245) * 100)}% {t('within ±5% variance band', '±5% भिन्नता के भीतर')}
+            {balancedSubtext}
           </div>
         </SurfaceCard>
       </div>
@@ -164,13 +212,7 @@ export const DemandSupplyPage: React.FC<{
             onChange={setSectorFilter}
             options={[
               { label: 'All Sectors', value: 'All Sectors' },
-              { label: 'IT/ITeS', value: 'IT/ITeS' },
-              { label: 'Green Jobs', value: 'Green Jobs' },
-              { label: 'Manufacturing', value: 'Manufacturing' },
-              { label: 'Healthcare', value: 'Healthcare' },
-              { label: 'Agriculture', value: 'Agriculture' },
-              { label: 'Logistics', value: 'Logistics' },
-              { label: 'Hospitality', value: 'Hospitality' },
+              ...ALL_SECTORS_LIST.map((sec) => ({ label: sec, value: sec })),
             ]}
           />
         </div>
@@ -634,19 +676,25 @@ export const DataExplorerPage: React.FC<{
   const { t } = useLanguage();
   const horizon = getHorizonConfig(dateRange);
   const [query, setQuery] = useState<string>(initialSearch);
+  const [stateFilter, setStateFilter] = useState<string>('All States');
+  const [sectorFilter, setSectorFilter] = useState<string>('All Sectors');
   const [sourceFilter, setSourceFilter] = useState<string>('All Sources');
   const [nsqfFilter, setNsqfFilter] = useState<string>('All Levels');
 
-  const filtered = EXPLORER_RECORDS.filter((r) => {
+  const filtered = COMPREHENSIVE_DEMAND_SUPPLY_RECORDS.filter((r) => {
     const matchQ =
       !query.trim() ||
       r.tradeName.toLowerCase().includes(query.toLowerCase()) ||
       r.ncoCode.includes(query) ||
-      r.district.toLowerCase().includes(query.toLowerCase());
+      r.district.toLowerCase().includes(query.toLowerCase()) ||
+      r.state.toLowerCase().includes(query.toLowerCase()) ||
+      r.sector.toLowerCase().includes(query.toLowerCase());
+    const matchState = stateFilter === 'All States' || r.state === stateFilter;
+    const matchSector = sectorFilter === 'All Sectors' || r.sector === sectorFilter;
     const matchSource = sourceFilter === 'All Sources' || r.source === sourceFilter;
     const matchNsqf =
       nsqfFilter === 'All Levels' || `Level ${r.nsqfLevel}` === nsqfFilter;
-    return matchQ && matchSource && matchNsqf;
+    return matchQ && matchState && matchSector && matchSource && matchNsqf;
   });
 
   return (
@@ -676,10 +724,10 @@ export const DataExplorerPage: React.FC<{
 
       {/* Search & Filters */}
       <SurfaceCard className="p-3.5">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
           <div>
             <label className="text-[11px] font-medium text-[#64716D] block mb-1">
-              Filter by Trade, NCO-2015 Code or District
+              Filter by Trade, NCO or District
             </label>
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-[#64716D] absolute left-3 top-1/2 -translate-y-1/2" />
@@ -687,11 +735,29 @@ export const DataExplorerPage: React.FC<{
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search NCO code (e.g. 2512.01) or trade..."
+                placeholder="Search NCO code or trade..."
                 className="w-full pl-8 pr-3 py-1.5 text-xs bg-[#FFFEFB] border border-[#E9E0D3] rounded-lg text-[#173F35] focus:outline-none focus:border-[#17604D]"
               />
             </div>
           </div>
+          <SelectControl
+            label="State"
+            value={stateFilter}
+            onChange={setStateFilter}
+            options={[
+              { label: 'All States', value: 'All States' },
+              ...STATES_DATA.map((s) => ({ label: s.state, value: s.state })),
+            ]}
+          />
+          <SelectControl
+            label="Sector"
+            value={sectorFilter}
+            onChange={setSectorFilter}
+            options={[
+              { label: 'All Sectors', value: 'All Sectors' },
+              ...ALL_SECTORS_LIST.map((sec) => ({ label: sec, value: sec })),
+            ]}
+          />
           <SelectControl
             label="Data Source"
             value={sourceFilter}
@@ -727,6 +793,8 @@ export const DataExplorerPage: React.FC<{
           actionLabel="Clear Explorer Filters"
           onAction={() => {
             setQuery('');
+            setStateFilter('All States');
+            setSectorFilter('All Sectors');
             setSourceFilter('All Sources');
             setNsqfFilter('All Levels');
           }}
