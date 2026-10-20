@@ -2,9 +2,8 @@
 ## AI-Enabled Labour Market Intelligence and Skill Demand-Supply Forecasting Engine
 ### Ministry of Skill Development and Entrepreneurship (MSDE), Government of India
 
-[![Frontend Vercel](https://img.shields.io/badge/Frontend-Vercel%20Edge%20CDN-black?logo=vercel)](https://kaushal-drishti-mu.vercel.app)
-[![Backend Render](https://img.shields.io/badge/Backend-Render%20FastAPI-46E3B7?logo=render)](https://kaushaldrishti-backend.onrender.com)
-[![Database Neon](https://img.shields.io/badge/Database-Neon%20PostgreSQL-00E599?logo=postgresql)](https://neon.tech)
+[![Live Dashboard](https://img.shields.io/badge/Live%20Dashboard-Vercel%20App-black?logo=vercel)](https://kaushal-drishti-mu.vercel.app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python Version](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.14-3776AB.svg?logo=python)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-19.0%20(Vite)-61DAFB.svg?logo=react)](https://react.dev/)
@@ -15,17 +14,7 @@
 
 ---
 
-## 🌐 Live Production Deployments
-
-The platform is actively deployed on a **decoupled, forever-free cloud architecture**:
-
-| Component | Platform | Role | Live Link |
-| :--- | :--- | :--- | :--- |
-| **Frontend Dashboard** | **Vercel** | React 19 + TypeScript + Vite on Global Edge CDN | [**kaushal-drishti-mu.vercel.app**](https://kaushal-drishti-mu.vercel.app) |
-| **Intelligence Engine & API** | **Render** | Python FastAPI + Scikit-Learn + Uvicorn Core | [**kaushaldrishti-backend.onrender.com**](https://kaushaldrishti-backend.onrender.com) |
-| **Interactive API Documentation** | **Render Swagger** | OpenAPI Interactive Test Console (`/docs`) | [**Swagger API Docs**](https://kaushaldrishti-backend.onrender.com/docs) |
-| **Central Database Cluster** | **Neon** | Serverless PostgreSQL with Connection Pooling | `ep-aged-dew-...neon.tech` |
-| **Realtime Telemetry Health** | **Render / Vercel** | Live DB Connectivity & Table Ingestion Diagnostics | [**API db-status**](https://kaushaldrishti-backend.onrender.com/api/telemetry/db-status) |
+> 🌐 **Public Live Dashboard:** [**https://kaushal-drishti-mu.vercel.app**](https://kaushal-drishti-mu.vercel.app)
 
 ---
 
@@ -69,7 +58,7 @@ graph TD
     end
 
     subgraph "Render Web Service (Compute Tier)"
-        RenderService["Render Python 3.14 Web Service<br/>kaushaldrishti-backend.onrender.com"]
+        RenderService["Render Python 3.14 Web Service<br/>FastAPI Compute Core"]
         FastAPI["FastAPI 0.115+ Application & CORS"]
         Router["API Router (/api/v1 & /api)"]
         AnalyticalCore["Analytical Engines<br/>(CDI, HistGBM, MinT, Conformal)"]
@@ -77,7 +66,7 @@ graph TD
     end
 
     subgraph "Neon Cloud Database (Persistence Tier)"
-        NeonPG["Neon Serverless PostgreSQL<br/>aws-ap-southeast-1.neon.tech"]
+        NeonPG["Neon Serverless PostgreSQL<br/>Cloud Database Cluster"]
         BatchTable[("telemetry_batches<br/>(Receipts & SHA-256 Hashes)")]
         RecordTable[("telemetry_records<br/>(Clean District Microdata)")]
     end
@@ -412,7 +401,12 @@ KaushalDrishti/
 
 ---
 
+> 📖 **Deployment Architecture Guide:** For full cloud deployment topology, reference architecture, and verification runbooks, see [**DEPLOYMENTS.md**](DEPLOYMENTS.md).
+
+---
+
 ## 👥 Sponsoring Apex Body & Stakeholders
 - **Apex Ministry:** Ministry of Skill Development and Entrepreneurship (MSDE), Government of India.
-- **Primary Beneficiaries:** District Skill Committees (DSCs), State Skill Development Missions (SSDMs), National Council for Vocational Education and Training (NCVET), Directorate General of Training (DGT).
-- **License:** Open Source under the [MIT License](LICENSE).
+- **Author & Maintainer:** Khushboo Khator ([@khushboocodes](https://github.com/khushboocodes))
+- **Live Public Portal:** [https://kaushal-drishti-mu.vercel.app](https://kaushal-drishti-mu.vercel.app)
+- **License:** Open Source under the [MIT License](LICENSE) © 2026 Khushboo Khator (khushboocodes). All rights reserved.
