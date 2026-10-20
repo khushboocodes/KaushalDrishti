@@ -154,32 +154,48 @@ class DatabaseManager:
 
         # 1. Attempt PostgreSQL if DATABASE_URL is supplied
         if raw_url:
-            # Handle standard Heroku / Supabase postgres:// dialect upgrade
+            # Generate candidate driver URLs (psycopg2, psycopg, standard postgresql)
+            candidate_urls = []
             if raw_url.startswith("postgres://"):
-                raw_url = raw_url.replace("postgres://", "postgresql://", 1)
+                base = raw_url[len("postgres://"):]
+                candidate_urls = [f"postgresql+psycopg2://{base}", f"postgresql+psycopg://{base}", f"postgresql://{base}"]
+            elif raw_url.startswith("postgresql://") and not raw_url.startswith("postgresql+"):
+                base = raw_url[len("postgresql://"):]
+                candidate_urls = [f"postgresql+psycopg2://{base}", f"postgresql+psycopg://{base}", f"postgresql://{base}"]
+            else:
+                candidate_urls = [raw_url]
 
-            try:
-                logger.info(f"Connecting to Cloud PostgreSQL...")
-                engine = create_engine(
-                    raw_url,
-                    pool_pre_ping=True,
-                    pool_recycle=300,
-                    pool_size=10,
-                    max_overflow=20
-                )
-                # Verify active connection with ping
-                with engine.connect() as conn:
-                    conn.execute(text("SELECT 1"))
-                
-                self.engine = engine
-                self.active_engine_type = "postgresql"
-                self.db_url = raw_url
-                self.db_error = None
-                logger.info("Successfully connected to PostgreSQL database cluster.")
-            except Exception as e:
-                self.db_error = str(e)
+            connected = False
+            last_err = ""
+            for target_url in candidate_urls:
+                try:
+                    logger.info("Connecting to Cloud PostgreSQL with candidate driver...")
+                    engine = create_engine(
+                        target_url,
+                        pool_pre_ping=True,
+                        pool_recycle=300,
+                        pool_size=10,
+                        max_overflow=20
+                    )
+                    # Verify active connection with ping
+                    with engine.connect() as conn:
+                        conn.execute(text("SELECT 1"))
+                    
+                    self.engine = engine
+                    self.active_engine_type = "postgresql"
+                    self.db_url = target_url
+                    self.db_error = None
+                    connected = True
+                    logger.info("Successfully connected to PostgreSQL database cluster.")
+                    break
+                except Exception as e:
+                    last_err = str(e)
+                    logger.warning(f"Driver attempt failed for {target_url.split('@')[-1] if '@' in target_url else ''}: {e}")
+
+            if not connected:
+                self.db_error = last_err
                 logger.warning(
-                    f"Failed to connect to PostgreSQL ({e}). Falling back to local SQLite engine."
+                    f"Failed to connect to PostgreSQL ({last_err}). Falling back to local SQLite engine."
                 )
                 self._fallback_sqlite()
         else:
