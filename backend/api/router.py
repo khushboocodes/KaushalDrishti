@@ -10,6 +10,8 @@ from engine.analytics.cvos_ranker import cvos_ranker
 from engine.simulation.sandbox_core import simulation_sandbox
 from engine.simulation.recommender import dsdp_recommender
 from engine.export.exporter import target_exporter
+from engine.ingestion.telemetry_ledger import telemetry_ledger
+from backend.database import db_manager
 
 api_router = APIRouter()
 
@@ -131,3 +133,46 @@ def export_dsdp_csv(district_lgd_code: int):
         media_type="text/csv",
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
+
+# --- Telemetry Ingestion Ledger (Multi-Client Persistent Sync) ---
+
+@api_router.post("/telemetry/commit", tags=["Telemetry Ingestion Ledger"])
+def commit_telemetry_batch(payload: Dict[str, Any]):
+    """
+    Persists a verified district telemetry batch to the central backend ledger.
+    Data is stored on the server so all officers, evaluators, and sessions see live updates.
+    """
+    if not payload:
+        raise HTTPException(status_code=400, detail="Empty telemetry payload received")
+    result = telemetry_ledger.commit_batch(payload)
+    return result
+
+@api_router.get("/telemetry/batches", tags=["Telemetry Ingestion Ledger"])
+def get_telemetry_batches():
+    """Returns all committed telemetry batches currently active in the central ledger."""
+    batches = telemetry_ledger.get_batches()
+    return {
+        "count": len(batches),
+        "batches": batches
+    }
+
+@api_router.get("/telemetry/records", tags=["Telemetry Ingestion Ledger"])
+def get_telemetry_records():
+    """Returns all verified individual district-trade microdata records from committed batches."""
+    records = telemetry_ledger.get_records()
+    return {
+        "count": len(records),
+        "records": records
+    }
+
+@api_router.delete("/telemetry/reset", tags=["Telemetry Ingestion Ledger"])
+def reset_telemetry_ledger():
+    """Clears all telemetry batches from the central ledger (admin/testing reset)."""
+    telemetry_ledger.clear_batches()
+    return {"status": "success", "message": "Telemetry ledger reset successfully"}
+
+@api_router.get("/telemetry/db-status", tags=["Telemetry Ingestion Ledger"])
+def get_telemetry_db_status():
+    """Returns database connection diagnostics (PostgreSQL / SQLite, ping, and counts)."""
+    return db_manager.get_status()
+

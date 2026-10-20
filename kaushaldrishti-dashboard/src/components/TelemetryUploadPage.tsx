@@ -33,6 +33,7 @@ import {
   Building2,
   Users,
   GraduationCap,
+  Filter,
 } from 'lucide-react';
 import { SurfaceCard, PrimaryButton, SecondaryButton } from './DesignSystemUI';
 import { UserSession } from './AuthModal';
@@ -126,7 +127,24 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
   const [batchSearchQuery, setBatchSearchQuery] = useState<string>('');
   const [downloadSuccess, setDownloadSuccess] = useState<boolean>(false);
   const [activeViewMode, setActiveViewMode] = useState<'report' | 'table'>('report');
+  const [tableFilterMode, setTableFilterMode] = useState<'all' | 'valid' | 'faulty'>('all');
   const [, setStoreRefreshCounter] = useState<number>(0);
+  const [dbStatus, setDbStatus] = useState<{
+    engine: string;
+    status: string;
+    cloud_persisted: boolean;
+    total_batches_persisted: number;
+    url?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch('/api/telemetry/db-status')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data) setDbStatus(data);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     return globalTelemetryStore.subscribe(() => {
@@ -186,14 +204,16 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
     setCommitNotice(null);
     setBatchSearchQuery('');
     setActiveViewMode('report');
+    setTableFilterMode('all');
   };
 
-  const handleCommitToLedger = () => {
+  const handleCommitToLedger = async () => {
     if (!activeBatch) return;
-    globalTelemetryStore.commitBatch(activeBatch);
+    await globalTelemetryStore.commitBatch(activeBatch);
     setIsCommitted(true);
+    const dbTarget = dbStatus?.cloud_persisted ? 'PostgreSQL Cloud Database' : 'PostgreSQL-Ready Central Ledger';
     setCommitNotice(
-      `Batch ${activeBatch.batchId} successfully committed into National Labour Intelligence Ledger! Injected ${activeBatch.validRowsCount} verified district trade streams.`
+      `Batch ${activeBatch.batchId} successfully committed into Central ${dbTarget}! Injected ${activeBatch.validRowsCount} verified district trade streams.`
     );
   };
 
@@ -433,6 +453,249 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
     printWin.document.close();
   };
 
+  /**
+   * Export microdata table rows as standardized CSV
+   */
+  const handleExportTableCsv = (mode: 'all' | 'valid' | 'faulty' = tableFilterMode) => {
+    if (!activeBatch) return;
+    const rowsToExport = activeBatch.rows.filter((r) => {
+      if (mode === 'valid') return r.isValid;
+      if (mode === 'faulty') return !r.isValid;
+      return true;
+    });
+
+    if (rowsToExport.length === 0) {
+      alert('No rows available in this category to export.');
+      return;
+    }
+
+    const headers = [
+      'District LGD Code',
+      'District Name',
+      'State',
+      'ITI MIS Code',
+      'Trade NCO Code',
+      'Trade Name',
+      'Sector',
+      'NSQF Level',
+      'Batch ID',
+      'Sanctioned Seats',
+      'Enrolled Count',
+      'Certified Count',
+      'Retained Count',
+      'Placement Yield Rate (%)',
+      'Record Status',
+      'Audit Validation Errors (Rationale)',
+    ];
+
+    const escapeCsv = (val: any) => {
+      const s = String(val ?? '').replace(/"/g, '""');
+      return `"${s}"`;
+    };
+
+    const csvRows = [
+      headers.join(','),
+      ...rowsToExport.map((r) =>
+        [
+          r.districtLgdCode,
+          escapeCsv(r.districtName),
+          escapeCsv(r.state),
+          escapeCsv(r.itiMisCode),
+          escapeCsv(r.tradeNcoCode),
+          escapeCsv(r.tradeName),
+          escapeCsv(r.sector),
+          r.nsqfLevel,
+          escapeCsv(r.batchId),
+          r.sanctionedSeats,
+          r.enrolledCount,
+          r.certifiedCount,
+          r.retainedCount,
+          r.retentionRate,
+          r.isValid ? 'VALID' : 'QUARANTINED_WARNING',
+          escapeCsv(r.validationErrors.join('; ') || 'None (Clean Record)'),
+        ].join(',')
+      ),
+    ];
+
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    const label = mode === 'faulty' ? 'FAULTY_REVERIFY_LIST' : mode === 'valid' ? 'CLEAN_VERIFIED' : 'ALL_RECORDS';
+    link.setAttribute('download', `MSDE_District_Telemetry_${label}_${activeBatch.batchId}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  /**
+   * Export microdata table rows as official landscape PDF dossier
+   */
+  const handleExportTablePdf = (mode: 'all' | 'valid' | 'faulty' = tableFilterMode) => {
+    if (!activeBatch) return;
+    const rowsToExport = activeBatch.rows.filter((r) => {
+      if (mode === 'valid') return r.isValid;
+      if (mode === 'faulty') return !r.isValid;
+      return true;
+    });
+
+    if (rowsToExport.length === 0) {
+      alert('No rows available in this category to export.');
+      return;
+    }
+
+    const printWin = window.open('', '_blank', 'width=1100,height=1200');
+    if (!printWin) {
+      alert('Popup blocker prevented opening PDF window. Please allow popups for this site.');
+      return;
+    }
+
+    const modeTitle =
+      mode === 'faulty'
+        ? 'MSDE ITI Re-Verification Directive & Quarantined Audit Sheet'
+        : mode === 'valid'
+        ? 'MSDE Verified Microdata Register (Approved for Central Ledger)'
+        : 'MSDE Telemetry Microdata Registry (Comprehensive Batch Master)';
+
+    const modeBadge =
+      mode === 'faulty'
+        ? '<span style="background: #FDE8E8; color: #9B1C1C; border: 1px solid #F8B4B4; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 8.5px;">ACTION REQUIRED · ITI RE-VERIFICATION DIRECTIVE</span>'
+        : mode === 'valid'
+        ? '<span style="background: #E8F5E9; color: #2E7D32; border: 1px solid #C8E6C9; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 8.5px;">OFFICIAL MSDE VERIFIED LEDGER STREAM</span>'
+        : '<span style="background: #FAF0E1; color: #8C4E13; border: 1px solid #ECDCC7; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 8.5px;">MASTER BATCH MICRODATA PREVIEW</span>';
+
+    const directiveText =
+      mode === 'faulty'
+        ? `<strong>Urgent Administrative Notice for State SSDM &amp; ITI Principals:</strong> The following ${rowsToExport.length} flagged records failed LGD/NCO schema integrity or admission logic sanity checks. These rows have been <strong>quarantined</strong> and are excluded from the Central Labour Intelligence Ledger. Principals must re-verify admissions, correct capacity/LGD codes, and resubmit.`
+        : mode === 'valid'
+        ? `<strong>Official Record:</strong> Showing ${rowsToExport.length} verified records adhering strictly to Local Government Directory (LGD 2024) and National Classification of Occupations (NCO-2015) standards. These records have been merged into the central intelligence ledger.`
+        : `<strong>Batch Overview:</strong> Showing ${rowsToExport.length} total records (${activeBatch.validRowsCount} Valid Clean Records, ${activeBatch.flaggedRowsCount} Quarantined Records).`;
+
+    const tableRowsHtml = rowsToExport
+      .map(
+        (r, idx) => `
+      <tr style="${!r.isValid ? 'background: #FFFDF9;' : ''}">
+        <td style="font-family: monospace; color: #64716D;">${idx + 1}</td>
+        <td><strong>${r.batchId}</strong><br /><span style="color: #64716D; font-family: monospace; font-size: 8.5px;">${r.itiMisCode}</span></td>
+        <td><strong>${r.districtName}</strong><br /><span style="color: #64716D; font-size: 8.5px;">${r.state} (LGD: ${r.districtLgdCode || 'INVALID'})</span></td>
+        <td><strong>${r.tradeName}</strong><br /><span style="color: #64716D; font-family: monospace; font-size: 8.5px;">${r.tradeNcoCode} · ${r.sector}</span></td>
+        <td style="text-align: right; font-family: monospace;">${r.sanctionedSeats.toLocaleString('en-IN')}</td>
+        <td style="text-align: right; font-family: monospace;">${r.enrolledCount.toLocaleString('en-IN')}</td>
+        <td style="text-align: right; font-family: monospace; color: #166534; font-weight: bold;">${r.certifiedCount.toLocaleString('en-IN')}</td>
+        <td style="text-align: right; font-family: monospace; color: #D97925;">${r.retainedCount.toLocaleString('en-IN')}</td>
+        <td style="text-align: right; font-family: monospace; font-weight: bold;">${r.retentionRate}%</td>
+        <td style="text-align: center;">
+          ${
+            r.isValid
+              ? '<span style="color: #166534; font-weight: bold; font-size: 8px; background: #E8F5E9; padding: 2px 5px; border-radius: 3px;">VALID</span>'
+              : '<span style="color: #9B1C1C; font-weight: bold; font-size: 8px; background: #FDE8E8; padding: 2px 5px; border-radius: 3px;">FLAGGED</span>'
+          }
+        </td>
+        <td style="font-size: 8.5px;">
+          ${
+            r.validationErrors.length > 0
+              ? r.validationErrors
+                  .map(
+                    (err) =>
+                      `<div style="color: #9B1C1C; background: #FEF2F2; border: 1px solid #FECACA; padding: 1px 4px; border-radius: 3px; margin-bottom: 2px;">⚠️ ${err}</div>`
+                  )
+                  .join('')
+              : '<span style="color: #166534;">Verified Clean</span>'
+          }
+        </td>
+      </tr>
+    `
+      )
+      .join('');
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${modeTitle} - ${activeBatch.batchId}</title>
+  <style>
+    @page { size: A4 landscape; margin: 10mm 12mm 10mm 12mm; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #173F35; margin: 0; padding: 14px; font-size: 9.5px; line-height: 1.35; background: #fff; }
+    .header { border-bottom: 2px solid #17604D; padding-bottom: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .header-left h1 { margin: 2px 0; font-size: 15px; color: #173F35; font-family: Georgia, serif; font-weight: bold; }
+    .header-left p { margin: 1px 0 0; color: #64716D; font-size: 9px; }
+    .header-right { text-align: right; font-size: 8.5px; color: #64716D; }
+    .directive-card { padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; font-size: 9px; line-height: 1.4; ${
+      mode === 'faulty'
+        ? 'background: #FFFBEB; border: 1px solid #FDE68A; color: #92400E;'
+        : 'background: #FAF7F2; border: 1px solid #E9E0D3; color: #374151;'
+    } }
+    table { width: 100%; border-collapse: collapse; font-size: 9px; }
+    th { background: #FAF7F2; color: #64716D; text-align: left; padding: 5px 6px; border-bottom: 1px solid #E9E0D3; font-weight: 600; text-transform: uppercase; font-size: 8px; }
+    td { padding: 5px 6px; border-bottom: 1px solid #F2ECE1; color: #173F35; vertical-align: top; }
+    tr:nth-child(even) { background: #FCFBF9; }
+    .footer { margin-top: 14px; padding-top: 6px; border-top: 1px dashed #CBD5E1; display: flex; justify-content: space-between; font-size: 8px; color: #94A3B8; font-family: monospace; }
+    @media print { body { padding: 0; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      ${modeBadge}
+      <h1>${modeTitle}</h1>
+      <p>Ministry of Skill Development &amp; Entrepreneurship · KaushalDrishti Labour Intelligence Platform</p>
+    </div>
+    <div class="header-right">
+      <strong>Batch: ${activeBatch.batchId}</strong><br />
+      Source File: ${activeBatch.fileName} (${activeBatch.fileSizeKb} KB)<br />
+      Generated: ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+    </div>
+  </div>
+
+  <div class="directive-card">
+    ${directiveText}
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 20px;">#</th>
+        <th style="width: 100px;">Batch ID &amp; MIS</th>
+        <th style="width: 130px;">District &amp; State</th>
+        <th>Trade Name &amp; Sector</th>
+        <th style="text-align: right; width: 65px;">Sanctioned</th>
+        <th style="text-align: right; width: 60px;">Enrolled</th>
+        <th style="text-align: right; width: 60px;">Certified</th>
+        <th style="text-align: right; width: 60px;">Retained</th>
+        <th style="text-align: right; width: 50px;">Yield</th>
+        <th style="text-align: center; width: 65px;">Status</th>
+        <th style="width: 220px;">Audit &amp; Logic Diagnostics</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${tableRowsHtml}
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <span>SHA-256 Audit Trail: ${activeBatch.sha256Hash}</span>
+    <span>DPDP Act (2023) Compliant · National Classification of Occupations NCO-2015</span>
+    <span>Official Report</span>
+  </div>
+
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 500);
+    };
+  </script>
+</body>
+</html>
+    `;
+
+    printWin.document.open();
+    printWin.document.write(htmlContent);
+    printWin.document.close();
+  };
+
   // Dynamic AI Ingestion & Prediction Analytics
   const batchAnalytics = useMemo(() => {
     if (!activeBatch) return null;
@@ -565,19 +828,23 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
     };
   }, [activeBatch, horizon]);
 
-  const filteredBatchRows: ParsedTelemetryRow[] = activeBatch
-    ? activeBatch.rows.filter((r) => {
-        if (!batchSearchQuery.trim()) return true;
-        const q = batchSearchQuery.toLowerCase();
-        return (
-          r.tradeName.toLowerCase().includes(q) ||
-          r.tradeNcoCode.toLowerCase().includes(q) ||
-          r.districtName.toLowerCase().includes(q) ||
-          r.batchId.toLowerCase().includes(q) ||
-          r.itiMisCode.toLowerCase().includes(q)
-        );
-      })
-    : [];
+  const filteredBatchRows: ParsedTelemetryRow[] = useMemo(() => {
+    if (!activeBatch) return [];
+    return activeBatch.rows.filter((r) => {
+      if (tableFilterMode === 'valid' && !r.isValid) return false;
+      if (tableFilterMode === 'faulty' && r.isValid) return false;
+      if (!batchSearchQuery.trim()) return true;
+      const q = batchSearchQuery.toLowerCase();
+      return (
+        r.tradeName.toLowerCase().includes(q) ||
+        r.tradeNcoCode.toLowerCase().includes(q) ||
+        r.districtName.toLowerCase().includes(q) ||
+        r.batchId.toLowerCase().includes(q) ||
+        r.itiMisCode.toLowerCase().includes(q) ||
+        r.validationErrors.some((e) => e.toLowerCase().includes(q))
+      );
+    });
+  }, [activeBatch, tableFilterMode, batchSearchQuery]);
 
   const dynamicIngestionHistory: IngestionHistoryItem[] = [
     ...globalTelemetryStore.getBatches().map((b) => ({
@@ -618,6 +885,29 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+          {dbStatus && (
+            <span
+              title={`Engine: ${dbStatus.engine.toUpperCase()} · Batches Persisted: ${dbStatus.total_batches_persisted}`}
+              className={`text-[10.5px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-2xs border ${
+                dbStatus.cloud_persisted
+                  ? 'bg-[#E5F2E6] text-[#166534] border-[#CFE5D1]'
+                  : 'bg-[#EBF5FB] text-[#1B4F72] border-[#AED6F1]'
+              }`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  dbStatus.cloud_persisted ? 'bg-[#16A34A] animate-pulse' : 'bg-[#2980B9]'
+                }`}
+              />
+              <Database className="w-3 h-3" />
+              <span>
+                {dbStatus.cloud_persisted
+                  ? t('Cloud PostgreSQL: Connected', 'क्लाउड पोस्टग्रेएसक्यूएल: कनेक्टेड')
+                  : t('PostgreSQL-Ready SQL Engine: Active', 'पोस्टग्रेएसक्यूएल इंजन: सक्रिय')}
+              </span>
+            </span>
+          )}
+
           <span className="text-[10.5px] font-semibold px-2.5 py-1 rounded-full bg-[#FAF0E1] text-[#8C4E13] border border-[#ECDCC7] flex items-center gap-1.5 shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-[#D97925] animate-pulse"></span>
             <span>{dateRange}</span>
@@ -822,6 +1112,40 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
                 </div>
               </div>
             </div>
+
+            {/* Quarantine Notice & Action Directive for SSDM Director */}
+            {activeBatch.flaggedRowsCount > 0 && (
+              <div className="p-3.5 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#92400E]">
+                <div className="flex items-start gap-2.5">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-[#D97925] mt-0.5" />
+                  <div>
+                    <div className="font-bold text-[#78350F] flex items-center gap-2">
+                      <span>{t('Quarantine Notice & Action Directive:', 'संगीरोध सूचना एवं कार्रवाई निर्देश:')}</span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FEF3C7] text-[#92400E] border border-[#FCD34D]">
+                        {activeBatch.flaggedRowsCount} {t('Faulty Records Quarantined', 'दोषपूर्ण रिकॉर्ड संगरोध')}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[11.5px] text-[#92400E] leading-relaxed">
+                      {t(
+                        `The remaining ${activeBatch.flaggedRowsCount} flagged rows are quarantined and will NOT be merged into the central ledger (only ${activeBatch.validRowsCount} verified clean rows will be merged). You can inspect them in the Microdata Registry tab and export a dossier to request re-verification and correction from the concerned ITI centers / DSCs.`,
+                        `शेष ${activeBatch.flaggedRowsCount} चिह्नित पंक्तियों को संगरोध (quarantine) में रखा गया है और वे केंद्रीय लेज़र में मर्ज नहीं होंगी (केवल ${activeBatch.validRowsCount} सत्यापित शुद्ध पंक्तियां मर्ज होंगी)। इन्हें माइक्रोडाटा रजिस्ट्री टैब में देख कर संबंधित आईटीआई केंद्रों / डीएससी को पुनर्सत्यापन एवं सुधार हेतु भेजा जा सकता है।`
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveViewMode('table');
+                    setTableFilterMode('faulty');
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-[#D97925] text-white hover:bg-[#B45309] font-semibold text-xs shrink-0 cursor-pointer shadow-xs transition-colors flex items-center gap-1.5 self-start sm:self-auto"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  <span>{t('Inspect & Export Faulty Rows', 'दोषपूर्ण पंक्तियां देखें व निर्यात करें')} ({activeBatch.flaggedRowsCount}) &rarr;</span>
+                </button>
+              </div>
+            )}
 
             {/* Ingestion Commitment Action */}
             {!isCommitted ? (
@@ -1511,29 +1835,147 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
 
           {/* VIEW MODE 2: Raw Microdata Preview Table */}
           {activeViewMode === 'table' && (
-            <SurfaceCard className="p-4 space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#E9E0D3]">
-                <div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-[#173F35]">
-                    <FileSpreadsheet className="w-4 h-4 text-[#17604D]" />
-                    <span>Live Batch Microdata Preview ({activeBatch.fileName})</span>
+            <SurfaceCard className="p-4 space-y-3.5">
+              {/* Header with Title, Search, 3 Filter Tabs, and Download Buttons */}
+              <div className="flex flex-col gap-3 pb-3 border-b border-[#E9E0D3]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2 text-xs font-bold text-[#173F35]">
+                      <FileSpreadsheet className="w-4 h-4 text-[#17604D]" />
+                      <span>Live Batch Microdata Preview ({activeBatch.fileName})</span>
+                    </div>
+                    <div className="text-[11px] text-[#64716D] mt-0.5">
+                      Inspect row-level admissions, certification counts, and retention yields before final institutional commitment.
+                    </div>
                   </div>
-                  <div className="text-[11px] text-[#64716D] mt-0.5">
-                    Inspect row-level admissions, certification counts, and retention yields before final institutional commitment.
+
+                  <div className="relative w-full sm:w-64">
+                    <Search className="w-3.5 h-3.5 text-[#64716D] absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={batchSearchQuery}
+                      onChange={(e) => setBatchSearchQuery(e.target.value)}
+                      placeholder="Filter batch trade or district..."
+                      className="w-full pl-8 pr-3 py-1 text-xs bg-[#FFFEFB] border border-[#E9E0D3] rounded-lg text-[#173F35] focus:outline-none focus:border-[#17604D]"
+                    />
                   </div>
                 </div>
 
-                <div className="relative w-full sm:w-64">
-                  <Search className="w-3.5 h-3.5 text-[#64716D] absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={batchSearchQuery}
-                    onChange={(e) => setBatchSearchQuery(e.target.value)}
-                    placeholder="Filter batch trade or district..."
-                    className="w-full pl-8 pr-3 py-1 text-xs bg-[#FFFEFB] border border-[#E9E0D3] rounded-lg text-[#173F35] focus:outline-none focus:border-[#17604D]"
-                  />
+                {/* 3 Filter Mode Tabs & Export Actions */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+                  <div className="flex items-center gap-1.5 bg-[#FAF7F2] p-1 rounded-lg border border-[#E9E0D3] overflow-x-auto">
+                    <button
+                      type="button"
+                      onClick={() => setTableFilterMode('all')}
+                      className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                        tableFilterMode === 'all'
+                          ? 'bg-[#173F35] text-white shadow-2xs'
+                          : 'text-[#64716D] hover:text-[#173F35] hover:bg-white/60'
+                      }`}
+                    >
+                      <span>1. All Records (Mixed)</span>
+                      <span
+                        className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                          tableFilterMode === 'all' ? 'bg-white/20 text-white' : 'bg-[#E9E0D3] text-[#173F35]'
+                        }`}
+                      >
+                        {activeBatch.totalRows}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setTableFilterMode('valid')}
+                      className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                        tableFilterMode === 'valid'
+                          ? 'bg-[#166534] text-white shadow-2xs'
+                          : 'text-[#64716D] hover:text-[#166534] hover:bg-white/60'
+                      }`}
+                    >
+                      <CheckCircle2 className="w-3 h-3 text-[#BBF7D0]" />
+                      <span>2. Only Correct Data</span>
+                      <span
+                        className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                          tableFilterMode === 'valid' ? 'bg-white/20 text-white' : 'bg-[#E2F0E3] text-[#166534]'
+                        }`}
+                      >
+                        {activeBatch.validRowsCount}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setTableFilterMode('faulty')}
+                      className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                        tableFilterMode === 'faulty'
+                          ? 'bg-[#9B1C1C] text-white shadow-2xs'
+                          : 'text-[#64716D] hover:text-[#9B1C1C] hover:bg-white/60'
+                      }`}
+                    >
+                      <AlertTriangle className="w-3 h-3 text-[#FCA5A5]" />
+                      <span>3. Only Faulty Data</span>
+                      <span
+                        className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                          tableFilterMode === 'faulty' ? 'bg-white/20 text-white' : 'bg-[#FDE8E8] text-[#9B1C1C]'
+                        }`}
+                      >
+                        {activeBatch.flaggedRowsCount}
+                      </span>
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => handleExportTableCsv(tableFilterMode)}
+                      className="px-3 py-1.5 rounded-lg bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#E0D5C3] text-xs font-semibold text-[#173F35] flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+                      title={`Download ${tableFilterMode === 'faulty' ? 'Faulty' : tableFilterMode === 'valid' ? 'Clean' : 'All'} rows as CSV`}
+                    >
+                      <FileSpreadsheet className="w-3.5 h-3.5 text-[#17604D]" />
+                      <span>
+                        Download CSV ({tableFilterMode === 'faulty' ? 'Faulty' : tableFilterMode === 'valid' ? 'Clean' : 'All'})
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleExportTablePdf(tableFilterMode)}
+                      className="px-3 py-1.5 rounded-lg bg-[#173F35] hover:bg-[#12322A] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+                      title={`Download ${tableFilterMode === 'faulty' ? 'Faulty Sheet' : tableFilterMode === 'valid' ? 'Clean Register' : 'Complete Master'} as PDF`}
+                    >
+                      <FileDown className="w-3.5 h-3.5 text-[#E2F0E3]" />
+                      <span>
+                        Download PDF ({tableFilterMode === 'faulty' ? 'Faulty Sheet' : tableFilterMode === 'valid' ? 'Clean Register' : 'All Records'})
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </div>
+
+              {/* Directive Advisory Banner inside table when viewing faulty rows */}
+              {tableFilterMode === 'faulty' && (
+                <div className="p-3 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#92400E]">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-[#D97925] shrink-0 mt-0.5" />
+                    <span>
+                      <strong>ITI Centers Re-Verification Directive:</strong>{' '}
+                      {t(
+                        `These ${activeBatch.flaggedRowsCount} rows failed validation checks and are quarantined from the central ledger. Use 'Download PDF (Faulty Sheet)' or 'Download CSV' above to dispatch these discrepancy records to the respective ITI Principals for re-verification and resubmission.`,
+                        `ये ${activeBatch.flaggedRowsCount} पंक्तियां सत्यापन में विफल रहीं और संगरोध में हैं। संबंधित आईटीआई प्राचार्यों को सुधार एवं पुनः प्रस्तुति हेतु भेजने के लिए ऊपर दिए गए 'Download PDF (Faulty Sheet)' अथवा 'Download CSV' का उपयोग करें।`
+                      )}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {tableFilterMode === 'valid' && (
+                <div className="p-2.5 rounded-lg bg-[#E8F5E9] border border-[#C8E6C9] flex items-center gap-2 text-xs text-[#166534]">
+                  <CheckCircle2 className="w-4 h-4 text-[#2E7D32] shrink-0" />
+                  <span>
+                    <strong>Approved Ledger Records:</strong> Showing {activeBatch.validRowsCount} verified rows adhering to LGD 2024 and NCO-2015 registries. Only these clean records merge into the National Ledger.
+                  </span>
+                </div>
+              )}
 
               <div className="overflow-x-auto max-h-96 overflow-y-auto">
                 <table className="w-full text-left text-xs border-collapse">
@@ -1552,59 +1994,87 @@ export const TelemetryUploadPage: React.FC<TelemetryUploadPageProps> = ({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#F2ECE1]">
-                    {filteredBatchRows.map((row, idx) => (
-                      <tr key={row.id} className="hover:bg-[#F8F5EF] transition-colors">
-                        <td className="py-2.5 px-3 text-[#64716D] font-mono">{idx + 1}</td>
-                        <td className="py-2.5 px-3">
-                          <div className="font-semibold text-[#173F35] font-mono">{row.batchId}</div>
-                          <div className="text-[10px] text-[#64716D] font-mono">{row.itiMisCode}</div>
-                        </td>
-                        <td className="py-2.5 px-3">
-                          <div className="font-medium text-[#173F35]">{row.districtName}</div>
-                          <div className="text-[10px] text-[#64716D]">{row.state}</div>
-                        </td>
-                        <td className="py-2.5 px-3">
-                          <div className="font-medium text-[#173F35] flex items-center gap-1.5">
-                            <span>{row.tradeName}</span>
-                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#F5F0E7] text-[#173F35] font-mono">
-                              NSQF L{row.nsqfLevel}
-                            </span>
-                          </div>
-                          <div className="text-[10px] text-[#64716D] font-mono">{row.tradeNcoCode} · {row.sector}</div>
-                        </td>
-                        <td className="py-2.5 px-3 text-right font-mono font-medium text-[#173F35]">
-                          {row.sanctionedSeats.toLocaleString('en-IN')}
-                        </td>
-                        <td className="py-2.5 px-3 text-right font-mono text-[#64716D]">
-                          {row.enrolledCount.toLocaleString('en-IN')}
-                        </td>
-                        <td className="py-2.5 px-3 text-right font-mono font-semibold text-[#17604D]">
-                          {row.certifiedCount.toLocaleString('en-IN')}
-                        </td>
-                        <td className="py-2.5 px-3 text-right font-mono text-[#D97925]">
-                          {row.retainedCount.toLocaleString('en-IN')}
-                        </td>
-                        <td className="py-2.5 px-3 text-right font-mono text-xs font-bold text-[#17604D]">
-                          {row.retentionRate}%
-                        </td>
-                        <td className="py-2.5 px-3 text-center">
-                          {row.isValid ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#E2F0E3] text-[#17604D] border border-[#BBF7D0]">
-                              <CheckCircle2 className="w-3 h-3" />
-                              <span>Valid</span>
-                            </span>
+                    {filteredBatchRows.length === 0 ? (
+                      <tr>
+                        <td colSpan={10} className="py-8 text-center text-xs text-[#64716D]">
+                          {tableFilterMode === 'faulty' && activeBatch.flaggedRowsCount === 0 ? (
+                            <div className="flex flex-col items-center justify-center gap-1 text-[#166534]">
+                              <CheckCircle2 className="w-5 h-5 text-[#166534]" />
+                              <span className="font-semibold">No faulty or quarantined records in this batch!</span>
+                              <span className="text-[11px] text-[#64716D]">All {activeBatch.totalRows} records passed validation checks cleanly.</span>
+                            </div>
                           ) : (
-                            <span
-                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#FDE8E8] text-[#9B1C1C] border border-[#F8B4B4]"
-                              title={row.validationErrors.join(', ')}
-                            >
-                              <AlertTriangle className="w-3 h-3" />
-                              <span>Warning</span>
-                            </span>
+                            <span>No records match the current filter or search criteria.</span>
                           )}
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      filteredBatchRows.map((row, idx) => (
+                        <tr key={row.id} className={`hover:bg-[#F8F5EF] transition-colors ${!row.isValid ? 'bg-[#FFFDFB]' : ''}`}>
+                          <td className="py-2.5 px-3 text-[#64716D] font-mono">{idx + 1}</td>
+                          <td className="py-2.5 px-3">
+                            <div className="font-semibold text-[#173F35] font-mono">{row.batchId}</div>
+                            <div className="text-[10px] text-[#64716D] font-mono">{row.itiMisCode}</div>
+                          </td>
+                          <td className="py-2.5 px-3">
+                            <div className="font-medium text-[#173F35]">{row.districtName}</div>
+                            <div className="text-[10px] text-[#64716D]">
+                              {row.state} {row.districtLgdCode > 0 ? `(LGD ${row.districtLgdCode})` : ''}
+                            </div>
+                          </td>
+                          <td className="py-2.5 px-3">
+                            <div className="font-medium text-[#173F35] flex items-center gap-1.5">
+                              <span>{row.tradeName}</span>
+                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#F5F0E7] text-[#173F35] font-mono">
+                                NSQF L{row.nsqfLevel}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-[#64716D] font-mono">{row.tradeNcoCode} · {row.sector}</div>
+                            {!row.isValid && row.validationErrors.length > 0 && (
+                              <div className="mt-1 flex flex-wrap gap-1">
+                                {row.validationErrors.map((err, eIdx) => (
+                                  <span key={eIdx} className="inline-flex items-center gap-1 text-[9.5px] font-semibold text-[#9B1C1C] bg-[#FDE8E8] border border-[#F8B4B4] px-1.5 py-0.5 rounded">
+                                    <AlertTriangle className="w-2.5 h-2.5 shrink-0" />
+                                    <span>{err}</span>
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-3 text-right font-mono font-medium text-[#173F35]">
+                            {row.sanctionedSeats.toLocaleString('en-IN')}
+                          </td>
+                          <td className="py-2.5 px-3 text-right font-mono text-[#64716D]">
+                            {row.enrolledCount.toLocaleString('en-IN')}
+                          </td>
+                          <td className="py-2.5 px-3 text-right font-mono font-semibold text-[#17604D]">
+                            {row.certifiedCount.toLocaleString('en-IN')}
+                          </td>
+                          <td className="py-2.5 px-3 text-right font-mono text-[#D97925]">
+                            {row.retainedCount.toLocaleString('en-IN')}
+                          </td>
+                          <td className="py-2.5 px-3 text-right font-mono text-xs font-bold text-[#17604D]">
+                            {row.retentionRate}%
+                          </td>
+                          <td className="py-2.5 px-3 text-center">
+                            {row.isValid ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#E2F0E3] text-[#17604D] border border-[#BBF7D0]">
+                                <CheckCircle2 className="w-3 h-3" />
+                                <span>Valid</span>
+                              </span>
+                            ) : (
+                              <span
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#FDE8E8] text-[#9B1C1C] border border-[#F8B4B4]"
+                                title={row.validationErrors.join(', ')}
+                              >
+                                <AlertTriangle className="w-3 h-3" />
+                                <span>Warning</span>
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

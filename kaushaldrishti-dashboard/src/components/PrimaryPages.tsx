@@ -83,6 +83,17 @@ export const DashboardOverviewPage: React.FC<{
   const roleConfig = getRoleConfig(userSession);
   const dataset = getDashboardDataset(roleType, dateRange);
 
+  const [, setStoreRefreshCounter] = useState<number>(0);
+  useEffect(() => {
+    return globalTelemetryStore.subscribe(() => {
+      setStoreRefreshCounter((prev) => prev + 1);
+    });
+  }, []);
+
+  const committedBatches = globalTelemetryStore.getBatches();
+  const totalIngestedCertified = committedBatches.reduce((acc, b) => acc + b.totalCertified, 0);
+  const totalIngestedRows = committedBatches.reduce((acc, b) => acc + b.validRowsCount, 0);
+
   const [chartPeriod, setChartPeriod] = useState<'Yearly' | 'Quarterly'>('Yearly');
   const barsData = dataset.chart.bars[chartPeriod] || dataset.chart.bars.Yearly;
 
@@ -152,6 +163,31 @@ export const DashboardOverviewPage: React.FC<{
         </div>
       </div>
 
+      {/* Live Telemetry Synchronization Notice Banner */}
+      {committedBatches.length > 0 && (
+        <div className="p-3 rounded-xl bg-[#E8F5E9] border border-[#C8E6C9] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#166534] shadow-2xs animate-card-slide-up">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#166534] animate-ping shrink-0" />
+            <div>
+              <span className="font-bold text-[#173F35]">
+                {t('Live District Telemetry Ledger Active:', 'लाइव जिला टेलीमेट्री लेज़र सक्रिय:')}
+              </span>{' '}
+              <span>
+                {committedBatches.length} {t('batch(es) synchronized', 'बैच सिंक्रनाइज़')} · +{totalIngestedRows} {t('district streams merged', 'जिला रिकॉर्ड्स शामिल')} · +{totalIngestedCertified.toLocaleString('en-IN')} {t('certified candidates fed into real-time supply calculations.', 'प्रमाणित उम्मीदवार लाइव गणना में शामिल।')}
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => onNavigate('demand-supply')}
+            className="px-3 py-1 bg-white border border-[#C8E6C9] rounded-lg text-[11px] font-semibold text-[#166534] hover:bg-[#F1F8F3] cursor-pointer shrink-0 shadow-2xs flex items-center gap-1 self-start sm:self-auto"
+          >
+            <span>{t('View in Demand & Supply', 'मांग एवं आपूर्ति में देखें')}</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+      )}
+
       {/* KPI Row — 4 Equal-Width Cards matching Reference Image 1 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5">
         {/* Card 1 — Total Job Demand */}
@@ -166,11 +202,16 @@ export const DashboardOverviewPage: React.FC<{
             <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-0.5">
               {dataset.kpis.demand.value}
             </div>
-            <div className="flex items-center gap-1 text-[11px] mt-1">
+            <div className="flex items-center gap-1 text-[11px] mt-1 flex-wrap">
               <span className="font-semibold text-[#17604D] inline-flex items-center">
                 {dataset.kpis.demand.trend}
               </span>
               <span className="text-[#64716D]">{dataset.kpis.demand.trendLabel}</span>
+              {totalIngestedCertified > 0 && (
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-[#DBEAFE] text-[#1E40AF]" title="Absorbed industrial demand generated from live uploaded batches">
+                  +{Math.round(totalIngestedCertified * 1.35).toLocaleString('en-IN')} Live
+                </span>
+              )}
             </div>
           </div>
         </SurfaceCard>
@@ -187,11 +228,16 @@ export const DashboardOverviewPage: React.FC<{
             <div className="text-2xl font-bold text-[#173F35] tabular-nums mt-0.5">
               {dataset.kpis.trained.value}
             </div>
-            <div className="flex items-center gap-1 text-[11px] mt-1">
+            <div className="flex items-center gap-1 text-[11px] mt-1 flex-wrap">
               <span className="font-semibold text-[#17604D] inline-flex items-center">
                 {dataset.kpis.trained.trend}
               </span>
               <span className="text-[#64716D]">{dataset.kpis.trained.trendLabel}</span>
+              {totalIngestedCertified > 0 && (
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-[#C8E6C9] text-[#166534]" title="Certified candidate telemetry fed from live uploaded batches">
+                  +{totalIngestedCertified.toLocaleString('en-IN')} Live
+                </span>
+              )}
             </div>
           </div>
         </SurfaceCard>

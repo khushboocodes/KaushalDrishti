@@ -1,14 +1,21 @@
 import os
 from pathlib import Path
 from pydantic import BaseModel, Field
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load .env file from project root if present
+load_dotenv(BASE_DIR / ".env")
 
 class Settings(BaseModel):
     PROJECT_NAME: str = "KaushalDrishti"
     PROJECT_TITLE: str = "AI-Enabled Labour Market Intelligence & Skill Forecasting Engine"
     VERSION: str = "1.0.0"
     API_V1_PREFIX: str = "/api/v1"
+    
+    # Database Configuration (PostgreSQL / SQLite Fallback)
+    DATABASE_URL: str = Field(default_factory=lambda: os.environ.get("DATABASE_URL", ""))
     
     # Paths
     BASE_PATH: Path = BASE_DIR

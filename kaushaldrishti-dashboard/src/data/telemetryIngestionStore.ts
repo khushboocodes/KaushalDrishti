@@ -293,12 +293,28 @@ export function parseTelemetryCsv(
 }
 
 /**
- * In-Memory Observable Store for Real-Time Ingested Telemetry
+ * Multi-User Observable Store for Real-Time District Telemetry
+ * Synchronizes with Central Backend Ledger (FastAPI /api/telemetry/...)
+ * so that committed data is instantly visible across all users, devices, and sessions.
  */
 class TelemetryStore {
   private activeRecords: ExplorerRecord[] = [...COMPREHENSIVE_DEMAND_SUPPLY_RECORDS];
   private ingestedBatches: IngestionBatchResult[] = [];
   private listeners: Array<() => void> = [];
+  private syncTimer: any = null;
+  private isSyncing: boolean = false;
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      // 1. Initial hydration from central backend server
+      this.syncWithServer();
+
+      // 2. Multi-client background synchronization polling (every 6 seconds)
+      this.syncTimer = setInterval(() => {
+        this.syncWithServer();
+      }, 6000);
+    }
+  }
 
   public getRecords(): ExplorerRecord[] {
     return this.activeRecords;
@@ -308,39 +324,101 @@ class TelemetryStore {
     return this.ingestedBatches;
   }
 
-  public commitBatch(batch: IngestionBatchResult): void {
-    this.ingestedBatches.unshift(batch);
+  /**
+   * Rebuilds ExplorerRecords from all active batches
+   */
+  private rebuildRecords(): void {
+    const newRecords: ExplorerRecord[] = [];
 
-    // Convert valid telemetry rows into live ExplorerRecords
-    const newRecords: ExplorerRecord[] = batch.rows
-      .filter((r) => r.isValid)
-      .map((r, idx) => {
-        // Approximate baseline annual demand as 1.35x sanctioned seats
-        const annualDemand = Math.round(r.sanctionedSeats * 1.35);
-        const annualTrained = r.certifiedCount;
-        const gap = annualDemand - annualTrained;
-        const status: SupplyStatus = gap > 150 ? 'Undersupply' : gap < -150 ? 'Oversupply' : 'Balanced';
+    this.ingestedBatches.forEach((batch) => {
+      const rows = batch.rows || [];
+      rows
+        .filter((r) => r.isValid)
+        .forEach((r, idx) => {
+          const annualDemand = Math.round(r.sanctionedSeats * 1.35);
+          const annualTrained = r.certifiedCount;
+          const gap = annualDemand - annualTrained;
+          const status: SupplyStatus = gap > 150 ? 'Undersupply' : gap < -150 ? 'Oversupply' : 'Balanced';
 
-        return {
-          id: `telemetry-${batch.batchId}-${idx}`,
-          ncoCode: r.tradeNcoCode,
-          tradeName: r.tradeName,
-          nsqfLevel: r.nsqfLevel,
-          sector: r.sector,
-          state: r.state,
-          district: r.districtName,
-          annualDemand: annualDemand,
-          annualTrained: annualTrained,
-          gap: gap,
-          status: status,
-          source: 'Live District Telemetry (MSDE v2.4)',
-          lastUpdated: 'Just now (Synced)',
-        };
+          newRecords.push({
+            id: `telemetry-${batch.batchId}-${idx}`,
+            ncoCode: r.tradeNcoCode,
+            tradeName: r.tradeName,
+            nsqfLevel: r.nsqfLevel,
+            sector: r.sector,
+            state: r.state,
+            district: r.districtName,
+            annualDemand: annualDemand,
+            annualTrained: annualTrained,
+            gap: gap,
+            status: status,
+            source: 'Live District Telemetry (MSDE v2.4)',
+            lastUpdated: batch.uploadedAt || 'Just now (Synced)',
+          });
+        });
+    });
+
+    this.activeRecords = [...newRecords, ...COMPREHENSIVE_DEMAND_SUPPLY_RECORDS];
+  }
+
+  /**
+   * Fetches latest committed batches from central server ledger
+   */
+  public async syncWithServer(): Promise<void> {
+    if (this.isSyncing) return;
+    this.isSyncing = true;
+    try {
+      const res = await fetch('/api/telemetry/batches', {
+        headers: { Accept: 'application/json' },
       });
+      if (!res.ok) return;
+      const data = await res.json();
+      const serverBatches: IngestionBatchResult[] = data.batches || [];
 
-    // Prepend newly ingested records to the top of the global catalog
-    this.activeRecords = [...newRecords, ...this.activeRecords];
+      // Check if server batches differ from current local state
+      const serverSig = serverBatches.map((b) => `${b.batchId}:${b.validRowsCount}`).join('|');
+      const localSig = this.ingestedBatches.map((b) => `${b.batchId}:${b.validRowsCount}`).join('|');
+
+      if (serverSig !== localSig) {
+        this.ingestedBatches = serverBatches;
+        this.rebuildRecords();
+        this.notify();
+      }
+    } catch {
+      // Quietly continue using local cache if server is offline
+    } finally {
+      this.isSyncing = false;
+    }
+  }
+
+  /**
+   * Commits a batch locally and pushes to central backend server for global persistence
+   */
+  public async commitBatch(batch: IngestionBatchResult): Promise<void> {
+    // 1. Optimistic local update
+    const existingIdx = this.ingestedBatches.findIndex((b) => b.batchId === batch.batchId);
+    if (existingIdx >= 0) {
+      this.ingestedBatches[existingIdx] = batch;
+    } else {
+      this.ingestedBatches.unshift(batch);
+    }
+
+    this.rebuildRecords();
     this.notify();
+
+    // 2. Persist to central backend server
+    try {
+      await fetch('/api/telemetry/commit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(batch),
+      });
+    } catch (err) {
+      console.warn('[TelemetryStore] Failed to persist batch to central server:', err);
+    }
   }
 
   public subscribe(listener: () => void): () => void {
