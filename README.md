@@ -467,6 +467,7 @@ KaushalDrishti/
 │   ├── benchmark_results.md       # Model accuracy benchmarks (MAPE = 16.4%)
 │   ├── DPDP_COMPLIANCE_REPORT.md  # DPDP Act 2023 Statutory Compliance Verification
 │   ├── DEPLOYMENT_GUIDE.md        # Cloud deployment runbook (Vercel, Render, Neon, Docker)
+│   ├── PROJECT_DOCUMENTATION.md   # Complete Technical, Algorithmic & Architectural Manual (Full-Color Diagrams)
 │   └── REALTIME_TELEMETRY_INGESTION_SPEC.md # Full technical specification for telemetry parsing
 ├── tests/                         # Pytest Verification Suite (23 Passing Tests)
 │   ├── test_fast_track.py         # End-to-end API and dashboard serving tests
@@ -492,6 +493,8 @@ KaushalDrishti/
 
 ---
 
+> 📘 **Complete Master Documentation:** For the full end-to-end technical, algorithmic, and architectural manual with 8 full-color diagrams, see [**docs/PROJECT_DOCUMENTATION.md**](docs/PROJECT_DOCUMENTATION.md).
+>
 > 📖 **Deployment Architecture Guide:** For full cloud deployment topology, reference architecture, and verification runbooks, see [**DEPLOYMENTS.md**](DEPLOYMENTS.md).
 
 ---
