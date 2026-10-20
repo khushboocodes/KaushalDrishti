@@ -495,7 +495,7 @@ KaushalDrishti/
 
 > 📘 **Complete Master Documentation:** For the full end-to-end technical, algorithmic, and architectural manual with 8 full-color diagrams, see [**docs/PROJECT_DOCUMENTATION.md**](docs/PROJECT_DOCUMENTATION.md).
 >
-> 📖 **Deployment Architecture Guide:** For full cloud deployment topology, reference architecture, and verification runbooks, see [**DEPLOYMENTS.md**](DEPLOYMENTS.md).
+> 📖 **Deployment Architecture Guide:** For full cloud deployment topology, reference architecture, and verification runbooks, see [**docs/DEPLOYMENT_GUIDE.md**](docs/DEPLOYMENT_GUIDE.md).
 
 ---
 

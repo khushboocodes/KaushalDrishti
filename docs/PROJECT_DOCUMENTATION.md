@@ -819,7 +819,7 @@ c:\Users\loq\Downloads\KaushalDrishti\
 │
 ├── docs/                                  # Technical Documentation, Specifications & Compliance Reports
 │   ├── benchmark_results.md               # Empirical model performance comparison vs. baselines (MAPE = 16.4%)
-│   ├── DEPLOYMENT_GUIDE.md                # Cloud deployment runbook for Vercel, Render, Neon, and Docker
+│   ├── DEPLOYMENT_GUIDE.md                # Consolidated cloud deployment guide, topology & runbook (Vercel, Render, Neon, Docker)
 │   ├── DPDP_COMPLIANCE_REPORT.md          # Statutory DPDP Act 2023 compliance audit verification
 │   ├── METHODOLOGY_WHITEPAPER.md          # Formal mathematical equations and statistical methodology
 │   ├── PITCH_DECK_SLIDES.md               # Executive presentation slide outline for apex ministry leadership
@@ -834,7 +834,6 @@ c:\Users\loq\Downloads\KaushalDrishti\
 │   └── test_telemetry_ledger.py           # Database persistence, batch commits, record indexing & reset endpoints
 │
 ├── .env.example                           # Template for cloud database and server configuration
-├── DEPLOYMENTS.md                         # Reference cloud deployment topology & architecture guide
 ├── Dockerfile                             # Multi-stage production container build definition
 ├── LICENSE                                # Open Source MIT License attributed to Khushboo Khator
 ├── Procfile                               # Container process launcher for cloud PaaS deployments
