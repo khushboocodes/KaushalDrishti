@@ -143,11 +143,14 @@ class DatabaseManager:
         self.SessionFactory = None
         self.active_engine_type = "uninitialized"
         self.db_url = ""
+        self.db_error: Optional[str] = None
         self._init_engine()
 
     def _init_engine(self) -> None:
         raw_url = os.environ.get("DATABASE_URL") or settings.DATABASE_URL or ""
-        raw_url = raw_url.strip()
+        raw_url = raw_url.strip().strip('"').strip("'")
+        if raw_url.startswith("psql "):
+            raw_url = raw_url[5:].strip().strip('"').strip("'")
 
         # 1. Attempt PostgreSQL if DATABASE_URL is supplied
         if raw_url:
@@ -171,8 +174,10 @@ class DatabaseManager:
                 self.engine = engine
                 self.active_engine_type = "postgresql"
                 self.db_url = raw_url
+                self.db_error = None
                 logger.info("Successfully connected to PostgreSQL database cluster.")
             except Exception as e:
+                self.db_error = str(e)
                 logger.warning(
                     f"Failed to connect to PostgreSQL ({e}). Falling back to local SQLite engine."
                 )
@@ -223,14 +228,17 @@ class DatabaseManager:
         except Exception:
             pass
 
+        raw_url = os.environ.get("DATABASE_URL") or settings.DATABASE_URL or ""
         return {
             "engine": self.active_engine_type,
             "status": "connected" if self.engine else "disconnected",
             "url": masked_url,
+            "database_url_configured": bool(raw_url.strip()),
+            "connection_error": self.db_error,
             "total_batches_persisted": batches_count,
             "total_records_indexed": records_count,
             "cloud_persisted": (self.active_engine_type == "postgresql"),
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
 
 db_manager = DatabaseManager()
