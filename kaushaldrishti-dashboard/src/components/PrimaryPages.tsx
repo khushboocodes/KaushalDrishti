@@ -164,7 +164,7 @@ export const DashboardOverviewPage: React.FC<{
       </div>
 
       {/* Live Telemetry Synchronization Notice Banner */}
-      {committedBatches.length > 0 && (
+      {committedBatches.length > 0 ? (
         <div className="p-3 rounded-xl bg-[#E8F5E9] border border-[#C8E6C9] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#166534] shadow-2xs animate-card-slide-up">
           <div className="flex items-center gap-2.5">
             <span className="w-2.5 h-2.5 rounded-full bg-[#166534] animate-ping shrink-0" />
@@ -177,12 +177,44 @@ export const DashboardOverviewPage: React.FC<{
               </span>
             </div>
           </div>
+          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
+            <button
+              type="button"
+              onClick={() => onNavigate('telemetry-upload')}
+              className="px-3 py-1 bg-[#17604D] text-white rounded-lg text-[11px] font-semibold hover:bg-[#124b3c] cursor-pointer shadow-2xs flex items-center gap-1"
+            >
+              <span>{t('Ingest / Test More Data', 'और डेटा टेस्ट करें')}</span>
+              <span>&rarr;</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onNavigate('demand-supply')}
+              className="px-3 py-1 bg-white border border-[#C8E6C9] rounded-lg text-[11px] font-semibold text-[#166534] hover:bg-[#F1F8F3] cursor-pointer shadow-2xs flex items-center gap-1"
+            >
+              <span>{t('View in Demand & Supply', 'मांग एवं आपूर्ति में देखें')}</span>
+              <span>&rarr;</span>
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="p-3 rounded-xl bg-[#F0F7F4] border border-[#C3DFD5] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#173F35] shadow-2xs animate-card-slide-up">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#17604D] shrink-0" />
+            <div>
+              <span className="font-bold text-[#173F35]">
+                {t('Live Data Testing Hub Active:', 'लाइव डेटा टेस्टिंग हब सक्रिय:')}
+              </span>{' '}
+              <span className="text-[#4D635D]">
+                {t('Upload local ITI admissions & district CSV microdata to test real-time tension scores and ML vacancy adjustments live.', 'लाइव तनाव स्कोर एवं मांग-आपूर्ति समायोजन का परीक्षण करने के लिए जिला सीएसवी अपलोड करें।')}
+              </span>
+            </div>
+          </div>
           <button
             type="button"
-            onClick={() => onNavigate('demand-supply')}
-            className="px-3 py-1 bg-white border border-[#C8E6C9] rounded-lg text-[11px] font-semibold text-[#166534] hover:bg-[#F1F8F3] cursor-pointer shrink-0 shadow-2xs flex items-center gap-1 self-start sm:self-auto"
+            onClick={() => onNavigate('telemetry-upload')}
+            className="px-3.5 py-1.5 bg-[#17604D] text-white rounded-lg text-[11px] font-semibold hover:bg-[#124b3c] cursor-pointer shadow-2xs flex items-center gap-1.5 self-start sm:self-auto shrink-0 transition-colors"
           >
-            <span>{t('View in Demand & Supply', 'मांग एवं आपूर्ति में देखें')}</span>
+            <span>{t('Open Data Test Workbench', 'डेटा टेस्ट कार्यक्षेत्र खोलें')}</span>
             <span>&rarr;</span>
           </button>
         </div>

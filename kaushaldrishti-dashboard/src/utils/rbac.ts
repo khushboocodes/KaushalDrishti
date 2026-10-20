@@ -32,6 +32,7 @@ export const ROLE_CONFIGS: Record<UserRoleType, RoleConfig> = {
     governanceScope: 'State-wide policy, budget allocation, cross-district reallocations, and inter-state analytics.',
     allowedRoutes: [
       'dashboard',
+      'telemetry-upload',
       'demand-supply',
       'forecasting',
       'sectors',
@@ -42,7 +43,6 @@ export const ROLE_CONFIGS: Record<UserRoleType, RoleConfig> = {
       'recommendations',
       'reports',
       'data-explorer',
-      'telemetry-upload',
       'settings',
     ],
     canSanctionSeats: true,
@@ -64,6 +64,7 @@ export const ROLE_CONFIGS: Record<UserRoleType, RoleConfig> = {
     governanceScope: 'Hyper-local ITI seat utilization, local MSME cluster hiring, and District Skill Development Plan (DSDP) drafting.',
     allowedRoutes: [
       'dashboard',
+      'telemetry-upload',
       'geographic',
       'training',
       'policy-sandbox',
@@ -72,7 +73,6 @@ export const ROLE_CONFIGS: Record<UserRoleType, RoleConfig> = {
       'recommendations',
       'reports',
       'data-explorer',
-      'telemetry-upload',
     ],
     canSanctionSeats: false,
     canReviseCurriculum: false,
@@ -93,6 +93,7 @@ export const ROLE_CONFIGS: Record<UserRoleType, RoleConfig> = {
     governanceScope: 'Curriculum obsolescence monitoring, Qualification Packs (QPs), NSQF alignment, and training provider accreditation.',
     allowedRoutes: [
       'dashboard',
+      'telemetry-upload',
       'sectors',
       'demand-supply',
       'forecasting',
@@ -101,7 +102,6 @@ export const ROLE_CONFIGS: Record<UserRoleType, RoleConfig> = {
       'policy-sandbox',
       'reports',
       'data-explorer',
-      'telemetry-upload',
     ],
     canSanctionSeats: false,
     canReviseCurriculum: true,

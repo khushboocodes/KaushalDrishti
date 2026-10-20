@@ -9,6 +9,7 @@ import {
   MapPin,
   Building2,
   User,
+  UploadCloud,
 } from 'lucide-react';
 import {
   LogoHorizontal,
@@ -28,6 +29,7 @@ import {
 
 const NAV_LABELS_HI: Record<string, string> = {
   'dashboard': 'डैशबोर्ड (कमान केंद्र)',
+  'telemetry-upload': 'टेलीमेट्री अपलोड',
   'demand-supply': 'मांग एवं आपूर्ति',
   'forecasting': 'पूर्वानुमान इंजन',
   'sectors': 'क्षेत्र एवं व्यवसाय',
@@ -38,7 +40,6 @@ const NAV_LABELS_HI: Record<string, string> = {
   'recommendations': 'योजना सिफारिशें',
   'reports': 'रिपोर्ट एवं निर्यात',
   'data-explorer': 'डेटा अन्वेषक',
-  'telemetry-upload': 'टेलीमेट्री अपलोड',
   'settings': 'सिस्टम सेटिंग्स',
 };
 
@@ -63,6 +64,7 @@ export const SIDEBAR_NAV_ITEMS: {
   icon: string;
 }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+  { id: 'telemetry-upload', label: 'Telemetry Upload', icon: 'upload' },
   { id: 'demand-supply', label: 'Demand & Supply', icon: 'demand' },
   { id: 'forecasting', label: 'Forecasting', icon: 'forecast' },
   { id: 'sectors', label: 'Sectors & Trades', icon: 'sectors' },
@@ -73,7 +75,6 @@ export const SIDEBAR_NAV_ITEMS: {
   { id: 'recommendations', label: 'Recommendations', icon: 'recommendations' },
   { id: 'reports', label: 'Reports', icon: 'reports' },
   { id: 'data-explorer', label: 'Data Explorer', icon: 'data' },
-  { id: 'telemetry-upload', label: 'Telemetry Upload', icon: 'upload' },
   { id: 'settings', label: 'Settings', icon: 'settings' },
 ];
 
@@ -110,7 +111,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   );
 
   const renderSidebarContent = () => (
-    <div className="flex flex-col h-full justify-between bg-[#F5F0E7] border-r border-[#E9E0D3] w-[205px] shrink-0 select-none">
+    <div className="flex flex-col h-full justify-between bg-[#F5F0E7] border-r border-[#E9E0D3] w-[218px] shrink-0 select-none">
       {/* Top Brand Logo & Wordmark */}
       <div>
         <div className="px-3.5 pt-4 pb-3 border-b border-[#E9E0D3]/60">
@@ -172,7 +173,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                     : 'text-[#173F35] hover:bg-[#ECE4D7] font-medium'
                 }`}
               >
-                <span className="inline-flex items-center gap-2.5 truncate">
+                <span className="inline-flex items-center gap-2 min-w-0">
                   <AssetOutlineIcon
                     name={item.icon}
                     active={isActive}
@@ -182,6 +183,11 @@ export const AppShell: React.FC<AppShellProps> = ({
                     {language === 'HI' ? (NAV_LABELS_HI[item.id] || item.label) : item.label}
                   </span>
                 </span>
+                {item.id === 'telemetry-upload' && (
+                  <span className="ml-auto px-1.5 py-0.2 rounded text-[8px] font-bold tracking-wider bg-[#E2F0E3] text-[#17604D] border border-[#C8E6C9] shrink-0">
+                    TEST
+                  </span>
+                )}
               </button>
             );
           })}
@@ -271,6 +277,20 @@ export const AppShell: React.FC<AppShellProps> = ({
 
           {/* Right Zone: Frame Mode Switcher, Date-Range Selector, Language, Notifications, Admin Profile */}
           <div className="flex items-center gap-2.5 shrink-0">
+
+            {/* Quick Action: Live Data Testing Workbench */}
+            <button
+              type="button"
+              onClick={() => {
+                onToggleCanvasMode('single');
+                onSelectRoute('telemetry-upload');
+              }}
+              className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#E2F0E3] hover:bg-[#D5E9D7] border border-[#C8E6C9] text-xs font-semibold text-[#17604D] cursor-pointer shadow-2xs transition-all"
+              title="Upload CSV to test & simulate live district telemetry"
+            >
+              <UploadCloud className="w-3.5 h-3.5 shrink-0 text-[#17604D]" />
+              <span>{language === 'HI' ? 'डेटा टेस्ट / अपलोड' : 'Test Live Data'}</span>
+            </button>
 
             {/* Date-Range Selector matching Reference Image 1 ("Last 1 Year") */}
             <div className="relative">
