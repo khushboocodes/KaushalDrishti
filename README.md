@@ -42,6 +42,36 @@ India's technical vocational education and training (TVET) landscape faces four 
 
 ---
 
+## 💻 Technology Stack (Tech Stack)
+
+| Layer | Technology | Version | Purpose & Architectural Role |
+| :--- | :--- | :--- | :--- |
+| **Frontend Framework** | **React** | `19.0` | Component-driven UI architecture with concurrent rendering |
+| **Frontend Language** | **TypeScript** | `5.0+` | End-to-end type safety across domain models and telemetry records |
+| **Build Tool & Bundler** | **Vite** | `8.3` | Ultra-fast ESM development server and optimized production packaging |
+| **Styling & Design System** | **TailwindCSS** | `4.0` | MSDE tricolor-inspired curated theme tokens and glassmorphism styling |
+| **Icons & Micro-Interactions** | **Lucide React + Motion** | `^0.546` / `^12.23` | Interactive iconography and fluid state transitions |
+| **Geospatial Mapping** | **Leaflet + GeoJSON** | `^1.9.4` | Interactive SVG India administrative boundaries and choropleth heatmaps |
+| **Client State & Sync** | **Reactive Telemetry Store** | *Custom Core* | Multi-client observable store with background 6-second polling sync |
+| **Backend Framework** | **FastAPI** | `>=0.115.0` | High-throughput asynchronous ASGI web framework with OpenAPI generation |
+| **ASGI Web Server** | **Uvicorn** | `>=0.28.0` | Industrial-grade ASGI web server with `uvloop` concurrency |
+| **Data Validation** | **Pydantic** | `>=2.6.0` | Strict runtime request/response payload validation and settings management |
+| **Machine Learning Core** | **Scikit-Learn** | `>=1.4.0` | `HistGradientBoostingRegressor` for multi-horizon panel forecasting |
+| **Statistical Computing** | **NumPy + SciPy** | `>=1.26` / `>=1.12` | Matrix operations, error covariance estimation for MinT reconciliation |
+| **Data Manipulation** | **Pandas** | `>=2.2.0` | Time-series aggregations, rolling window features, and panel joins |
+| **Fuzzy Matching & Hygiene** | **RapidFuzz + Jellyfish** | `>=3.0` / `>=1.0` | Tri-tier canonical district LGD entity resolution and string deduplication |
+| **Deduplication Engine** | **64-bit SimHash** | *Custom Core* | Locality-sensitive hashing with Hamming distance $\le 3$ for ghost vacancies |
+| **Central Database** | **Neon PostgreSQL** | `16.0 (Serverless)` | Cloud relational database cluster with connection pooling (`pool_recycle=300`) |
+| **Database ORM** | **SQLAlchemy** | `>=2.1.0` | Declarative relational models for batches and microdata indexing |
+| **Database Drivers** | **Psycopg2 + Psycopg v3** | `>=2.9` / `>=3.1` | Multi-driver failover with automatic dialect detection |
+| **Offline Resilience** | **SQLite** | `3.x Built-in` | Zero-configuration local database fallback for development and testing |
+| **Frontend Edge CDN** | **Vercel** | *Edge Network* | Global CDN edge caching with serverless API rewrites to backend |
+| **Backend Cloud Compute** | **Render** | *Linux Web Service* | Auto-deploying Python container environment linked to GitHub repository |
+| **Test Suite** | **Pytest + HTTPX** | `>=8.0` / `>=0.27` | Comprehensive test harness (**23 / 23 unit & integration tests passing**) |
+| **Statutory Guard** | **DPDP Guard** | *Custom Engine* | DPDP Act 2023 compliance ($k \ge 50$ anonymization and SHA-256 digest) |
+
+---
+
 ## 🏛️ System Architecture Diagrams
 
 ### 1. Cloud Production Deployment Architecture (Vercel + Render + Neon)
