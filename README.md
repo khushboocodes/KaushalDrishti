@@ -230,6 +230,67 @@ The user interface is an accessible, bilingual (English / हिन्दी), W
 
 ---
 
+## 🛡️ Role-Based Access Control (RBAC) & Module Governance
+
+KaushalDrishti implements a multi-tier statutory Role-Based Access Control (RBAC) model aligned with the administrative governance hierarchy of India's skilling ecosystem. Access to dashboard modules, administrative actions, and spatial scopes are enforced dynamically via client-side routing guards (`isRouteAllowedForSession`) and role-tailored analytical views.
+
+### 👥 Governance Roles & Administrative Clearance
+
+| Role Attribute | State SSDM Director (`ADMIN`) | District Skill Officer (`DSO`) | NCVET Accreditation Admin (`NCVET`) |
+| :--- | :--- | :--- | :--- |
+| **Official Title** | **Director, State Skill Development Mission** | **District Skill Officer (DSC Lead)** | **Director of Qualifications & Standards** |
+| **Governance Tier** | **Apex Authority (Level 1)** | **Operational District Command (Level 2)** | **Standards & Regulatory (Level 2)** |
+| **Administrative Scope** | State-wide & National Policy, Fiscal Sanctions | Local ITI utilization & District Plans | National Qualifications & NSQF Compliance |
+| **Jurisdiction Boundary** | **All States & Apex Sanctions** (Unrestricted) | **Pune District, Maharashtra** (Strict Lock) | **National Scope** (Cross-Sectoral Standards) |
+| **Clearance Level** | Full Administrative & Budgetary Clearance | District Operational Command | Regulatory Qualifications & Standards |
+| **Primary Workflow** | Sanction seat transfers, capital grants, DSDP | Draft local targets, inspect ITIs, ingest data | Revise curriculum, flag obsolete QPs, audit |
+| **Default Entry Route** | National Command Center (`dashboard`) | District Command Center (`dashboard`) | Sectors & Trades Hub (`sectors`) |
+
+---
+
+### 🗺️ Role-Wise Dashboard Modules Access Matrix
+
+The platform comprises **13 core functional modules**. Navigation links and route access are restricted based on the active officer clearance:
+
+| # | Dashboard Module | Route ID | State SSDM (`ADMIN`) | District DSO (`DSO`) | NCVET Admin (`NCVET`) | Module Purpose & Access Scope |
+| :-: | :--- | :--- | :---: | :---: | :---: | :--- |
+| 1 | **National Command Center** | `dashboard` | 🟢 **Full Access** | 🟡 *District Locked* | 🟡 *National Overview* | High-level KPI cards, distress signals, and choropleth overview. |
+| 2 | **Demand & Supply Matrix** | `demand-supply` | 🟢 **Full Access** | 🟡 *District Filtered* | 🟢 **Full Access** | 561-record national dataset covering 37 States/UTs & 11 Sectors. |
+| 3 | **Forecasting Engine** | `forecasting` | 🟢 **Full Access** | 🔴 *Restricted* | 🟢 **Full Access** | 3M/6M/12M forward trajectories with MinT reconciliation & conformal bounds. |
+| 4 | **Sectors & Trades Lab** | `sectors` | 🟢 **Full Access** | 🔴 *Restricted* | 🟢 **Full Access** | Sectoral deep-dive, NCO-2015 competency clouds, and obsolescence tracking. |
+| 5 | **Geospatial District View**| `geographic` | 🟢 **Full Access** | 🟢 **Full Access** | 🔴 *Restricted* | High-resolution GIS map showing ITI clusters, capacity, and migration flows. |
+| 6 | **Training Capacity Hub** | `training` | 🟢 **Full Access** | 🟢 **Full Access** | 🟢 **Full Access** | ITI infrastructure audit, seat utilization rates, and trade-wise enrollment. |
+| 7 | **What-If Policy Sandbox** | `policy-sandbox`| 🟢 **Full Access** | 🟢 **Full Access** | 🟢 **Full Access** | Sub-15ms simulation of seat additions, trade conversion, and budget impact. |
+| 8 | **Alerts & Insights Radar** | `alerts` | 🟢 **Full Access** | 🟢 **Full Access** | 🟢 **Full Access** | 5-state early warning radar triaging Critical Shortage and Severe Surplus. |
+| 9 | **Target Recommendations** | `recommendations`| 🟢 **Full Access** | 🟢 **Full Access** | 🔴 *Restricted* | Algorithmic target allocation, DSDP draft endorsement, and budget sanction. |
+| 10 | **Reports & Dossiers** | `reports` | 🟢 **Full Access** | 🟢 **Full Access** | 🟢 **Full Access** | Exportable official executive summaries, PDF briefs, and diagnostic dossiers. |
+| 11 | **Data Explorer** | `data-explorer` | 🟢 **Full Access** | 🟢 **Full Access** | 🟢 **Full Access** | Granular multi-dimensional query builder across historical pilot and telemetry data. |
+| 12 | **Telemetry Upload Hub** | `telemetry-upload`| 🟢 **Full Access** | 🟢 **Full Access** | 🟢 **Full Access** | Real-time CSV ingestion, LGD/NCO hygiene validation, and Neon DB commit. |
+| 13 | **System & API Settings** | `settings` | 🟢 **Full Access** | 🔴 *Restricted* | 🔴 *Restricted* | API keys, Neon connection management, DPDP compliance logs, and system config. |
+
+> **Access Legend:**
+> - 🟢 **Full Access:** Complete operational authority, unfiltered query capability, and policy execution.
+> - 🟡 **Filtered / Locked:** Module accessible, but strictly scoped to assigned district (DSO) or national standards (NCVET).
+> - 🔴 **Restricted:** Navigation item hidden from sidebar; direct route access blocked by route guard.
+
+---
+
+### ⚡ Operational Actions & Statutory Permissions Matrix
+
+In addition to module navigation, the platform enforces fine-grained operational permissions across decision workflows:
+
+| Statutory Action / Permission | Code Capability Flag | State SSDM (`ADMIN`) | District DSO (`DSO`) | NCVET Admin (`NCVET`) |
+| :--- | :--- | :---: | :---: | :---: |
+| **Sanction Training Seats & Budgets** | `canSanctionSeats` | ✅ **Authorized** | ❌ *Endorse Draft Only* | ❌ *No Fiscal Authority* |
+| **Revise Curriculum & NSQF Standards**| `canReviseCurriculum` | ✅ **Authorized** | ❌ *No Standards Authority* | ✅ **Full Regulatory Authority** |
+| **Generate API Keys & Webhooks** | `canGenerateApiKeys` | ✅ **Authorized** | ❌ *Restricted* | ❌ *Restricted* |
+| **Modify System & Database Config** | `canEditSystemSettings` | ✅ **Authorized** | ❌ *Restricted* | ❌ *Restricted* |
+| **Spatial Boundary Lock Enforced** | `isDistrictLocked` | ❌ *Global Scope* | ✅ **Locked (Pune)** | ❌ *National Scope* |
+| **Commit Telemetry Batches to Cloud** | Database Persistence | ✅ **Commit & Quarantine** | ✅ **Upload District Batch** | ✅ **Audit Schema Compliance** |
+| **Primary Policy Call-to-Action** | Workflow Button | `"Approve & Sanction Allocation"` | `"Endorse Pune Target Draft"` | `"Mandate NSQF Overhaul"` |
+
+---
+
 ## 💾 Central Database Persistence (PostgreSQL & SQLite)
 
 The platform features an automated **dual-engine hybrid persistence layer** implemented via SQLAlchemy 2.1:
