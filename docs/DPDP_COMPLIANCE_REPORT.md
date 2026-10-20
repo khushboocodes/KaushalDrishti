@@ -1,8 +1,8 @@
 # Digital Personal Data Protection (DPDP) Act 2023 Compliance Audit
 ### Project KaushalDrishti (कौशल दृष्टि) — Ministry of Skill Development and Entrepreneurship (MSDE)
 **Audit Status:** `VERIFIED COMPLIANT (PASS)`
-**Audit Timestamp:** `2026-10-20T07:09:10.323230`
-**Tamper-Evident SHA-256 Checksum:** `aa8a6c0ef53ade5467c63a40e73fbb8baa13ec18e158c18ed346f2486e8f14b0`
+**Audit Timestamp:** `2026-10-20T08:11:45.414247`
+**Tamper-Evident SHA-256 Checksum:** `9762ebe4535d98286450bf55cd2e15f6bc2497bc8074af3a1c496d4ece9a6d38`
 
 ---
 
@@ -23,7 +23,7 @@ In strict adherence to the **Digital Personal Data Protection Act (DPDP), 2023**
 
 ## 3. Cryptographic Audit Signature
 ```text
-SHA-256: aa8a6c0ef53ade5467c63a40e73fbb8baa13ec18e158c18ed346f2486e8f14b0
+SHA-256: 9762ebe4535d98286450bf55cd2e15f6bc2497bc8074af3a1c496d4ece9a6d38
 ```
 
 *(Certified compliant by KaushalDrishti Security Guard Engine)*

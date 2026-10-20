@@ -1,7 +1,10 @@
 import json
 from pathlib import Path
 from typing import Optional, Dict, List, Any
-from rapidfuzz import process, fuzz
+try:
+    from rapidfuzz import process, fuzz
+except ImportError:
+    process, fuzz = None, None
 from backend.config import settings
 
 MASTER_LGD_PATH = settings.MASTER_DATA_PATH / "lgd_districts.json"
@@ -73,12 +76,21 @@ class LGDMaster:
         if not candidates:
             return None
 
-        match = process.extractOne(q_clean, candidates, scorer=fuzz.token_sort_ratio)
-        if match and match[1] >= 80:
-            matched_name = match[0].lower()
-            code = self._name_to_id.get(matched_name) or self._alias_to_id.get(matched_name)
-            if code:
-                return self._districts[code]
+        if process and fuzz:
+            match = process.extractOne(q_clean, candidates, scorer=fuzz.token_sort_ratio)
+            if match and match[1] >= 80:
+                matched_name = match[0].lower()
+                code = self._name_to_id.get(matched_name) or self._alias_to_id.get(matched_name)
+                if code:
+                    return self._districts[code]
+        else:
+            import difflib
+            matches = difflib.get_close_matches(q_clean, candidates, n=1, cutoff=0.7)
+            if matches:
+                matched_name = matches[0].lower()
+                code = self._name_to_id.get(matched_name) or self._alias_to_id.get(matched_name)
+                if code:
+                    return self._districts[code]
 
         return None
 
