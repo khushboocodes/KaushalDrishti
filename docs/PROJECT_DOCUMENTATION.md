@@ -381,9 +381,9 @@ flowchart TD
 
     UserEntry --> AuthModal
 
-    AuthModal -->|Dr. Rajesh Varma, IES (4892)| Role_ADMIN["Role: State SSDM Director (ADMIN)<br/>Clearance: Apex Level 1"]:::adminStyle
-    AuthModal -->|Smt. Anjali Deshmukh (1492)| Role_DSO["Role: District Skill Officer (DSO)<br/>Clearance: Operational Level 2 (Locked Pune)"]:::dsoStyle
-    AuthModal -->|Shri Vikramaditya Sen (8801)| Role_NCVET["Role: NCVET Accreditation Admin<br/>Clearance: Standards Level 2 (National Scope)"]:::ncvetStyle
+    AuthModal -->|Dr. Rajesh Varma, IES - PIN 4892| Role_ADMIN["Role: State SSDM Director - ADMIN<br/>Clearance: Apex Level 1"]:::adminStyle
+    AuthModal -->|Smt. Anjali Deshmukh - PIN 1492| Role_DSO["Role: District Skill Officer - DSO<br/>Clearance: Operational Level 2 - Locked Pune"]:::dsoStyle
+    AuthModal -->|Shri Vikramaditya Sen - PIN 8801| Role_NCVET["Role: NCVET Accreditation Admin<br/>Clearance: Standards Level 2 - National Scope"]:::ncvetStyle
 
     subgraph AdminJourney ["State SSDM Director Journey (All 13 Modules Unrestricted)"]
         A1["National Command Center (Overview & State Aggregates)"]:::adminStyle
@@ -391,27 +391,27 @@ flowchart TD
         A3["Early Warning Radar Triage (Critical Shortage & Severe Surplus)"]:::adminStyle
         A4["Forecasting Engine (MinT Coherence & Conformal Bounds)"]:::adminStyle
         A5["Target Recommendations & Allocation Review"]:::adminStyle
-        A6["Action: 'Approve & Sanction Allocation'"]:::actionStyle
+        A6["Action: Approve & Sanction Allocation"]:::actionStyle
         A7["Export Official MSDE DSDP Annual CSV Package"]:::actionStyle
     end
 
-    subgraph DSOJourney ["District Skill Officer Journey (10 Modules · Locked to Pune LGD 492)"]
+    subgraph DSOJourney ["District Skill Officer Journey (10 Modules - Locked to Pune LGD 492)"]
         D1["District Command Center (Pune ITI Capacity & Local KPIs)"]:::dsoStyle
         D2["Geospatial District View (Pune ITI Clusters & MSME Inflows)"]:::dsoStyle
         D3["Real-Time Telemetry Upload Hub (Drag & Drop District CSV)"]:::dsoStyle
         D4["Multi-Stage Ingestion Validation (AI Report & Drop-Off Funnel)"]:::dsoStyle
         D5["Cloud Database Commit (Central Neon PG Persistence)"]:::actionStyle
         D6["What-If Policy Simulation Sandbox (Seat Delta Adjustments)"]:::dsoStyle
-        D7["Action: 'Endorse Pune Target Draft'"]:::actionStyle
+        D7["Action: Endorse Pune Target Draft"]:::actionStyle
     end
 
-    subgraph NCVETJourney ["NCVET Accreditation Admin Journey (10 Modules · Standards & QPs Scope)"]
+    subgraph NCVETJourney ["NCVET Accreditation Admin Journey (10 Modules - Standards Scope)"]
         N1["Sectors & Occupational Trades Lab (Default Home Route)"]:::ncvetStyle
         N2["National Demand & Supply Matrix (Cross-Sectoral Overview)"]:::ncvetStyle
         N3["Forecasting Trajectories (Sectoral Sunrise Trends)"]:::ncvetStyle
-        N4["Qualification Pack (QP) Competency Deficit Clouds"]:::ncvetStyle
+        N4["Qualification Pack Competency Deficit Clouds"]:::ncvetStyle
         N5["Curriculum Obsolescence Tracking & Credit Alignment"]:::ncvetStyle
-        N6["Action: 'Mandate NSQF Overhaul'"]:::actionStyle
+        N6["Action: Mandate NSQF Overhaul"]:::actionStyle
     end
 
     Role_ADMIN --> A1 --> A2 --> A3 --> A4 --> A5 --> A6 --> A7
@@ -567,7 +567,7 @@ flowchart TD
     FlagRow --> QuarantineDir
     AIRep --> DigestCalc
 
-    CommitClick["User Clicks 'Commit Verified Telemetry to Central Database'"]:::clientStep
+    CommitClick["User Clicks Commit Verified Telemetry to Central Database"]:::clientStep
     DigestCalc --> CommitClick
 
     subgraph ServerCommit ["Server-Side Database Persistence & Sync"]
@@ -598,9 +598,9 @@ sequenceDiagram
 
     Planner->>UI: Drags Seat Delta Slider (ΔC = +100 Seats)
     activate UI
-    UI->>State: Trigger onChange(delta: +100, horizon: "12M")
+    UI->>State: Trigger onChange(delta: +100, horizon: 12M)
     activate State
-    State->>Core: simulate(district_lgd: 158, nco: "7411.0101", delta: 100)
+    State->>Core: simulate(district_lgd: 158, nco: 7411.0101, delta: 100)
     activate Core
 
     Note over Core: Retrieves Baseline Trade Record (< 1ms In-Memory)
@@ -616,7 +616,7 @@ sequenceDiagram
     Radar-->>Core: State: CRITICAL_SHORTAGE_RISK (Severity 1, Red #D32F2F)
     deactivate Radar
 
-    Core->>Budget: compute_fiscal_impact(delta_seats: +100, sector: "Green Energy")
+    Core->>Budget: compute_fiscal_impact(delta_seats: +100, sector: Green Energy)
     activate Budget
     Budget-->>Core: Capex: ₹12.5 Lakhs, Opex: ₹4.8 Lakhs / Year
     deactivate Budget
