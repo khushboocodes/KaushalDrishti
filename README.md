@@ -42,33 +42,105 @@ India's technical vocational education and training (TVET) landscape faces four 
 
 ---
 
-## 💻 Technology Stack (Tech Stack)
+## 💻 Complete Technology Stack & Architecture Matrix
 
-| Layer | Technology | Version | Purpose & Architectural Role |
+KaushalDrishti is built on a modern, decoupled cloud architecture engineered for enterprise scalability, sub-15ms simulation latency, and strict DPDP Act 2023 statutory data privacy.
+
+### 🌟 Core Tech Stack at a Glance
+
+| Layer / Domain | Primary Technology | Version | Purpose & Architectural Role |
 | :--- | :--- | :--- | :--- |
-| **Frontend Framework** | **React** | `19.0` | Component-driven UI architecture with concurrent rendering |
-| **Frontend Language** | **TypeScript** | `5.0+` | End-to-end type safety across domain models and telemetry records |
-| **Build Tool & Bundler** | **Vite** | `8.3` | Ultra-fast ESM development server and optimized production packaging |
-| **Styling & Design System** | **TailwindCSS** | `4.0` | MSDE tricolor-inspired curated theme tokens and glassmorphism styling |
-| **Icons & Micro-Interactions** | **Lucide React + Motion** | `^0.546` / `^12.23` | Interactive iconography and fluid state transitions |
-| **Geospatial Mapping** | **Leaflet + GeoJSON** | `^1.9.4` | Interactive SVG India administrative boundaries and choropleth heatmaps |
-| **Client State & Sync** | **Reactive Telemetry Store** | *Custom Core* | Multi-client observable store with background 6-second polling sync |
-| **Backend Framework** | **FastAPI** | `>=0.115.0` | High-throughput asynchronous ASGI web framework with OpenAPI generation |
-| **ASGI Web Server** | **Uvicorn** | `>=0.28.0` | Industrial-grade ASGI web server with `uvloop` concurrency |
-| **Data Validation** | **Pydantic** | `>=2.6.0` | Strict runtime request/response payload validation and settings management |
-| **Machine Learning Core** | **Scikit-Learn** | `>=1.4.0` | `HistGradientBoostingRegressor` for multi-horizon panel forecasting |
-| **Statistical Computing** | **NumPy + SciPy** | `>=1.26` / `>=1.12` | Matrix operations, error covariance estimation for MinT reconciliation |
-| **Data Manipulation** | **Pandas** | `>=2.2.0` | Time-series aggregations, rolling window features, and panel joins |
-| **Fuzzy Matching & Hygiene** | **RapidFuzz + Jellyfish** | `>=3.0` / `>=1.0` | Tri-tier canonical district LGD entity resolution and string deduplication |
-| **Deduplication Engine** | **64-bit SimHash** | *Custom Core* | Locality-sensitive hashing with Hamming distance $\le 3$ for ghost vacancies |
-| **Central Database** | **Neon PostgreSQL** | `16.0 (Serverless)` | Cloud relational database cluster with connection pooling (`pool_recycle=300`) |
-| **Database ORM** | **SQLAlchemy** | `>=2.1.0` | Declarative relational models for batches and microdata indexing |
-| **Database Drivers** | **Psycopg2 + Psycopg v3** | `>=2.9` / `>=3.1` | Multi-driver failover with automatic dialect detection |
-| **Offline Resilience** | **SQLite** | `3.x Built-in` | Zero-configuration local database fallback for development and testing |
-| **Frontend Edge CDN** | **Vercel** | *Edge Network* | Global CDN edge caching with serverless API rewrites to backend |
+| **Frontend Framework** | **React** | `19.0.1` | Component-driven UI architecture with concurrent rendering and transitions |
+| **Frontend Language** | **TypeScript** | `5.7+` | End-to-end static typing across domain models, telemetry records, and props |
+| **Build Tool & Bundler** | **Vite** | `8.3.0` | Ultra-fast ESM development server and optimized Rollup/Rolldown packaging |
+| **Styling & Design System** | **TailwindCSS** | `4.3.3` | Custom MSDE tricolor-inspired warm neutral tokens and glassmorphism styling |
+| **Micro-Interactions** | **Motion** *(Framer Motion)* | `12.23.24` | Fluid physics-based springs, layout transitions, and card slide reveals |
+| **Vector Iconography** | **Lucide React** | `0.546.0` | Accessible, consistent SVG vector iconography across all 13 modules |
+| **Geospatial Intelligence** | **Leaflet + GeoJSON** | `1.9.4` | High-performance interactive choropleth map of 36 States & UTs |
+| **Backend Framework** | **FastAPI** | `>=0.115.0` | Asynchronous ASGI web framework with automatic OpenAPI v3.1 and Swagger / ReDoc |
+| **ASGI Web Server** | **Uvicorn** | `>=0.28.0` | High-throughput production ASGI server with `uvloop` concurrency |
+| **Data Validation** | **Pydantic v2** | `>=2.6.0` | Rust-accelerated runtime request/response payload validation |
+| **Machine Learning Core** | **Scikit-Learn** | `>=1.4.0` | `HistGradientBoostingRegressor` for 3M, 6M, and 12M forward horizon forecasting |
+| **Scientific & Matrix Computing** | **NumPy + SciPy** | `>=1.26` / `>=1.12` | Matrix operations, error covariance estimation for MinT reconciliation, eCDF |
+| **Data Manipulation** | **Pandas** | `>=2.2.0` | Time-series panel joins, rolling window lag generation, and aggregation |
+| **Fuzzy Entity Resolution** | **RapidFuzz + Jellyfish** | `>=3.0` / `>=1.0` | Tri-tier canonical district LGD entity resolution and string deduplication |
+| **Locality-Sensitive Hashing** | **64-bit SimHash** | *Custom Engine* | Locality-sensitive hashing with Hamming distance $\le 3$ for ghost vacancies |
+| **Generative Intelligence** | **Google Gemini API** | `@google/genai 2.4` | Automated policy briefing generation and executive dossier synthesis |
+| **Primary Cloud Database** | **Neon PostgreSQL** | `16.0 (Serverless)` | Auto-scaling cloud relational database cluster with connection pooling |
+| **Database ORM** | **SQLAlchemy** | `>=2.0.0` | Declarative 2.0-style relational models and query abstraction |
+| **Database Drivers** | **Psycopg2 + Psycopg v3** | `>=2.9` / `>=3.1` | Dual-driver failover with automatic dialect negotiation |
+| **Offline Fallback Database** | **SQLite 3** | *Built-in* | Zero-configuration local database fallback for development and test suites |
+| **Frontend Edge CDN** | **Vercel** | *Edge Network* | Anycast edge caching with serverless proxy rewrites (`vercel.json`) |
 | **Backend Cloud Compute** | **Render** | *Linux Web Service* | Auto-deploying Python container environment linked to GitHub repository |
-| **Test Suite** | **Pytest + HTTPX** | `>=8.0` / `>=0.27` | Comprehensive test harness (**23 / 23 unit & integration tests passing**) |
-| **Statutory Guard** | **DPDP Guard** | *Custom Engine* | DPDP Act 2023 compliance ($k \ge 50$ anonymization and SHA-256 digest) |
+| **Containerization** | **Docker** | *OCI Compliant* | Multi-stage container build with non-root security execution |
+| **Automated Testing** | **Pytest + HTTPX** | `>=8.0` / `>=0.27` | Comprehensive test harness (**23 / 23 unit & integration tests passing**) |
+| **Statutory Compliance Guard** | **DPDP Guard** | *Custom Engine* | DPDP Act 2023 compliance ($k \ge 50$ anonymization and SHA-256 digest) |
+
+---
+
+### 🔍 Detailed Subsystem Breakdown
+
+#### 1. Frontend & Client Presentation Tier
+| Technology | Package / Tool | Version | Role in KaushalDrishti |
+| :--- | :--- | :--- | :--- |
+| **React** | `react`, `react-dom` | `^19.0.1` | Master UI view layer with concurrent rendering, custom hooks, and memoized metrics |
+| **TypeScript** | `typescript` | `^5.7.0` | Compile-time type checking, interfaces for LGD records, CDI panels, and telemetry batches |
+| **Vite** | `vite`, `@vitejs/plugin-react` | `^8.3.0` | Sub-50ms HMR in development, optimized bundle chunking, and build pipeline |
+| **TailwindCSS** | `tailwindcss`, `@tailwindcss/vite` | `^4.3.3` | Modern v4 engine utilizing `@theme` tokens for MSDE Warm Stone (`#F8F5EF`) and Deep Evergreen (`#173F35`) |
+| **Motion** | `motion` | `^12.23.24` | Staggered entrance animations, KPI counters, and interactive chart state transitions |
+| **Lucide Icons** | `lucide-react` | `^0.546.0` | Standardized iconography across all 13 modules, filters, and executive navigation items |
+| **Geospatial Mapping** | `leaflet`, `@types/leaflet` | `^1.9.4` | SVG choropleth rendering of state and district boundaries with interactive tooltips |
+| **State Management** | `telemetryIngestionStore` | *Custom Observable* | Event-driven observable store synchronizing uploaded telemetry batches across browsers via 6-second polling |
+| **AI Summarization** | `@google/genai` | `^2.4.0` | Official Google GenAI SDK powering automated executive intelligence dossiers |
+| **Headless SSR Preview** | `express`, `tsx` | `^4.21`, `^4.21` | Lightweight local server and TypeScript execution runner |
+
+#### 2. Backend, API Services & Runtime Tier
+| Technology | Package / Tool | Version | Role in KaushalDrishti |
+| :--- | :--- | :--- | :--- |
+| **Python** | `python` | `3.11 / 3.12 / 3.14` | High-level language powering mathematical algorithms, data processing, and APIs |
+| **FastAPI** | `fastapi` | `>=0.110.0` | Asynchronous ASGI web framework with dependency injection and automatic OpenAPI generation |
+| **Uvicorn** | `uvicorn[standard]` | `>=0.28.0` | Industrial-grade ASGI web server with `uvloop` concurrency and `httptools` parsing |
+| **Pydantic v2** | `pydantic` | `>=2.6.0` | Strongly-typed schemas for request validation, error handling, and serialization |
+| **Streaming Parser** | `python-multipart` | `>=0.0.9` | RFC 7578 streaming multipart file upload processor for district telemetry CSVs |
+| **Environment Config** | `python-dotenv` | `>=1.0.0` | 12-factor configuration loading database credentials and API secrets from `.env` |
+
+#### 3. Machine Learning, Forecasting & Mathematical Engines
+| Component | Algorithm / Library | Math Formulation / Standard | Architectural Function |
+| :--- | :--- | :--- | :--- |
+| **Composite Demand Index (CDI)** | Custom Econometric Pipeline | $\text{CDI} = 0.35 V_t + 0.25 G_t + 0.15 H_t + 0.15 S_t + 0.10 M_t$ | Normalizes raw vacancy volumes, growth momentum, employer breadth, skill dispersion, and GVA |
+| **Multi-Horizon Forecasting** | `scikit-learn` `HistGradientBoostingRegressor` | Bin-based gradient boosting with monotonic constraints | Generates forward-looking demand estimates across 3M, 6M, and 12M forward planning horizons |
+| **Spatial Coherence** | **Minimum Trace (MinT)** Reconciliation | $\tilde{\mathbf{y}}_t = \mathbf{S}(\mathbf{S}^T\mathbf{W}^{-1}\mathbf{S})^{-1}\mathbf{S}^T\mathbf{W}^{-1}\hat{\mathbf{y}}_t$ | Reconciles hierarchical forecasts ensuring $\sum \text{Districts} = \text{State}$ and $\sum \text{States} = \text{National}$ |
+| **Uncertainty Quantification** | **Split Conformal Prediction** | Non-parametric finite-sample coverage $1 - \alpha$ | Produces valid 80% and 95% confidence intervals without Gaussian error assumptions |
+| **Deduplication Engine** | **64-bit SimHash** | Locality-Sensitive Hashing with XOR Hamming distance $\le 3$ | Eliminates cross-posted and duplicate employer job vacancy postings across portals |
+| **Fuzzy Entity Resolution** | `RapidFuzz` + `Jellyfish` | Levenshtein Distance & Jaro-Winkler Similarity ($\ge 0.88$) | Resolves misspelt district names and state aliases to canonical LGD Census 2024 codes |
+| **Simulation Sandbox** | In-Memory Counterfactual Engine | Sub-15ms vector recalculation of seats, dropouts, and retention | Real-time what-if policy experimentation for District Skill Committees before sanctioning |
+
+#### 4. Data Persistence & Storage Tier
+| System | Technology | Version | Architectural Function |
+| :--- | :--- | :--- | :--- |
+| **Cloud Database** | **Neon PostgreSQL** | `16.0 Serverless` | Primary cloud ACID store hosting `telemetry_batches` and `telemetry_records` |
+| **Database ORM** | **SQLAlchemy** | `>=2.0.0` | Declarative 2.0-style object-relational mapping with connection recycling (`pool_recycle=300`) |
+| **Database Drivers** | `psycopg2-binary` & `psycopg` | `>=2.9` / `>=3.1` | Dual-driver failover architecture supporting PostgreSQL wire protocols across platforms |
+| **Local Offline Fallback** | **SQLite 3** | *Built-in* | Zero-dependency local persistence fallback ensuring 100% offline development and test execution |
+
+#### 5. Cloud Infrastructure, Deployment & DevOps
+| Component | Platform / Tool | Configuration | Architectural Function |
+| :--- | :--- | :--- | :--- |
+| **Frontend Hosting** | **Vercel** | Edge Network CDN | Global edge delivery of static assets with `/api/*` reverse proxy rewrites to Render |
+| **Backend Compute** | **Render** | Linux Web Service | Managed auto-scaling containerized compute hosting FastAPI and analytical engines |
+| **Containerization** | **Docker** | `Dockerfile` | Multi-stage lightweight Linux container with non-root security execution |
+| **Process Management** | **Procfile** | `web: python run.py` | Cloud platform entrypoint orchestrating Uvicorn server startup |
+| **Testing Harness** | **Pytest + HTTPX** | `pytest>=8.0`, `httpx>=0.27` | Automated test suite validating ML reconciliation, DPDP guards, and telemetry APIs |
+| **Version Control** | **Git & GitHub** | `origin/main` | Central source repository with branch protection and deployment hooks |
+
+#### 6. Data Standards & Statutory Governance
+| Standard | Governing Body | Coverage in KaushalDrishti |
+| :--- | :--- | :--- |
+| **DPDP Act 2023** | Ministry of Electronics and Information Technology (MeitY) | Enforces $k$-anonymity ($k \ge 50$), zero raw PII ingestion, SHA-256 HMAC digest verification |
+| **LGD 2024** | Ministry of Panchayati Raj / Census of India | Local Government Directory standardization across 36 States/UTs and 788+ districts |
+| **NCO-2015** | Ministry of Labour and Employment (MoLE) | 4-digit National Classification of Occupations standardizing trade and vacancy classifications |
+| **NSQF / NQR** | NCVET / MSDE | Levels 1 to 8 National Skills Qualification Framework alignment and curriculum obsolescence tracking |
+| **WCAG 2.1 AA** | W3C / Web Accessibility Initiative | Color contrast compliance, accessible ARIA attributes, semantic HTML5, and keyboard navigation |
 
 ---
 
